@@ -1,0 +1,13 @@
+{
+    "packages" : [
+        {
+            "name" : "org.moditect.deptective.plugintest.basic.bar"
+        },
+        {
+            "name" : "org.moditect.deptective.plugintest.basic.foo",
+            "reads" : [
+                "java.lang"
+            ]
+        }
+    ]
+}
