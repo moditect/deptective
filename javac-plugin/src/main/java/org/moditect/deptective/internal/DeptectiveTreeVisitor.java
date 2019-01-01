@@ -27,24 +27,25 @@ import com.sun.source.tree.VariableTree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.TreePathScanner;
 import com.sun.tools.javac.api.BasicJavacTask;
-import com.sun.tools.javac.code.Type;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.Log;
 
-public class CodePatternTreeVisitor extends TreePathScanner<Void, Void> {
+public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
 
     private final Log log;
     private final Elements elements;
     private final PackageDependencies packageDependencies;
 
     private Package packageOfCurrentCompilationUnit;
+    private final ReportingPolicy reportingPolicy;
 
-    public  CodePatternTreeVisitor(PackageDependencies packageDependencies, JavacTask task) {
+    public  DeptectiveTreeVisitor(PackageDependencies packageDependencies, ReportingPolicy reportingPolicy, JavacTask task) {
         elements = task.getElements();
 
         Context context = ((BasicJavacTask) task).getContext();
         this.log = Log.instance(context);
         this.packageDependencies = packageDependencies;
+        this.reportingPolicy = reportingPolicy;
     }
 
     @Override
@@ -66,14 +67,18 @@ public class CodePatternTreeVisitor extends TreePathScanner<Void, Void> {
 
     @Override
     public Void visitVariable(VariableTree node, Void p) {
-        Type type = ((com.sun.tools.javac.tree.JCTree)node).type;
-        PackageElement pakkage = elements.getPackageOf(type.asElement());
+        com.sun.tools.javac.tree.JCTree jcTree = (com.sun.tools.javac.tree.JCTree)node;
 
+        PackageElement pakkage = elements.getPackageOf(jcTree.type.asElement());
         String qualifiedName = pakkage.getQualifiedName().toString();
+
         if (!qualifiedName.isEmpty() && !packageOfCurrentCompilationUnit.reads(qualifiedName)) {
-            // log.rawError((int)sourcePositions.getStartPosition(currCompUnit, node), "Package: " + packageOfCurrentCompilationUnit + " doesn't read " + qualifiedName);
-//            log.rawError(((com.sun.tools.javac.tree.JCTree)node).pos, "error: Package " + packageOfCurrentCompilationUnit + " doesn't read " + qualifiedName);
-            log.error(((com.sun.tools.javac.tree.JCTree)node).pos, DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY, packageOfCurrentCompilationUnit, qualifiedName);
+            if (reportingPolicy == ReportingPolicy.ERROR) {
+                log.error(jcTree.pos, DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY, packageOfCurrentCompilationUnit, qualifiedName);
+            }
+            else {
+                log.strictWarning(jcTree, DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY, packageOfCurrentCompilationUnit, qualifiedName);
+            }
         }
 
         return super.visitVariable(node, p);

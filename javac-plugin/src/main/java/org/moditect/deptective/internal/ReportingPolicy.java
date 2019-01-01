@@ -15,19 +15,13 @@
  */
 package org.moditect.deptective.internal;
 
-import java.util.ListResourceBundle;
+/**
+ * How illegal package dependencies should be reported.
+ *
+ * @author Gunnar Morling
+ */
+public enum ReportingPolicy {
 
-public class DeptectiveMessages extends ListResourceBundle {
-
-    public static final String ILLEGAL_PACKAGE_DEPENDENCY = "deptective.illegalpackagedependency";
-    private static final String ERROR_PREFIX = "compiler.err.";
-    private static final String WARNING_PREFIX = "compiler.warn.";
-
-    @Override
-    protected final Object[][] getContents() {
-        return new Object[][] {
-            { ERROR_PREFIX + ILLEGAL_PACKAGE_DEPENDENCY, "package {0} does not read {1}" },
-            { WARNING_PREFIX + ILLEGAL_PACKAGE_DEPENDENCY, "package {0} does not read {1}" }
-        };
-    }
+    ERROR,
+    WARN;
 }

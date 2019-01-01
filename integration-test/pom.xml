@@ -52,6 +52,7 @@
                     <fork>true</fork>
                     <compilerArgs>
                         <arg>-Xplugin:Deptective</arg>
+                        <arg>-Adeptective.reportingpolicy=WARN</arg>
 <!--                         <arg>-J-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=1044</arg> -->
                     </compilerArgs>
                 </configuration>

@@ -15,21 +15,19 @@
  */
 package org.moditect.deptective;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javax.tools.JavaFileManager;
 import javax.tools.StandardLocation;
 
-import org.moditect.deptective.internal.CodePatternTreeVisitor;
 import org.moditect.deptective.internal.DeptectiveMessages;
+import org.moditect.deptective.internal.DeptectiveTreeVisitor;
+import org.moditect.deptective.internal.ReportingPolicy;
 import org.moditect.deptective.internal.model.ConfigParser;
 import org.moditect.deptective.internal.model.PackageDependencies;
 
@@ -45,34 +43,6 @@ import com.sun.tools.javac.util.JavacMessages;
 
 public class DeptectivePlugin implements Plugin {
 
-    private static class DeptectiveOptions {
-
-        private final Map<String, String> options;
-
-        private DeptectiveOptions(Context context) {
-            this.options = Collections.unmodifiableMap(
-                    JavacProcessingEnvironment.instance(context).getOptions()
-            );
-        }
-
-        public static DeptectiveOptions instance(Context context) {
-            return new DeptectiveOptions(context);
-        }
-
-        public Optional<Path> getConfigFilePath() {
-            String path = options.get("deptective.configfile");
-
-            if (path != null) {
-                return Optional.of(new File(path).toPath());
-            }
-            else {
-                return Optional.empty();
-            }
-        }
-    }
-
-    private PackageDependencies config;
-
     @Override
     public String getName() {
         return "Deptective";
@@ -81,19 +51,14 @@ public class DeptectivePlugin implements Plugin {
     @Override
     public void init(JavacTask task, String... args) {
         Context context = ((BasicJavacTask) task).getContext();
+
         JavacMessages messages = context.get(JavacMessages.messagesKey);
         messages.add(l -> ResourceBundle.getBundle(DeptectiveMessages.class.getName(), l));
 
-        try {
-            DeptectiveOptions options = DeptectiveOptions.instance(context);
+        DeptectiveOptions options = new DeptectiveOptions(JavacProcessingEnvironment.instance(context).getOptions());
 
-            try (InputStream is = getConfig(options.getConfigFilePath(), context)) {
-                this.config = new ConfigParser(is).getPackageDependencies();
-            }
-        }
-        catch(Exception e) {
-            throw new RuntimeException(e);
-        }
+        PackageDependencies config = getConfig(context, options);
+        ReportingPolicy reportingPolicy = options.getReportingPolicy();
 
         task.addTaskListener(new TaskListener() {
 
@@ -105,10 +70,21 @@ public class DeptectivePlugin implements Plugin {
             public void finished(TaskEvent e) {
                 if(e.getKind().equals(TaskEvent.Kind.ANALYZE)) {
                     CompilationUnitTree compilationUnit = e.getCompilationUnit();
-                    new CodePatternTreeVisitor(config, task).scan(compilationUnit, null);
+                    new DeptectiveTreeVisitor(config, reportingPolicy, task).scan(compilationUnit, null);
                 }
             }
         });
+    }
+
+    private PackageDependencies getConfig(Context context, DeptectiveOptions options) {
+        try {
+            try (InputStream is = getConfig(options.getConfigFilePath(), context)) {
+                return new ConfigParser(is).getPackageDependencies();
+            }
+        }
+        catch(Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private InputStream getConfig(Optional<Path> configFile, Context context) {

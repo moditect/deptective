@@ -1,6 +1,6 @@
 # Deptective
 
-Deptective is a plug-in for the Java compiler (_javac_) that validates the dependencies
+🕵️ Deptective is a plug-in for the Java compiler (_javac_) that validates the dependencies
 amongst a project's packages against a description of allowed package dependences
 and fail the project compilation when detecting any unintentional dependencies.
 
@@ -64,6 +64,7 @@ When using Maven, the following configuration can be used:
 The following options can be provided when running the plug-in:
 
 * `-Adeptective.configfile=path/to/deptective.json`: Path of the configuration file in the file system
+* `-Adeptective.reportingpolicy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when spotting any illegal package dependencies (defaults to `ERROR`)
 
 ## License
 
