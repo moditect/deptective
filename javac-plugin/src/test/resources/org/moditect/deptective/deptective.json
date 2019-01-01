@@ -1,0 +1,14 @@
+{
+    "packages" : [
+        {
+            "name" : "com.example.foo",
+            "reads" : [
+                "java.lang",
+                "java.util"
+            ]
+        },
+        {
+            "name" : "com.example.bar"
+        }
+    ]
+}
