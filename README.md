@@ -6,7 +6,7 @@ and fail the project compilation when detecting any unintentional dependencies.
 
 ## Requirements
 
-JDK 11 is needed to run Deptective.
+🕵 JDK 11 is needed to run Deptective.
 Support for JDK 8 may be added later on.
 
 The plug-in is specific to _javac_, i.e. the compiler coming with the JDK, it does not work with other compilers such as Eclipse's _ejc_ compiler.
@@ -14,7 +14,7 @@ Support for _ejc_ may be added later on.
 
 ## Usage
 
-Define a file _deptective.json_ which describes the allowed dependencies amongst the project's packages like so:
+🕵 Define a file _deptective.json_ which describes the allowed dependencies amongst the project's packages like so:
 
 ```
 {
@@ -69,13 +69,15 @@ When using Maven, the following configuration can be used:
 ...
 ```
 
+See _integration-test/pom.xml_ for a complete example.
+
 ## Configuration Options
 
-The following options can be provided when running the plug-in:
+🕵 The following options can be provided when running the plug-in:
 
 * `-Adeptective.configfile=path/to/deptective.json`: Path of the configuration file in the file system
 * `-Adeptective.reportingpolicy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when spotting any illegal package dependencies (defaults to `ERROR`)
 
 ## License
 
-Deptective is licensed under the Apache License version 2.0.
+🕵 Deptective is licensed under the Apache License version 2.0.
