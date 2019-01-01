@@ -33,11 +33,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.moditect.deptective</groupId>
-            <artifactId>deptective-javac-plugin</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
@@ -55,6 +50,13 @@
                         <arg>-Adeptective.reportingpolicy=WARN</arg>
 <!--                         <arg>-J-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=1044</arg> -->
                     </compilerArgs>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.moditect.deptective</groupId>
+                            <artifactId>deptective-javac-plugin</artifactId>
+                            <version>1.0-SNAPSHOT</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
         </plugins>

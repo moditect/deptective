@@ -52,6 +52,10 @@ public class DeptectivePlugin implements Plugin {
     public void init(JavacTask task, String... args) {
         Context context = ((BasicJavacTask) task).getContext();
 
+        // Without touch the class here, I'm getting a weird classloading error
+        // when using Maven and not having <fork>true</fork> :(
+        DeptectiveMessages.class.getName();
+
         JavacMessages messages = context.get(JavacMessages.messagesKey);
         messages.add(l -> ResourceBundle.getBundle(DeptectiveMessages.class.getName(), l));
 

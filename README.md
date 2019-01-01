@@ -4,6 +4,14 @@
 amongst a project's packages against a description of allowed package dependences
 and fail the project compilation when detecting any unintentional dependencies.
 
+## Requirements
+
+JDK 11 is needed to run Deptective.
+Support for JDK 8 may be added later on.
+
+The plug-in is specific to _javac_, i.e. the compiler coming with the JDK, it does not work with other compilers such as Eclipse's _ejc_ compiler.
+Support for _ejc_ may be added later on.
+
 ## Usage
 
 Define a file _deptective.json_ which describes the allowed dependencies amongst the project's packages like so:
@@ -31,20 +39,12 @@ Define a file _deptective.json_ which describes the allowed dependencies amongst
 Place the file in the root of your source directory (e.g. _src/main/java_ for Maven projects).
 Alternatively you can specify the location of the config file using the `-Adeptective.configfile` option (see below).
 
-Add _deptective-javac-plugin-1.0-SNAPSHOT.jar_ to your project's classpath
+Add _deptective-javac-plugin-1.0-SNAPSHOT.jar_ to your project's annotation processor path
 and specify the option `-Xplugin:Deptective` when invoking _javac_.
 When using Maven, the following configuration can be used:
 
 ```
-<dependencies>
-    <dependency>
-        <groupId>org.moditect.deptective</groupId>
-        <artifactId>deptective-javac-plugin</artifactId>
-        <scope>provided</scope>
-        <version>1.0-SNAPSHOT</version>
-    </dependency>
-</dependencies>
-
+...
 <build>
     <plugins>
         <plugin>
@@ -52,11 +52,21 @@ When using Maven, the following configuration can be used:
             <configuration>
                 <compilerArgs>
                     <arg>-Xplugin:Deptective</arg>
+                    <!-- specify options like so -->
+                    <!-- <arg>-Adeptective.reportingpolicy=WARN</arg> -->
                 </compilerArgs>
+                <annotationProcessorPaths>
+                    <path>
+                        <groupId>org.moditect.deptective</groupId>
+                        <artifactId>deptective-javac-plugin</artifactId>
+                        <version>1.0-SNAPSHOT</version>
+                    </path>
+                </annotationProcessorPaths>
             </configuration>
         </plugin>
     </plugins>
 </build>
+...
 ```
 
 ## Configuration Options
