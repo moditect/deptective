@@ -43,8 +43,8 @@ Support for _ecj_ may be added [later on](https://github.com/moditect/deptective
         }
     ],
     "whitelisted" : [
-        "java.lang*",
-        "java.util*"
+        "java.util*",
+        "java.swing*"
     ]
 }
 ```
@@ -55,7 +55,9 @@ and a `reads` property (list of strings representing the fully-qualified names o
 
 `whitelisted` is a list of strings representing whitelisted packages,
 i.e. packages that always can be read by any other package.
-The `*` character can be used as a wildcard, so e.g. `java.lang*` will whitelist the packages `java.lang`, `java.lang.reflect` etc.
+The `*` character can be used as a wildcard, so e.g. `java.util*` will whitelist the packages `java.util`, `java.util.concurrent` etc.
+
+_Note:_ access to the package `java.lang` is always allowed. 
 
 Place the configuration file in the root of your source directory (e.g. _src/main/java_ for Maven projects).
 Alternatively you can specify the location of the config file using the `-Adeptective.configfile` option (see below).
