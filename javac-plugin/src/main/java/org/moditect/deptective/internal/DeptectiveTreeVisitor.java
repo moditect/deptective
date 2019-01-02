@@ -175,6 +175,10 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
     protected void checkPackageAccess(Tree node, String qualifiedName) {
         com.sun.tools.javac.tree.JCTree jcTree = (com.sun.tools.javac.tree.JCTree)node;
 
+        if ("java.lang".equals(qualifiedName)) {
+            return;
+        }
+
         if (packageDependencies.isWhitelisted(qualifiedName)) {
             return;
         }

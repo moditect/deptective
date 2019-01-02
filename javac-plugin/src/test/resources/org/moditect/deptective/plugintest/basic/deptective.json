@@ -24,7 +24,6 @@
         {
             "name" : "org.moditect.deptective.plugintest.basic.foo",
             "reads" : [
-                "java.lang",
                 "java.util"
             ]
         }
