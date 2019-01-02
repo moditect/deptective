@@ -15,8 +15,11 @@
  */
 package org.moditect.deptective.config;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.Test;
 import org.moditect.deptective.internal.model.ConfigParser;
+import org.moditect.deptective.internal.model.Package;
 import org.moditect.deptective.internal.model.PackageDependencies;
 
 public class ConfigParsingTest {
@@ -43,6 +46,16 @@ public class ConfigParsingTest {
                 "}\n")
                .getPackageDependencies();
 
-        System.out.println(dependencies);
+        assertThat(dependencies).isNotNull();
+
+        Package ui = dependencies.getPackage("com.example.ui");
+        assertThat(ui).isNotNull();
+        assertThat(ui.reads("com.example.service")).isTrue();
+        assertThat(ui.reads("com.example.persistence")).isTrue();
+
+        Package service = dependencies.getPackage("com.example.service");
+        assertThat(service).isNotNull();
+        assertThat(service.reads("com.example.ui")).isFalse();
+        assertThat(service.reads("com.example.persistence")).isTrue();
     }
 }
