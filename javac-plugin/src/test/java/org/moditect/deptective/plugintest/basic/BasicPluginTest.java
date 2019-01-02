@@ -27,6 +27,7 @@ import org.moditect.deptective.plugintest.basic.barparameter.BarParameter;
 import org.moditect.deptective.plugintest.basic.barretval.BarRetVal;
 import org.moditect.deptective.plugintest.basic.bartypearg.BarTypeArg;
 import org.moditect.deptective.plugintest.basic.foo.Foo;
+import org.moditect.deptective.plugintest.basic.foo.FooWithoutErrors;
 
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.Compiler;
@@ -51,6 +52,14 @@ public class BasicPluginTest extends PluginTestBase {
     }
 
     @Test
+    public void shouldAllowAccessToJavaLangAutomatically() {
+        Compilation compilation = Compiler.javac()
+                .withOptions("-Xplugin:Deptective", getConfigFileOption())
+                .compile(forTestClass(FooWithoutErrors.class));
+        assertThat(compilation).succeeded();
+    }
+
+    @Test
     public void shouldDetectInvalidSuperClass() {
         Compilation compilation = compile();
         assertThat(compilation).failed();
@@ -66,7 +75,6 @@ public class BasicPluginTest extends PluginTestBase {
     @Test
     public void shouldDetectInvalidImplementedInterface() {
         Compilation compilation = compile();
-        assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
                 "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barinter");
