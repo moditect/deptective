@@ -51,6 +51,10 @@ public class BasicPluginTest extends PluginTestBase {
         return compilation;
     }
 
+    private String packageFooMustNotAccess(String packageName) {
+        return "package org.moditect.deptective.plugintest.basic.foo must not access " + packageName;
+    }
+
     @Test
     public void shouldAllowAccessToJavaLangAutomatically() {
         Compilation compilation = Compiler.javac()
@@ -65,11 +69,11 @@ public class BasicPluginTest extends PluginTestBase {
         assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo must not access org.moditect.deptective.plugintest.basic.barsuper");
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barsuper"));
 
         // inner class
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo must not access org.moditect.deptective.plugintest.basic.barinnersuper");
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barinnersuper"));
     }
 
     @Test
@@ -77,10 +81,10 @@ public class BasicPluginTest extends PluginTestBase {
         Compilation compilation = compile();
 
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo must not access org.moditect.deptective.plugintest.basic.barinter");
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barinter"));
 
         // inner interface
-        assertThat(compilation).hadErrorContaining("package org.moditect.deptective.plugintest.basic.foo must not access org.moditect.deptective.plugintest.basic.barinnerinner");
+        assertThat(compilation).hadErrorContaining(packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barinnerinner"));
     }
 
 
@@ -90,7 +94,7 @@ public class BasicPluginTest extends PluginTestBase {
         assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo must not access org.moditect.deptective.plugintest.basic.barctorparam");
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barctorparam"));
     }
 
     @Test
@@ -99,7 +103,7 @@ public class BasicPluginTest extends PluginTestBase {
         assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo must not access org.moditect.deptective.plugintest.basic.barctorcall");
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barctorcall"));
     }
 
     @Test
@@ -108,7 +112,7 @@ public class BasicPluginTest extends PluginTestBase {
         assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo must not access org.moditect.deptective.plugintest.basic.barfield");
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barfield"));
     }
 
     @Test
@@ -117,7 +121,7 @@ public class BasicPluginTest extends PluginTestBase {
         assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo must not access org.moditect.deptective.plugintest.basic.barlocalvar");
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barlocalvar"));
     }
 
     @Test
@@ -126,7 +130,7 @@ public class BasicPluginTest extends PluginTestBase {
         assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo must not access org.moditect.deptective.plugintest.basic.barloopvar");
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barloopvar"));
     }
 
     @Test
@@ -135,7 +139,7 @@ public class BasicPluginTest extends PluginTestBase {
         assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo must not access org.moditect.deptective.plugintest.basic.barparameter");
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barparameter"));
     }
 
     @Test
@@ -144,9 +148,9 @@ public class BasicPluginTest extends PluginTestBase {
         assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo must not access org.moditect.deptective.plugintest.basic.barclazzan");
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barclazzan"));
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo must not access org.moditect.deptective.plugintest.basic.barfieldan");
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barfieldan"));
     }
 
     @Test
@@ -155,13 +159,13 @@ public class BasicPluginTest extends PluginTestBase {
     	assertThat(compilation).failed();
 
     	assertThat(compilation).hadErrorContaining(
-    			"package org.moditect.deptective.plugintest.basic.foo must not access org.moditect.deptective.plugintest.basic.barretval"
-    	);
+    			packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barretval"
+    	));
 
     	// Invalid Reference in Type Parameter
     	assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo must not access org.moditect.deptective.plugintest.basic.barretvalgen"
-        );
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barretvalgen"
+        ));
     }
 
     @Test
@@ -171,15 +175,15 @@ public class BasicPluginTest extends PluginTestBase {
 
         // in type argument
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo must not access org.moditect.deptective.plugintest.basic.bartypearg");
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.bartypearg"));
 
         // in class definition type argument bound
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo must not access org.moditect.deptective.plugintest.basic.bargen");
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.bargen"));
 
         // in 'extends' class definition type argument
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo must not access org.moditect.deptective.plugintest.basic.bargentype");
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.bargentype"));
     }
 
     @Test
@@ -192,6 +196,6 @@ public class BasicPluginTest extends PluginTestBase {
 
         assertThat(compilation).succeeded();
         assertThat(compilation).hadWarningContaining(
-                "package org.moditect.deptective.plugintest.basic.foo must not access org.moditect.deptective.plugintest.basic.barfield");
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barfield"));
     }
 }
