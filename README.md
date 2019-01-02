@@ -1,8 +1,8 @@
 # Deptective
 
 🕵️ Deptective is a plug-in for the Java compiler (_javac_) that validates the dependencies
-amongst a project's packages against a description of allowed package dependences
-and fail the project compilation when detecting any unintentional dependencies.
+amongst a project's packages against a description of allowed dependences
+and fails the compilation when detecting any unintentional dependencies.
 
 * [Requirements](#requirements)
 * [Usage](#usage)
@@ -19,7 +19,7 @@ and fail the project compilation when detecting any unintentional dependencies.
 Support for JDK 8 may be added later on.
 
 The plug-in is specific to _javac_, i.e. the compiler coming with the JDK, it does not work with other compilers such as the _Eclipse Batch Compiler_ (_ecj_).
-Support for _ecj_ may be added later on.
+Support for _ecj_ may be added [later on](https://github.com/moditect/deptective/issues/2).
 
 ## Usage
 
