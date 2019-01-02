@@ -33,98 +33,78 @@ import com.google.testing.compile.Compiler;
 
 public class BasicPluginTest extends PluginTestBase {
 
-	private Compilation compile() {
-		Compilation compilation = Compiler.javac()
-	            .withOptions(
-	                    "-Xplugin:Deptective",
-	                    getConfigFileOption()
-	            )
-	            .compile(
-	                    forTestClass(BarCtorCall.class),
-	                    forTestClass(BarField.class),
-	                    forTestClass(BarLocalVar.class),
-	                    forTestClass(BarLoopVar.class),
-	                    forTestClass(BarParameter.class),
-	                    forTestClass(BarRetVal.class),
-	                    forTestClass(BarTypeArg.class),
-	                    forTestClass(Foo.class)
-	            );
+    private Compilation compile() {
+        Compilation compilation = Compiler.javac().withOptions("-Xplugin:Deptective", getConfigFileOption()).compile(
+                forTestClass(BarCtorCall.class), forTestClass(BarField.class), forTestClass(BarLocalVar.class),
+                forTestClass(BarLoopVar.class), forTestClass(BarParameter.class), forTestClass(BarRetVal.class),
+                forTestClass(BarTypeArg.class), forTestClass(Foo.class));
 
-
-		return compilation;
-	}
+        return compilation;
+    }
 
     @Test
     public void shouldDetectInvalidConstructorParameters() {
-	Compilation compilation = compile();
+        Compilation compilation = compile();
         assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barctorparam"
-        );
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barctorparam");
     }
 
     @Test
     public void shouldDetectInvalidConstructorCalls() {
-	Compilation compilation = compile();
+        Compilation compilation = compile();
         assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barctorcall"
-        );
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barctorcall");
     }
 
     @Test
     public void shouldDetectInvalidFieldReferences() {
-	Compilation compilation = compile();
-	assertThat(compilation).failed();
+        Compilation compilation = compile();
+        assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barfield"
-        );
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barfield");
     }
 
     @Test
     public void shouldDetectInvalidLocalVariableReferences() {
-	Compilation compilation = compile();
-	assertThat(compilation).failed();
+        Compilation compilation = compile();
+        assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barlocalvar"
-        );
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barlocalvar");
     }
 
     @Test
     public void shouldDetectInvalidLoopVariableReferences() {
-	Compilation compilation = compile();
-	assertThat(compilation).failed();
+        Compilation compilation = compile();
+        assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barloopvar"
-        );
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barloopvar");
     }
 
     @Test
     public void shouldDetectInvalidMethodParameterReferences() {
-	Compilation compilation = compile();
-	assertThat(compilation).failed();
+        Compilation compilation = compile();
+        assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barparameter"
-        );
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barparameter");
     }
 
     @Test
     public void shouldDetectInvalidAnnotationReferences() {
-	Compilation compilation = compile();
-	assertThat(compilation).failed();
+        Compilation compilation = compile();
+        assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barclazzan"
-        );
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barclazzan");
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barfieldan"
-        );
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barfieldan");
     }
 
 //    @Test
@@ -141,47 +121,32 @@ public class BasicPluginTest extends PluginTestBase {
 
     @Test
     public void shouldDetectInvalidTypeArguments() {
-	Compilation compilation = compile();
-	assertThat(compilation).failed();
+        Compilation compilation = compile();
+        assertThat(compilation).failed();
 
-	// in type argument
+        // in type argument
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.bartypearg"
-        );
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.bartypearg");
 
         // in class definition type argument bound
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.bargen"
-        );
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.bargen");
 
         // in 'extends' class definition type argument
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.bargentype"
-        );
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.bargentype");
     }
 
     @Test
     public void shouldUseWarnReportingPolicy() {
         Compilation compilation = Compiler.javac()
-            .withOptions(
-                    "-Xplugin:Deptective",
-                    getConfigFileOption(),
-                    "-Adeptective.reportingpolicy=WARN"
-            )
-            .compile(
-                    forTestClass(BarCtorCall.class),
-                    forTestClass(BarField.class),
-                    forTestClass(BarLocalVar.class),
-                    forTestClass(BarLoopVar.class),
-                    forTestClass(BarParameter.class),
-                    forTestClass(BarRetVal.class),
-                    forTestClass(BarTypeArg.class),
-                    forTestClass(Foo.class)
-            );
+                .withOptions("-Xplugin:Deptective", getConfigFileOption(), "-Adeptective.reportingpolicy=WARN")
+                .compile(forTestClass(BarCtorCall.class), forTestClass(BarField.class), forTestClass(BarLocalVar.class),
+                        forTestClass(BarLoopVar.class), forTestClass(BarParameter.class), forTestClass(BarRetVal.class),
+                        forTestClass(BarTypeArg.class), forTestClass(Foo.class));
 
         assertThat(compilation).succeeded();
         assertThat(compilation).hadWarningContaining(
-                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barfield"
-        );
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barfield");
     }
 }

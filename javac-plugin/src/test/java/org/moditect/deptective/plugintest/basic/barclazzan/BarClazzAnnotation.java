@@ -20,5 +20,5 @@ import java.lang.annotation.Target;
 @Target({ TYPE, FIELD, METHOD, PARAMETER, CONSTRUCTOR, LOCAL_VARIABLE, ANNOTATION_TYPE, PACKAGE, TYPE_PARAMETER,
 		TYPE_USE, MODULE })
 public @interface BarClazzAnnotation {
-	Class<?> classParameter() default String.class;
+    Class<?> classParameter() default String.class;
 }
