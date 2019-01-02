@@ -41,7 +41,7 @@ public class WhitelistTest extends PluginTestBase {
 
         assertThat(compilation).failed();
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.whitelist.foo does not read org.moditect.deptective.plugintest.whitelist.bar"
+                "package org.moditect.deptective.plugintest.whitelist.foo must not access org.moditect.deptective.plugintest.whitelist.bar"
         );
     }
 }
