@@ -71,25 +71,23 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
         return super.visitCompilationUnit(tree, p);
     }
 
-
-
-//    @Override
-//	public Void visitImport(ImportTree node, Void p) {
+    //    @Override
+    //    public Void visitImport(ImportTree node, Void p) {
     // TODO: Deal with "on-demand-imports" (com.foo.*)
-//    	node.getQualifiedIdentifier().accept(new TreeScanner<Void, Void>() {
-//			@Override
-//			public Void visitMemberSelect(MemberSelectTree n, Void p) {
-//				return super.visitMemberSelect(n, p);
-//			}
-//    	}, null);
-//
-//        checkPackageAccess(node, getQualifiedName(node.getQualifiedIdentifier()));
-//		return super.visitImport(node, p);
-//	}
+    //        node.getQualifiedIdentifier().accept(new TreeScanner<Void, Void>() {
+    //            @Override
+    //            public Void visitMemberSelect(MemberSelectTree n, Void p) {
+    //                return super.visitMemberSelect(n, p);
+    //            }
+    //        }, null);
+    //
+    //        checkPackageAccess(node, getQualifiedName(node.getQualifiedIdentifier()));
+    //        return super.visitImport(node, p);
+    //    }
 
-	@Override
+    @Override
     public Void visitVariable(VariableTree node, Void p) {
-		com.sun.tools.javac.tree.JCTree jcTree = (com.sun.tools.javac.tree.JCTree)node;
+        com.sun.tools.javac.tree.JCTree jcTree = (com.sun.tools.javac.tree.JCTree)node;
 
         PackageElement pakkage = elements.getPackageOf(jcTree.type.asElement());
         String qualifiedName = pakkage.getQualifiedName().toString();
@@ -98,74 +96,71 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
         return super.visitVariable(node, p);
     }
 
-	@Override
-	public Void visitTypeParameter(TypeParameterTree node, Void p) {
-		node.getBounds().forEach(s -> {
-			checkPackageAccess(s, getQualifiedName(s));
-		});
+    @Override
+    public Void visitTypeParameter(TypeParameterTree node, Void p) {
+        node.getBounds().forEach(s -> {
+            checkPackageAccess(s, getQualifiedName(s));
+        });
 
-		return super.visitTypeParameter(node, p);
-	}
+        return super.visitTypeParameter(node, p);
+    }
 
-	@Override
-	public Void visitParameterizedType(ParameterizedTypeTree node, Void p) {
-		node.getTypeArguments().forEach(s -> {
-		    checkPackageAccess(s, getQualifiedName(s));
-		});
-		return super.visitParameterizedType(node, p);
-	}
+    @Override
+    public Void visitParameterizedType(ParameterizedTypeTree node, Void p) {
+        node.getTypeArguments().forEach(s -> {
+            checkPackageAccess(s, getQualifiedName(s));
+        });
+        return super.visitParameterizedType(node, p);
+    }
 
-	@Override
-	public Void visitAnnotation(AnnotationTree node, Void p) {
-		checkPackageAccess(node.getAnnotationType(), getQualifiedName(node));
+    @Override
+    public Void visitAnnotation(AnnotationTree node, Void p) {
+        checkPackageAccess(node.getAnnotationType(), getQualifiedName(node));
 
-		// TODO: find Types that are references from Annotation Arguments
-//		node.getArguments().forEach(expr -> {
-//
-//			System.out.println("expr" + expr + "(" + expr.getClass().getName() + ")");
-//			if (expr instanceof AssignmentTree) {
-//				AssignmentTree assignmentTree = (AssignmentTree)expr;
-//				System.out.println("expr" + expr);
-//				System.out.println("qn => " + getQualifiedName(assignmentTree.getExpression()));
-//				checkPackageAccess(assignmentTree.getExpression(), getQualifiedName(assignmentTree.getExpression()));
-//			}
-//		});
-		return super.visitAnnotation(node, p);
-	}
+        // TODO: find Types that are references from Annotation Arguments
+        //        node.getArguments().forEach(expr -> {
+        //
+        //            System.out.println("expr" + expr + "(" + expr.getClass().getName() + ")");
+        //            if (expr instanceof AssignmentTree) {
+        //                AssignmentTree assignmentTree = (AssignmentTree)expr;
+        //                System.out.println("expr" + expr);
+        //                System.out.println("qn => " + getQualifiedName(assignmentTree.getExpression()));
+        //                checkPackageAccess(assignmentTree.getExpression(), getQualifiedName(assignmentTree.getExpression()));
+        //            }
+        //        });
+        return super.visitAnnotation(node, p);
+    }
 
+    @Override
+    public Void visitNewClass(NewClassTree node, Void p) {
+        checkPackageAccess(node, getQualifiedName(node));
+        return super.visitNewClass(node, p);
+    }
 
+    protected String getQualifiedName(Tree tree) {
+        com.sun.tools.javac.tree.JCTree jcTree = (com.sun.tools.javac.tree.JCTree)tree;
+        Type type = jcTree.type;
+        if (type == null) {
+            throw new IllegalArgumentException("Could not determine type for tree object " + tree + " (" + tree.getClass()+")");
+        }
+        PackageElement pakkage = elements.getPackageOf(type.asElement());
+        return pakkage.getQualifiedName().toString();
+    }
 
-	@Override
-	public Void visitNewClass(NewClassTree node, Void p) {
-		checkPackageAccess(node, getQualifiedName(node));
-		return super.visitNewClass(node, p);
-	}
+    protected void checkPackageAccess(Tree node, String qualifiedName) {
+        com.sun.tools.javac.tree.JCTree jcTree = (com.sun.tools.javac.tree.JCTree)node;
 
-	protected String getQualifiedName(Tree tree) {
-		com.sun.tools.javac.tree.JCTree jcTree = (com.sun.tools.javac.tree.JCTree)tree;
-		Type type = jcTree.type;
-		if (type == null) {
-			throw new IllegalArgumentException("Could not determine type for tree object " + tree + " (" + tree.getClass()+")");
-		}
-		PackageElement pakkage = elements.getPackageOf(type.asElement());
-	    return pakkage.getQualifiedName().toString();
-	}
+        if (packageDependencies.isWhitelisted(qualifiedName)) {
+            return;
+        }
 
-	protected void checkPackageAccess(Tree node, String qualifiedName) {
-		com.sun.tools.javac.tree.JCTree jcTree = (com.sun.tools.javac.tree.JCTree)node;
+        if (packageOfCurrentCompilationUnit.getName().equals(qualifiedName)) {
+            return;
+        }
 
-		if (packageDependencies.isWhitelisted(qualifiedName)) {
-			return;
-		}
-
-		if (packageOfCurrentCompilationUnit.getName().equals(qualifiedName)) {
-			return;
-		}
-
-		if (qualifiedName.isEmpty() || packageOfCurrentCompilationUnit.reads(qualifiedName)) {
-			return;
-		}
-
+        if (qualifiedName.isEmpty() || packageOfCurrentCompilationUnit.reads(qualifiedName)) {
+            return;
+        }
 
         if (reportingPolicy == ReportingPolicy.ERROR) {
             log.error(jcTree.pos, DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY, packageOfCurrentCompilationUnit, qualifiedName);
@@ -173,5 +168,5 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
         else {
             log.strictWarning(jcTree, DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY, packageOfCurrentCompilationUnit, qualifiedName);
         }
-	}
+    }
 }

@@ -59,8 +59,4 @@ public class Foo {
     static class InvalidFooGeneric<T extends BarGeneric> {}
 
     static class InvalidFooImplementation extends FooContainer<BarGenType> {}
-
-
-
-
 }

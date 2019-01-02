@@ -34,10 +34,18 @@ import com.google.testing.compile.Compiler;
 public class BasicPluginTest extends PluginTestBase {
 
     private Compilation compile() {
-        Compilation compilation = Compiler.javac().withOptions("-Xplugin:Deptective", getConfigFileOption()).compile(
-                forTestClass(BarCtorCall.class), forTestClass(BarField.class), forTestClass(BarLocalVar.class),
-                forTestClass(BarLoopVar.class), forTestClass(BarParameter.class), forTestClass(BarRetVal.class),
-                forTestClass(BarTypeArg.class), forTestClass(Foo.class));
+        Compilation compilation = Compiler.javac()
+                .withOptions("-Xplugin:Deptective", getConfigFileOption())
+                .compile(
+                        forTestClass(BarCtorCall.class),
+                        forTestClass(BarField.class),
+                        forTestClass(BarLocalVar.class),
+                        forTestClass(BarLoopVar.class),
+                        forTestClass(BarParameter.class),
+                        forTestClass(BarRetVal.class),
+                        forTestClass(BarTypeArg.class),
+                        forTestClass(Foo.class)
+                );
 
         return compilation;
     }
