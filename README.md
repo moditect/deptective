@@ -102,9 +102,12 @@ Before working on larger changes, it's recommended to get in touch first to make
 
 ### IDE Set-Up
 
-🕵 To work on the code base in Eclipse, register an OpenJDK 11 instance ("Preferences" -> "Java" -> "Installed JREs").
-Then run "File" -> "Import..." -> "Maven" -> "Existing Maven Projects".
-After importing the project, make sure that Java 11 is on the build path of the _javac-plugin_ module
+🕵 To work on the code base in Eclipse, please follow this steps:
+
+1. Run Eclipse with (at least) Version 2018-12/4.10.0 and make sure it runs with OpenJDK 11
+2. In Eclipse, register an OpenJDK 11 instance ("Preferences" -> "Java" -> "Installed JREs") if not already there
+3. Then run "File" -> "Import..." -> "Maven" -> "Existing Maven Projects" and select the root folder of this repository.
+4. After importing the project, make sure that Java 11 is on the build path of the _javac-plugin_ module
 (right-click on that module, then "Properties" -> "Java Build Path" -> "Libraries").
 
 ## License
