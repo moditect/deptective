@@ -4,13 +4,12 @@
 amongst a project's packages against a description of allowed package dependences
 and fail the project compilation when detecting any unintentional dependencies.
 
-* [Deptective](#deptective)
-  * [Requirements](#requirements)
-  * [Usage](#usage)
-  * [Configuration Options](#configuration-options)
-  * [Contributing and Development](#contributing-and-development)
-     * [IDE Set-Up](#ide-set-up)
-  * [License](#license)
+* [Usage](#usage)
+   * [Obtaining Deptective via Jitpack](#obtaining-deptective-via-jitpack)
+   * [Configuration Options](#configuration-options)
+* [Contributing and Development](#contributing-and-development)
+   * [IDE Set-Up](#ide-set-up)
+* [License](#license)
 
 ## Requirements
 
@@ -79,7 +78,27 @@ When using Maven, the following configuration can be used:
 
 See _integration-test/pom.xml_ for a complete example.
 
-## Configuration Options
+### Obtaining Deptective via Jitpack
+
+🕵 Deptective is not yet available in Maven Central.
+For the time being, you can obtain the latest snapshot JARs via [Jitpack](https://jitpack.io/).
+Add the following repository to your project's _pom.xml_ or your Maven _settings.xml_ file:
+
+```
+<repositories>
+    <repository>
+        <id>jitpack</id>
+        <name>Jitpack</name>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+```
+
+Then reference the Deptective JAR using the GAV coordinates `com.github.moditect.deptective:deptective-javac-plugin:master-SNAPSHOT`.
+
+See _jitpack-example/pom.xml_ for a complete example.
+
+### Configuration Options
 
 🕵 The following options can be provided when running the plug-in:
 
