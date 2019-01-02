@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.moditect.deptective.plugintest.basic.barclazzan.BarClazzAnnotation;
 import org.moditect.deptective.plugintest.basic.barctorcall.BarCtorCall;
+import org.moditect.deptective.plugintest.basic.barctorparam.BarCtorParam;
 import org.moditect.deptective.plugintest.basic.barfield.BarField;
 import org.moditect.deptective.plugintest.basic.barfieldan.BarFieldAnnotation;
 import org.moditect.deptective.plugintest.basic.bargen.BarGeneric;
@@ -38,7 +39,7 @@ public class Foo {
     private String s;
     private final BarField bar = new BarField();
 
-    public Foo(BarParameter bar) {
+    public Foo(BarCtorParam bar) {
     }
 
     public BarRetVal doSomething(BarParameter bar) {
@@ -48,6 +49,7 @@ public class Foo {
 
         for (BarLoopVar oneBar : new ArrayList<BarLoopVar>()) {
         }
+
 
         new BarCtorCall();
 

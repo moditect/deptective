@@ -22,9 +22,9 @@ import org.moditect.deptective.internal.model.Package;
 import org.moditect.deptective.internal.model.PackageDependencies;
 
 import com.sun.source.tree.AnnotationTree;
-import com.sun.source.tree.AssignmentTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.NewClassTree;
 import com.sun.source.tree.ParameterizedTypeTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.tree.TypeParameterTree;
@@ -131,6 +131,14 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
 //			}
 //		});
 		return super.visitAnnotation(node, p);
+	}
+
+
+
+	@Override
+	public Void visitNewClass(NewClassTree node, Void p) {
+		checkPackageAccess(node, getQualifiedName(node));
+		return super.visitNewClass(node, p);
 	}
 
 	protected String getQualifiedName(Tree tree) {

@@ -54,16 +54,25 @@ public class BasicPluginTest extends PluginTestBase {
 		return compilation;
 	}
 
-//    @Test
-//    public void shouldDetectInvalidConstructorParameters() {
-//    	Compilation compilation = compile();
-//        assertThat(compilation).failed();
-//
-//        // TODO https://github.com/moditect/deptective/issues/7
-//        assertThat(compilation).hadErrorContaining(
-//                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barctorcall"
-//        );
-//    }
+    @Test
+    public void shouldDetectInvalidConstructorParameters() {
+	Compilation compilation = compile();
+        assertThat(compilation).failed();
+
+        assertThat(compilation).hadErrorContaining(
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barctorparam"
+        );
+    }
+
+    @Test
+    public void shouldDetectInvalidConstructorCalls() {
+	Compilation compilation = compile();
+        assertThat(compilation).failed();
+
+        assertThat(compilation).hadErrorContaining(
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barctorcall"
+        );
+    }
 
     @Test
     public void shouldDetectInvalidFieldReferences() {
