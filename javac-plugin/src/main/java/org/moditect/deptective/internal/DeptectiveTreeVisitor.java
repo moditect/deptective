@@ -24,6 +24,7 @@ import org.moditect.deptective.internal.model.PackageDependencies;
 import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.NewClassTree;
 import com.sun.source.tree.ParameterizedTypeTree;
 import com.sun.source.tree.Tree;
@@ -135,6 +136,17 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
     public Void visitNewClass(NewClassTree node, Void p) {
         checkPackageAccess(node, getQualifiedName(node));
         return super.visitNewClass(node, p);
+    }
+
+
+
+    @Override
+    public Void visitMethod(MethodTree node, Void p) {
+        Tree returnType = node.getReturnType();
+        if (returnType != null) {
+            checkPackageAccess(returnType, getQualifiedName(returnType));
+        }
+        return super.visitMethod(node, p);
     }
 
     protected String getQualifiedName(Tree tree) {

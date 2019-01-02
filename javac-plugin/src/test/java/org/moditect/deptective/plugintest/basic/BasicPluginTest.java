@@ -115,17 +115,20 @@ public class BasicPluginTest extends PluginTestBase {
                 "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barfieldan");
     }
 
-//    @Test
-//    public void shouldDetectInvalidReturnValueReferences() {
-//    	Compilation compilation = compile();
-//    	assertThat(compilation).failed();
-//
-//        // TODO https://github.com/moditect/deptective/issues/7
-//    	assertThat(compilation).hadErrorContaining(
-//    			"package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barretval"
-//    	);
-//
-//    }
+    @Test
+    public void shouldDetectInvalidReturnValueReferences() {
+    	Compilation compilation = compile();
+    	assertThat(compilation).failed();
+
+    	assertThat(compilation).hadErrorContaining(
+    			"package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barretval"
+    	);
+
+    	// Invalid Reference in Type Parameter
+    	assertThat(compilation).hadErrorContaining(
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barretvalgen"
+        );
+    }
 
     @Test
     public void shouldDetectInvalidTypeArguments() {
