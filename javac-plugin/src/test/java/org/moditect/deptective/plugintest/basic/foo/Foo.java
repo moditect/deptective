@@ -25,16 +25,20 @@ import org.moditect.deptective.plugintest.basic.barfield.BarField;
 import org.moditect.deptective.plugintest.basic.barfieldan.BarFieldAnnotation;
 import org.moditect.deptective.plugintest.basic.bargen.BarGeneric;
 import org.moditect.deptective.plugintest.basic.bargentype.BarGenType;
+import org.moditect.deptective.plugintest.basic.barinnerinner.BarInnerInterface;
+import org.moditect.deptective.plugintest.basic.barinnersuper.BarInnerSuperClass;
+import org.moditect.deptective.plugintest.basic.barinter.BarInterface;
 import org.moditect.deptective.plugintest.basic.barlocalvar.BarLocalVar;
 import org.moditect.deptective.plugintest.basic.barloopvar.BarLoopVar;
 import org.moditect.deptective.plugintest.basic.barparameter.BarParameter;
 import org.moditect.deptective.plugintest.basic.barretval.BarRetVal;
 import org.moditect.deptective.plugintest.basic.barretvalgen.RetValGen;
+import org.moditect.deptective.plugintest.basic.barsuper.BarSuper;
 import org.moditect.deptective.plugintest.basic.bartypearg.BarTypeArg;
 
 @FooAnnotation
 @BarClazzAnnotation
-public class Foo {
+public class Foo extends BarSuper implements BarInterface, /* allowed: */ IFoo {
 
 	@BarFieldAnnotation
     private String s;
@@ -65,4 +69,12 @@ public class Foo {
     static class InvalidFooGeneric<T extends BarGeneric> {}
 
     static class InvalidFooImplementation extends FooContainer<BarGenType> {}
+
+    static interface InnerFoo extends BarInnerInterface {
+
+    }
+
+    static class InnerFooClass extends BarInnerSuperClass {
+
+    }
 }

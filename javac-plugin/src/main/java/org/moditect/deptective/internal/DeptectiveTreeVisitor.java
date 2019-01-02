@@ -22,6 +22,7 @@ import org.moditect.deptective.internal.model.Package;
 import org.moditect.deptective.internal.model.PackageDependencies;
 
 import com.sun.source.tree.AnnotationTree;
+import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodTree;
@@ -72,6 +73,8 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
         return super.visitCompilationUnit(tree, p);
     }
 
+
+
     //    @Override
     //    public Void visitImport(ImportTree node, Void p) {
     // TODO: Deal with "on-demand-imports" (com.foo.*)
@@ -85,6 +88,18 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
     //        checkPackageAccess(node, getQualifiedName(node.getQualifiedIdentifier()));
     //        return super.visitImport(node, p);
     //    }
+
+    @Override
+    public Void visitClass(ClassTree node, Void p) {
+        Tree extendsClause = node.getExtendsClause();
+        if (extendsClause != null) {
+            checkPackageAccess(extendsClause, getQualifiedName(extendsClause));
+        }
+
+        node.getImplementsClause().forEach(implementsClause -> checkPackageAccess(implementsClause, getQualifiedName(implementsClause)));
+
+        return super.visitClass(node, p);
+    }
 
     @Override
     public Void visitVariable(VariableTree node, Void p) {
@@ -137,8 +152,6 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
         checkPackageAccess(node, getQualifiedName(node));
         return super.visitNewClass(node, p);
     }
-
-
 
     @Override
     public Void visitMethod(MethodTree node, Void p) {
