@@ -59,7 +59,7 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
         }
 
         if (packageOfCurrentCompilationUnit == null) {
-            throw new IllegalArgumentException("Package " +packageName + " is not configured.");
+            throw new IllegalArgumentException("Package " + packageName + " is not configured.");
         }
 
         return super.visitCompilationUnit(tree, p);
@@ -72,7 +72,8 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
         PackageElement pakkage = elements.getPackageOf(jcTree.type.asElement());
         String qualifiedName = pakkage.getQualifiedName().toString();
 
-        if (!packageDependencies.isWhitelisted(qualifiedName)) {
+        if (!packageOfCurrentCompilationUnit.getName().equals(qualifiedName) &&
+                !packageDependencies.isWhitelisted(qualifiedName)) {
             if (!qualifiedName.isEmpty() && !packageOfCurrentCompilationUnit.reads(qualifiedName)) {
                 if (reportingPolicy == ReportingPolicy.ERROR) {
                     log.error(jcTree.pos, DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY, packageOfCurrentCompilationUnit, qualifiedName);
