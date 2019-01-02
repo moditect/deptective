@@ -30,7 +30,7 @@
 
     <artifactId>deptective-javac-plugin</artifactId>
 
-    <name>Javac Plug-in</name>
+    <name>Deptective Javac Plug-in</name>
 
     <dependencies>
         <dependency>

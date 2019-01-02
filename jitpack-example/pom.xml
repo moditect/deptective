@@ -21,12 +21,13 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.moditect.deptective.jitpacktest</groupId>
-    <artifactId>deptective-integration-test</artifactId>
+    <groupId>org.moditect.deptective.jitpackexample</groupId>
+    <artifactId>deptective-jitpack-example</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>Deptective Integration Test</name>
+    <name>Deptective Jitpack Example</name>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
