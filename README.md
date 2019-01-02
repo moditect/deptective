@@ -4,6 +4,14 @@
 amongst a project's packages against a description of allowed package dependences
 and fail the project compilation when detecting any unintentional dependencies.
 
+* [Deptective](#deptective)
+      * [Requirements](#requirements)
+      * [Usage](#usage)
+      * [Configuration Options](#configuration-options)
+      * [Contributing and Development](#contributing-and-development)
+         * [IDE Set-Up](#ide-set-up)
+      * [License](#license)
+
 ## Requirements
 
 🕵 JDK 11 is needed to run Deptective.
@@ -77,6 +85,27 @@ See _integration-test/pom.xml_ for a complete example.
 
 * `-Adeptective.configfile=path/to/deptective.json`: Path of the configuration file in the file system
 * `-Adeptective.reportingpolicy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when spotting any illegal package dependencies (defaults to `ERROR`)
+
+## Contributing and Development
+
+🕵 In order to build Deptective, [OpenJDK 11](https://openjdk.java.net/projects/jdk/11/) or later and Apache Maven 3.x must be installed.
+Then obtain the source code from GitHub and build it like so:
+
+```
+git clone https://github.com/moditect/deptective.git
+cd deptective
+mvn clean install
+```
+
+Your contributions to Deptective in form of [pull requests](https://help.github.com/articles/about-pull-requests/) are very welcomed.
+Before working on larger changes, it's recommended to get in touch first to make sure there's agreement on the feature and design.
+
+### IDE Set-Up
+
+🕵 To work on the code base in Eclipse, register an OpenJDK 11 instance ("Preferences" -> "Java" -> "Installed JREs").
+Then run "File" -> "Import..." -> "Maven" -> "Existing Maven Projects".
+After importing the project, make sure that Java 11 is on the build path of the _javac-plugin_ module
+(right-click on that module, then "Properties" -> "Java Build Path" -> "Libraries").
 
 ## License
 
