@@ -4,11 +4,13 @@
 amongst a project's packages against a description of allowed package dependences
 and fail the project compilation when detecting any unintentional dependencies.
 
+* [Requirements](#requirements)
 * [Usage](#usage)
    * [Obtaining Deptective via Jitpack](#obtaining-deptective-via-jitpack)
    * [Configuration Options](#configuration-options)
 * [Contributing and Development](#contributing-and-development)
    * [IDE Set-Up](#ide-set-up)
+* [Related Work](#related-work)
 * [License](#license)
 
 ## Requirements
@@ -140,6 +142,17 @@ Before working on larger changes, it's recommended to get in touch first to make
 3. Then run "File" -> "Import..." -> "Maven" -> "Existing Maven Projects" and select the root folder of this repository.
 4. After importing the project, make sure that Java 11 is on the build path of the _javac-plugin_ module
 (right-click on that module, then "Properties" -> "Java Build Path" -> "Libraries").
+
+## Related Work
+
+🕵 Different projects exist that analyze Java package dependencies, validate and/or produce metrics on them.
+I'm not aware of any tool though that provides instantaneous feedback about any unwanted dependencies right during compilation.
+Some related tools are:
+
+* [ArchUnit](https://www.archunit.org/) aims at enforcing architectures described in a Java DSL.
+In contrast to Deptective it is not executed during compilation but via (JUnit) tests.
+* [JDepend](https://github.com/clarkware/jdepend) analyzes Java packages and produces metrics on them.
+* The Eclipse Java compiler allows to put access restrictions in place but they can only be used to limit access to types/packages in other JARs on the classpath, not to packages of the current compilation unit itself
 
 ## License
 
