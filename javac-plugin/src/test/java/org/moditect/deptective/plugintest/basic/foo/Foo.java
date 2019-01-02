@@ -18,16 +18,23 @@ package org.moditect.deptective.plugintest.basic.foo;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.moditect.deptective.plugintest.basic.barclazzan.BarClazzAnnotation;
 import org.moditect.deptective.plugintest.basic.barctorcall.BarCtorCall;
 import org.moditect.deptective.plugintest.basic.barfield.BarField;
+import org.moditect.deptective.plugintest.basic.barfieldan.BarFieldAnnotation;
+import org.moditect.deptective.plugintest.basic.bargen.BarGeneric;
+import org.moditect.deptective.plugintest.basic.bargentype.BarGenType;
 import org.moditect.deptective.plugintest.basic.barlocalvar.BarLocalVar;
 import org.moditect.deptective.plugintest.basic.barloopvar.BarLoopVar;
 import org.moditect.deptective.plugintest.basic.barparameter.BarParameter;
 import org.moditect.deptective.plugintest.basic.barretval.BarRetVal;
 import org.moditect.deptective.plugintest.basic.bartypearg.BarTypeArg;
 
+@FooAnnotation
+@BarClazzAnnotation
 public class Foo {
 
+	@BarFieldAnnotation
     private String s;
     private final BarField bar = new BarField();
 
@@ -46,6 +53,12 @@ public class Foo {
 
         return null;
     }
+
+    static class InvalidFooGeneric<T extends BarGeneric> {}
+
+    static class InvalidFooImplementation extends FooContainer<BarGenType> {}
+
+
 
 
 }

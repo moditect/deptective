@@ -21,12 +21,18 @@ import javax.lang.model.util.Elements;
 import org.moditect.deptective.internal.model.Package;
 import org.moditect.deptective.internal.model.PackageDependencies;
 
+import com.sun.source.tree.AnnotationTree;
+import com.sun.source.tree.AssignmentTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.ParameterizedTypeTree;
+import com.sun.source.tree.Tree;
+import com.sun.source.tree.TypeParameterTree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.TreePathScanner;
 import com.sun.tools.javac.api.BasicJavacTask;
+import com.sun.tools.javac.code.Type;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.Log;
 
@@ -59,31 +65,105 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
         }
 
         if (packageOfCurrentCompilationUnit == null) {
-            throw new IllegalArgumentException("Package " + packageName + " is not configured.");
+            throw new IllegalArgumentException("Package " +packageName + " is not configured.");
         }
 
         return super.visitCompilationUnit(tree, p);
     }
 
-    @Override
+
+
+//    @Override
+//	public Void visitImport(ImportTree node, Void p) {
+    // TODO: Deal with "on-demand-imports" (com.foo.*)
+//    	node.getQualifiedIdentifier().accept(new TreeScanner<Void, Void>() {
+//			@Override
+//			public Void visitMemberSelect(MemberSelectTree n, Void p) {
+//				return super.visitMemberSelect(n, p);
+//			}
+//    	}, null);
+//
+//        checkPackageAccess(node, getQualifiedName(node.getQualifiedIdentifier()));
+//		return super.visitImport(node, p);
+//	}
+
+	@Override
     public Void visitVariable(VariableTree node, Void p) {
-        com.sun.tools.javac.tree.JCTree jcTree = (com.sun.tools.javac.tree.JCTree)node;
+		com.sun.tools.javac.tree.JCTree jcTree = (com.sun.tools.javac.tree.JCTree)node;
 
         PackageElement pakkage = elements.getPackageOf(jcTree.type.asElement());
         String qualifiedName = pakkage.getQualifiedName().toString();
-
-        if (!packageOfCurrentCompilationUnit.getName().equals(qualifiedName) &&
-                !packageDependencies.isWhitelisted(qualifiedName)) {
-            if (!qualifiedName.isEmpty() && !packageOfCurrentCompilationUnit.reads(qualifiedName)) {
-                if (reportingPolicy == ReportingPolicy.ERROR) {
-                    log.error(jcTree.pos, DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY, packageOfCurrentCompilationUnit, qualifiedName);
-                }
-                else {
-                    log.strictWarning(jcTree, DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY, packageOfCurrentCompilationUnit, qualifiedName);
-                }
-            }
-        }
+        checkPackageAccess(node, qualifiedName);
 
         return super.visitVariable(node, p);
     }
+
+	@Override
+	public Void visitTypeParameter(TypeParameterTree node, Void p) {
+		node.getBounds().forEach(s -> {
+			checkPackageAccess(s, getQualifiedName(s));
+		});
+
+		return super.visitTypeParameter(node, p);
+	}
+
+	@Override
+	public Void visitParameterizedType(ParameterizedTypeTree node, Void p) {
+		node.getTypeArguments().forEach(s -> {
+		    checkPackageAccess(s, getQualifiedName(s));
+		});
+		return super.visitParameterizedType(node, p);
+	}
+
+	@Override
+	public Void visitAnnotation(AnnotationTree node, Void p) {
+		checkPackageAccess(node.getAnnotationType(), getQualifiedName(node));
+
+		// TODO: find Types that are references from Annotation Arguments
+//		node.getArguments().forEach(expr -> {
+//
+//			System.out.println("expr" + expr + "(" + expr.getClass().getName() + ")");
+//			if (expr instanceof AssignmentTree) {
+//				AssignmentTree assignmentTree = (AssignmentTree)expr;
+//				System.out.println("expr" + expr);
+//				System.out.println("qn => " + getQualifiedName(assignmentTree.getExpression()));
+//				checkPackageAccess(assignmentTree.getExpression(), getQualifiedName(assignmentTree.getExpression()));
+//			}
+//		});
+		return super.visitAnnotation(node, p);
+	}
+
+	protected String getQualifiedName(Tree tree) {
+		com.sun.tools.javac.tree.JCTree jcTree = (com.sun.tools.javac.tree.JCTree)tree;
+		Type type = jcTree.type;
+		if (type == null) {
+			throw new IllegalArgumentException("Could not determine type for tree object " + tree + " (" + tree.getClass()+")");
+		}
+		PackageElement pakkage = elements.getPackageOf(type.asElement());
+	    return pakkage.getQualifiedName().toString();
+	}
+
+	protected void checkPackageAccess(Tree node, String qualifiedName) {
+		com.sun.tools.javac.tree.JCTree jcTree = (com.sun.tools.javac.tree.JCTree)node;
+
+		if (packageDependencies.isWhitelisted(qualifiedName)) {
+			return;
+		}
+
+		if (packageOfCurrentCompilationUnit.getName().equals(qualifiedName)) {
+			return;
+		}
+
+		if (qualifiedName.isEmpty() || packageOfCurrentCompilationUnit.reads(qualifiedName)) {
+			return;
+		}
+
+
+        if (reportingPolicy == ReportingPolicy.ERROR) {
+            log.error(jcTree.pos, DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY, packageOfCurrentCompilationUnit, qualifiedName);
+        }
+        else {
+            log.strictWarning(jcTree, DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY, packageOfCurrentCompilationUnit, qualifiedName);
+        }
+	}
 }
