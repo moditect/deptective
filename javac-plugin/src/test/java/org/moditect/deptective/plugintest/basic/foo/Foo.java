@@ -29,6 +29,7 @@ import org.moditect.deptective.plugintest.basic.barlocalvar.BarLocalVar;
 import org.moditect.deptective.plugintest.basic.barloopvar.BarLoopVar;
 import org.moditect.deptective.plugintest.basic.barparameter.BarParameter;
 import org.moditect.deptective.plugintest.basic.barretval.BarRetVal;
+import org.moditect.deptective.plugintest.basic.barretvalgen.RetValGen;
 import org.moditect.deptective.plugintest.basic.bartypearg.BarTypeArg;
 
 @FooAnnotation
@@ -55,6 +56,11 @@ public class Foo {
 
         return null;
     }
+
+    private boolean isAllowed() { return true; }
+    private void isAlsoAllowed() { }
+
+    private List<RetValGen> isNotAllowed() { return null; }
 
     static class InvalidFooGeneric<T extends BarGeneric> {}
 
