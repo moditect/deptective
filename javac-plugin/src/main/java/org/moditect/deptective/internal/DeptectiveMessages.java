@@ -19,15 +19,19 @@ import java.util.ListResourceBundle;
 
 public class DeptectiveMessages extends ListResourceBundle {
 
-    public static final String ILLEGAL_PACKAGE_DEPENDENCY = "deptective.illegalpackagedependency";
     private static final String ERROR_PREFIX = "compiler.err.";
     private static final String WARNING_PREFIX = "compiler.warn.";
+
+    public static final String ILLEGAL_PACKAGE_DEPENDENCY = "deptective.illegalpackagedependency";
+    public static final String NO_DEPTECTIVE_CONFIG_FOUND = "deptective.nodeptectiveconfigfound";
+
 
     @Override
     protected final Object[][] getContents() {
         return new Object[][] {
             { ERROR_PREFIX + ILLEGAL_PACKAGE_DEPENDENCY, "package {0} does not read {1}" },
-            { WARNING_PREFIX + ILLEGAL_PACKAGE_DEPENDENCY, "package {0} does not read {1}" }
+            { WARNING_PREFIX + ILLEGAL_PACKAGE_DEPENDENCY, "package {0} does not read {1}" },
+            { ERROR_PREFIX + NO_DEPTECTIVE_CONFIG_FOUND, "Config file deptective.json was not found" }
         };
     }
 }

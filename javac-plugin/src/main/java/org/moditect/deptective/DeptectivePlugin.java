@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import javax.tools.FileObject;
 import javax.tools.JavaFileManager;
 import javax.tools.StandardLocation;
 
@@ -40,6 +41,7 @@ import com.sun.tools.javac.api.BasicJavacTask;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.JavacMessages;
+import com.sun.tools.javac.util.Log;
 
 public class DeptectivePlugin implements Plugin {
 
@@ -62,27 +64,41 @@ public class DeptectivePlugin implements Plugin {
         DeptectiveOptions options = new DeptectiveOptions(JavacProcessingEnvironment.instance(context).getOptions());
 
         PackageDependencies config = getConfig(context, options);
-        ReportingPolicy reportingPolicy = options.getReportingPolicy();
 
-        task.addTaskListener(new TaskListener() {
+        if (config == null) {
+            Log log = context.get(Log.logKey);
+            log.error(DeptectiveMessages.NO_DEPTECTIVE_CONFIG_FOUND);
+        }
+        else {
+            ReportingPolicy reportingPolicy = options.getReportingPolicy();
 
-            @Override
-            public void started(TaskEvent e) {
-            }
+            task.addTaskListener(new TaskListener() {
 
-            @Override
-            public void finished(TaskEvent e) {
-                if(e.getKind().equals(TaskEvent.Kind.ANALYZE)) {
-                    CompilationUnitTree compilationUnit = e.getCompilationUnit();
-                    new DeptectiveTreeVisitor(config, reportingPolicy, task).scan(compilationUnit, null);
+                @Override
+                public void started(TaskEvent e) {
                 }
-            }
-        });
+
+                @Override
+                public void finished(TaskEvent e) {
+                    if(e.getKind().equals(TaskEvent.Kind.ANALYZE)) {
+                        CompilationUnitTree compilationUnit = e.getCompilationUnit();
+                        new DeptectiveTreeVisitor(config, reportingPolicy, task).scan(compilationUnit, null);
+                    }
+                }
+            });
+        }
+
     }
 
     private PackageDependencies getConfig(Context context, DeptectiveOptions options) {
         try {
-            try (InputStream is = getConfig(options.getConfigFilePath(), context)) {
+            InputStream inputStream = getConfig(options.getConfigFilePath(), context);
+
+            if (inputStream == null) {
+                return null;
+            }
+
+            try (InputStream is = inputStream) {
                 return new ConfigParser(is).getPackageDependencies();
             }
         }
@@ -98,12 +114,17 @@ public class DeptectivePlugin implements Plugin {
             }
             else {
                 JavaFileManager jfm = context.get(JavaFileManager.class);
-                return jfm.getFileForInput(StandardLocation.SOURCE_PATH, "", "deptective.json").openInputStream();
+                FileObject file = jfm.getFileForInput(StandardLocation.SOURCE_PATH, "", "deptective.json");
 
+                if (file != null) {
+                    return file.openInputStream();
+                }
             }
         }
         catch (IOException e) {
             throw new RuntimeException("Failed to load Deptective configuration file", e);
         }
+
+        return null;
     }
 }
