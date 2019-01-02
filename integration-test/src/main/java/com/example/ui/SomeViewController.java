@@ -13,8 +13,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.example.bar;
+package com.example.ui;
 
-public class Bar {
+import com.example.persistence.SomeDao;
+import com.example.rest.SomeResource;
 
+public class SomeViewController {
+
+    private final SomeDao dao = new SomeDao();
+
+    // Uh oh, referencing the "rest" package from "ui" is not intended
+    private final SomeResource resource = SomeResource.getInstance();
+
+    public String getView() {
+        return null;
+    }
 }

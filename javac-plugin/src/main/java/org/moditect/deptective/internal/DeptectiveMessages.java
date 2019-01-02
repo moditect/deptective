@@ -29,8 +29,8 @@ public class DeptectiveMessages extends ListResourceBundle {
     @Override
     protected final Object[][] getContents() {
         return new Object[][] {
-            { ERROR_PREFIX + ILLEGAL_PACKAGE_DEPENDENCY, "package {0} does not read {1}" },
-            { WARNING_PREFIX + ILLEGAL_PACKAGE_DEPENDENCY, "package {0} does not read {1}" },
+            { ERROR_PREFIX + ILLEGAL_PACKAGE_DEPENDENCY, "package {0} must not access {1}" },
+            { WARNING_PREFIX + ILLEGAL_PACKAGE_DEPENDENCY, "package {0} must not access {1}" },
             { ERROR_PREFIX + NO_DEPTECTIVE_CONFIG_FOUND, "Config file deptective.json was not found" }
         };
     }

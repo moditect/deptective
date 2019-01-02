@@ -13,17 +13,8 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.example.foo;
+package com.example.persistence;
 
-import com.example.bar.Bar;
-import com.example.baz.Baz;
+public class SomeDao {
 
-public class App {
-
-    private final int baseType = 0;
-    private final Bar bar = new Bar();
-    private final Baz baz = new Baz();
-
-    public static void main( String[] args ) {
-    }
 }

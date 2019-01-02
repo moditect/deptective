@@ -1,19 +1,23 @@
 {
     "packages" : [
         {
-            "name" : "com.example.foo",
+            "name" : "com.example.ui",
             "reads" : [
-                "com.example.bar"
+                "com.example.persistence",
+                "com.example.service"
             ]
         },
         {
-            "name" : "com.example.bar"
+            "name" : "com.example.persistence"
         },
         {
-            "name" : "com.example.baz"
+            "name" : "com.example.service"
+        },
+        {
+            "name" : "com.example.rest"
         }
     ],
     "whitelisted" : [
-        "java*"
+        "java.util*"
     ]
 }

@@ -13,8 +13,8 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.example.baz;
+package com.example.service;
 
-public class Baz {
+public class SomeService {
 
 }
