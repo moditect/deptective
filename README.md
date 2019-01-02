@@ -39,11 +39,23 @@ Support for _ecj_ may be added later on.
                 "com.example.baz"
             ]
         }
+    ],
+    "whitelisted" : [
+        "java.lang*",
+        "java.util*"
     ]
 }
 ```
 
-Place the file in the root of your source directory (e.g. _src/main/java_ for Maven projects).
+`packages` is a list of `Package` objects.
+The `Package` object has a `name` property (fully-qualified name of the described package)
+and a `reads` property (list of strings representing the fully-qualified names of other packages read by the given package).
+
+`whitelisted` is a list of strings representing whitelisted packages,
+i.e. packages that always can be read by any other package.
+The `*` character can be used as a wildcard, so e.g. `java.lang*` will whitelist the packages `java.lang`, `java.lang.reflect` etc.
+
+Place the configuration file in the root of your source directory (e.g. _src/main/java_ for Maven projects).
 Alternatively you can specify the location of the config file using the `-Adeptective.configfile` option (see below).
 
 Add _deptective-javac-plugin-1.0-SNAPSHOT.jar_ to your project's annotation processor path

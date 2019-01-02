@@ -72,12 +72,14 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
         PackageElement pakkage = elements.getPackageOf(jcTree.type.asElement());
         String qualifiedName = pakkage.getQualifiedName().toString();
 
-        if (!qualifiedName.isEmpty() && !packageOfCurrentCompilationUnit.reads(qualifiedName)) {
-            if (reportingPolicy == ReportingPolicy.ERROR) {
-                log.error(jcTree.pos, DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY, packageOfCurrentCompilationUnit, qualifiedName);
-            }
-            else {
-                log.strictWarning(jcTree, DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY, packageOfCurrentCompilationUnit, qualifiedName);
+        if (!packageDependencies.isWhitelisted(qualifiedName)) {
+            if (!qualifiedName.isEmpty() && !packageOfCurrentCompilationUnit.reads(qualifiedName)) {
+                if (reportingPolicy == ReportingPolicy.ERROR) {
+                    log.error(jcTree.pos, DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY, packageOfCurrentCompilationUnit, qualifiedName);
+                }
+                else {
+                    log.strictWarning(jcTree, DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY, packageOfCurrentCompilationUnit, qualifiedName);
+                }
             }
         }
 

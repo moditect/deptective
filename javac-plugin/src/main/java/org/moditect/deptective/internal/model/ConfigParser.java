@@ -79,12 +79,24 @@ public class ConfigParser {
     }
 
     private PackageDependencies parsePackages(JsonNode config) throws IOException {
-        ArrayNode packages = (ArrayNode) config.get("packages");
-        Iterator<JsonNode> it = packages.iterator();
         PackageDependencies.Builder builder = PackageDependencies.builder();
 
-        while(it.hasNext()) {
-            parsePackage(it.next(), builder);
+        ArrayNode packages = (ArrayNode) config.get("packages");
+
+        if (packages != null) {
+            Iterator<JsonNode> it = packages.iterator();
+            while(it.hasNext()) {
+                parsePackage(it.next(), builder);
+            }
+        }
+
+        ArrayNode whitelisted = (ArrayNode) config.get("whitelisted");
+
+        if (whitelisted != null) {
+            Iterator<JsonNode> it = whitelisted.iterator();
+            while(it.hasNext()) {
+                builder.addWhitelistedPackage(it.next().asText());
+            }
         }
 
         return builder.build();

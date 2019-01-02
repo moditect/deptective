@@ -15,41 +15,28 @@
  */
 package org.moditect.deptective.internal.model;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.regex.Pattern;
 
 /**
- * Describes a Java package and its intended dependences to other packages.
+ * An expression matching one or more whitelisted Java packages, i.e. packages
+ * that other packages are always allowed to depend on.
  *
  * @author Gunnar Morling
  */
-public class Package {
+public class WhitelistedPackagePattern {
 
-    private final String name;
-    private final List<String> reads;
+    private final Pattern pattern;
 
-    Package(String name, List<String> reads) {
-        this.name = name;
-        this.reads = Collections.unmodifiableList(reads);
+    WhitelistedPackagePattern(String pattern) {
+        this.pattern = Pattern.compile(pattern.replace("*", ".*"));
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public List<String> getReads() {
-        return reads;
-    }
-
-    /**
-     * Whether this package reads the given other package.
-     */
-    public boolean reads(String qualifiedName) {
-        return reads.contains(qualifiedName);
+    public boolean matches(String packageName) {
+        return pattern.matcher(packageName).matches();
     }
 
     @Override
     public String toString() {
-        return name;
+        return pattern.pattern();
     }
 }

@@ -3,9 +3,7 @@
         {
             "name" : "com.example.foo",
             "reads" : [
-                "com.example.bar",
-                "java.lang",
-                "java.util"
+                "com.example.bar"
             ]
         },
         {
@@ -14,5 +12,8 @@
         {
             "name" : "com.example.baz"
         }
+    ],
+    "whitelisted" : [
+        "java*"
     ]
 }

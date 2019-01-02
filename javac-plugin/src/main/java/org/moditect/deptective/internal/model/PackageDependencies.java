@@ -17,18 +17,21 @@ package org.moditect.deptective.internal.model;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 public class PackageDependencies {
 
     public static class Builder {
 
         private final Map<String, Package> packagesByName = new HashMap<>();
+        private final Set<WhitelistedPackagePattern> whitelisted = new HashSet<>();
 
         public PackageDependencies build() {
-            return new PackageDependencies(packagesByName);
+            return new PackageDependencies(packagesByName, whitelisted);
         }
 
         public void addPackage(String name, List<String> reads) {
@@ -38,12 +41,18 @@ public class PackageDependencies {
 
             packagesByName.put(name, new Package(name, reads));
         }
+
+        public void addWhitelistedPackage(String pattern) {
+            this.whitelisted.add(new WhitelistedPackagePattern(pattern));
+        }
     }
 
     private final Map<String, Package> packagesByName;
+    private final Set<WhitelistedPackagePattern> whitelisted;
 
-    private PackageDependencies(Map<String, Package> packagesByName) {
+    private PackageDependencies(Map<String, Package> packagesByName, Set<WhitelistedPackagePattern> whitelisted) {
         this.packagesByName = Collections.unmodifiableMap(packagesByName);
+        this.whitelisted = Collections.unmodifiableSet(whitelisted);
     }
 
     public static Builder builder() {
@@ -60,12 +69,33 @@ public class PackageDependencies {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("packages {");
+        sb.append(System.lineSeparator());
 
         for (Entry<String, Package> pakkage : packagesByName.entrySet()) {
-            sb.append(pakkage.getKey() + "=" + pakkage.getValue().getReads() + System.lineSeparator());
+            sb.append("  ");
+            sb.append(pakkage.getKey());
+            sb.append("=");
+            sb.append(pakkage.getValue().getReads());
+            sb.append(System.lineSeparator());
         }
 
+        sb.append("}");
+        sb.append(System.lineSeparator());
+        sb.append("whitelisted {").append(System.lineSeparator());
+        for (WhitelistedPackagePattern whitelistedPackagePattern : whitelisted) {
+            sb.append("  ");
+            sb.append(whitelistedPackagePattern);
+            sb.append(System.lineSeparator());
+        }
+        sb.append("}");
         return sb.toString();
+    }
+
+    public boolean isWhitelisted(String packageName) {
+        return whitelisted.stream()
+            .filter(w -> w.matches(packageName))
+            .findFirst()
+            .isPresent();
     }
 }

@@ -42,6 +42,9 @@ public class ConfigParsingTest {
                 "                \"com.example.persistence\"\n" +
                 "            ]\n" +
                 "        }\n" +
+                "    ],\n" +
+                "    \"whitelisted\" : [\n" +
+                "        \"java.lang*\", \"java.util*\"\n" +
                 "    ]\n" +
                 "}\n")
                .getPackageDependencies();
@@ -57,5 +60,10 @@ public class ConfigParsingTest {
         assertThat(service).isNotNull();
         assertThat(service.reads("com.example.ui")).isFalse();
         assertThat(service.reads("com.example.persistence")).isTrue();
+
+        assertThat(dependencies.isWhitelisted("java.lang")).isTrue();
+        assertThat(dependencies.isWhitelisted("java.lang.reflect")).isTrue();
+        assertThat(dependencies.isWhitelisted("java.util.concurrent")).isTrue();
+        assertThat(dependencies.isWhitelisted("java.io")).isFalse();
     }
 }
