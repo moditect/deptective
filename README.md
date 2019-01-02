@@ -17,8 +17,8 @@ and fail the project compilation when detecting any unintentional dependencies.
 🕵 JDK 11 is needed to run Deptective.
 Support for JDK 8 may be added later on.
 
-The plug-in is specific to _javac_, i.e. the compiler coming with the JDK, it does not work with other compilers such as Eclipse's _ejc_ compiler.
-Support for _ejc_ may be added later on.
+The plug-in is specific to _javac_, i.e. the compiler coming with the JDK, it does not work with other compilers such as the _Eclipse Batch Compiler_ (_ecj_).
+Support for _ecj_ may be added later on.
 
 ## Usage
 
