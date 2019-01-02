@@ -51,6 +51,32 @@ public class BasicPluginTest extends PluginTestBase {
     }
 
     @Test
+    public void shouldDetectInvalidSuperClass() {
+        Compilation compilation = compile();
+        assertThat(compilation).failed();
+
+        assertThat(compilation).hadErrorContaining(
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barsuper");
+
+        // inner class
+        assertThat(compilation).hadErrorContaining(
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barinnersuper");
+    }
+
+    @Test
+    public void shouldDetectInvalidImplementedInterface() {
+        Compilation compilation = compile();
+        assertThat(compilation).failed();
+
+        assertThat(compilation).hadErrorContaining(
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barinter");
+
+        // inner interface
+        assertThat(compilation).hadErrorContaining("package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barinnerinner");
+    }
+
+
+    @Test
     public void shouldDetectInvalidConstructorParameters() {
         Compilation compilation = compile();
         assertThat(compilation).failed();
