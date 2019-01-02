@@ -1,12 +1,31 @@
 {
     "packages" : [
         {
-            "name" : "org.moditect.deptective.plugintest.basic.bar"
+            "name" : "org.moditect.deptective.plugintest.basic.barctorcall"
+        },
+        {
+            "name" : "org.moditect.deptective.plugintest.basic.barfield"
+        },
+        {
+            "name" : "org.moditect.deptective.plugintest.basic.barlocalvar"
+        },
+        {
+            "name" : "org.moditect.deptective.plugintest.basic.barloopvar"
+        },
+        {
+            "name" : "org.moditect.deptective.plugintest.basic.barparameter"
+        },
+        {
+            "name" : "org.moditect.deptective.plugintest.basic.barretval"
+        },
+        {
+            "name" : "org.moditect.deptective.plugintest.basic.bartypearg"
         },
         {
             "name" : "org.moditect.deptective.plugintest.basic.foo",
             "reads" : [
-                "java.lang"
+                "java.lang",
+                "java.util"
             ]
         }
     ]

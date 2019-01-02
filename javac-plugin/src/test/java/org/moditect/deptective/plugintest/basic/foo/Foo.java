@@ -15,10 +15,37 @@
  */
 package org.moditect.deptective.plugintest.basic.foo;
 
-import org.moditect.deptective.plugintest.basic.bar.Bar;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.moditect.deptective.plugintest.basic.barctorcall.BarCtorCall;
+import org.moditect.deptective.plugintest.basic.barfield.BarField;
+import org.moditect.deptective.plugintest.basic.barlocalvar.BarLocalVar;
+import org.moditect.deptective.plugintest.basic.barloopvar.BarLoopVar;
+import org.moditect.deptective.plugintest.basic.barparameter.BarParameter;
+import org.moditect.deptective.plugintest.basic.barretval.BarRetVal;
+import org.moditect.deptective.plugintest.basic.bartypearg.BarTypeArg;
 
 public class Foo {
 
     private String s;
-    private final Bar bar = new Bar();
+    private final BarField bar = new BarField();
+
+    public Foo(BarParameter bar) {
+    }
+
+    public BarRetVal doSomething(BarParameter bar) {
+        BarLocalVar varLocalVar = new BarLocalVar();
+
+        List<BarTypeArg> bars = new ArrayList<>();
+
+        for (BarLoopVar oneBar : new ArrayList<BarLoopVar>()) {
+        }
+
+        new BarCtorCall();
+
+        return null;
+    }
+
+
 }

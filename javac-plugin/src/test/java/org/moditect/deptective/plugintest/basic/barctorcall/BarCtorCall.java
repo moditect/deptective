@@ -13,8 +13,8 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.moditect.deptective.plugintest.basic.bar;
+package org.moditect.deptective.plugintest.basic.barctorcall;
 
-public class Bar {
+public class BarCtorCall {
 
 }

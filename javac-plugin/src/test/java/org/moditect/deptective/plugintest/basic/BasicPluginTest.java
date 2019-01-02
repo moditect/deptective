@@ -19,7 +19,13 @@ import static com.google.testing.compile.CompilationSubject.assertThat;
 
 import org.junit.Test;
 import org.moditect.deptective.plugintest.PluginTestBase;
-import org.moditect.deptective.plugintest.basic.bar.Bar;
+import org.moditect.deptective.plugintest.basic.barctorcall.BarCtorCall;
+import org.moditect.deptective.plugintest.basic.barfield.BarField;
+import org.moditect.deptective.plugintest.basic.barlocalvar.BarLocalVar;
+import org.moditect.deptective.plugintest.basic.barloopvar.BarLoopVar;
+import org.moditect.deptective.plugintest.basic.barparameter.BarParameter;
+import org.moditect.deptective.plugintest.basic.barretval.BarRetVal;
+import org.moditect.deptective.plugintest.basic.bartypearg.BarTypeArg;
 import org.moditect.deptective.plugintest.basic.foo.Foo;
 
 import com.google.testing.compile.Compilation;
@@ -35,14 +41,42 @@ public class BasicPluginTest extends PluginTestBase {
                     getConfigFileOption()
             )
             .compile(
-                    forTestClass(Bar.class),
+                    forTestClass(BarCtorCall.class),
+                    forTestClass(BarField.class),
+                    forTestClass(BarLocalVar.class),
+                    forTestClass(BarLoopVar.class),
+                    forTestClass(BarParameter.class),
+                    forTestClass(BarRetVal.class),
+                    forTestClass(BarTypeArg.class),
                     forTestClass(Foo.class)
             );
 
         assertThat(compilation).failed();
+
+        // TODO https://github.com/moditect/deptective/issues/7
+//        assertThat(compilation).hadErrorContaining(
+//                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barctorcall"
+//        );
         assertThat(compilation).hadErrorContaining(
-                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.bar"
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barfield"
         );
+        assertThat(compilation).hadErrorContaining(
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barlocalvar"
+        );
+        assertThat(compilation).hadErrorContaining(
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barloopvar"
+        );
+        assertThat(compilation).hadErrorContaining(
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barparameter"
+        );
+
+        // TODO https://github.com/moditect/deptective/issues/7
+//        assertThat(compilation).hadErrorContaining(
+//                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barretval"
+//        );
+//        assertThat(compilation).hadErrorContaining(
+//                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.bartypearg"
+//        );
     }
 
     @Test
@@ -54,13 +88,19 @@ public class BasicPluginTest extends PluginTestBase {
                     "-Adeptective.reportingpolicy=WARN"
             )
             .compile(
-                    forTestClass(Bar.class),
+                    forTestClass(BarCtorCall.class),
+                    forTestClass(BarField.class),
+                    forTestClass(BarLocalVar.class),
+                    forTestClass(BarLoopVar.class),
+                    forTestClass(BarParameter.class),
+                    forTestClass(BarRetVal.class),
+                    forTestClass(BarTypeArg.class),
                     forTestClass(Foo.class)
             );
 
         assertThat(compilation).succeeded();
         assertThat(compilation).hadWarningContaining(
-                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.bar"
+                "package org.moditect.deptective.plugintest.basic.foo does not read org.moditect.deptective.plugintest.basic.barfield"
         );
     }
 }
