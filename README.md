@@ -5,12 +5,12 @@ amongst a project's packages against a description of allowed package dependence
 and fail the project compilation when detecting any unintentional dependencies.
 
 * [Deptective](#deptective)
-      * [Requirements](#requirements)
-      * [Usage](#usage)
-      * [Configuration Options](#configuration-options)
-      * [Contributing and Development](#contributing-and-development)
-         * [IDE Set-Up](#ide-set-up)
-      * [License](#license)
+  * [Requirements](#requirements)
+  * [Usage](#usage)
+  * [Configuration Options](#configuration-options)
+  * [Contributing and Development](#contributing-and-development)
+     * [IDE Set-Up](#ide-set-up)
+  * [License](#license)
 
 ## Requirements
 
