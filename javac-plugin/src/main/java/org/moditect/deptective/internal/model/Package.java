@@ -25,12 +25,20 @@ import java.util.List;
  */
 public class Package {
 
+    public static final Package UNCONFIGURED = new Package("__unconfigured__", Collections.emptyList(), false);
+
     private final String name;
     private final List<String> reads;
+    private final boolean configured;
 
     Package(String name, List<String> reads) {
+        this(name, reads, true);
+    }
+
+    private Package(String name, List<String> reads, boolean configured) {
         this.name = name;
         this.reads = Collections.unmodifiableList(reads);
+        this.configured = configured;
     }
 
     public String getName() {
@@ -46,6 +54,10 @@ public class Package {
      */
     public boolean reads(String qualifiedName) {
         return reads.contains(qualifiedName);
+    }
+
+    public boolean isConfigured() {
+        return configured;
     }
 
     @Override

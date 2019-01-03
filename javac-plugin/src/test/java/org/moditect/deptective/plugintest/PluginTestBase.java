@@ -29,7 +29,13 @@ import com.google.testing.compile.JavaFileObjects;
 public class PluginTestBase {
 
     protected String getConfigFileOption() {
-        return "-Adeptective.configfile=" + getClass().getResource("deptective.json").getPath();
+        URL resource = getClass().getResource("deptective.json");
+
+        if (resource == null) {
+            throw new IllegalStateException("No config file found");
+        }
+
+        return "-Adeptective.config_file=" + resource.getPath();
     }
 
     protected JavaFileObject forTestClass(Class<?> clazz) {

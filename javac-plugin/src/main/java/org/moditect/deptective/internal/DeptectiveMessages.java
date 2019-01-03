@@ -24,6 +24,7 @@ public class DeptectiveMessages extends ListResourceBundle {
 
     public static final String ILLEGAL_PACKAGE_DEPENDENCY = "deptective.illegalpackagedependency";
     public static final String NO_DEPTECTIVE_CONFIG_FOUND = "deptective.nodeptectiveconfigfound";
+    public static final String PACKAGE_NOT_CONFIGURED = "deptective.packagenotconfigured";
 
 
     @Override
@@ -31,6 +32,8 @@ public class DeptectiveMessages extends ListResourceBundle {
         return new Object[][] {
             { ERROR_PREFIX + ILLEGAL_PACKAGE_DEPENDENCY, "package {0} must not access {1}" },
             { WARNING_PREFIX + ILLEGAL_PACKAGE_DEPENDENCY, "package {0} must not access {1}" },
+            { ERROR_PREFIX + PACKAGE_NOT_CONFIGURED, "no Deptective configuration found for package {0}" },
+            { WARNING_PREFIX + PACKAGE_NOT_CONFIGURED, "no Deptective configuration found for package {0}" },
             { ERROR_PREFIX + NO_DEPTECTIVE_CONFIG_FOUND, "Config file deptective.json was not found" }
         };
     }

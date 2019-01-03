@@ -189,7 +189,7 @@ public class BasicPluginTest extends PluginTestBase {
     @Test
     public void shouldUseWarnReportingPolicy() {
         Compilation compilation = Compiler.javac()
-                .withOptions("-Xplugin:Deptective", getConfigFileOption(), "-Adeptective.reportingpolicy=WARN")
+                .withOptions("-Xplugin:Deptective", getConfigFileOption(), "-Adeptective.reporting_policy=WARN")
                 .compile(forTestClass(BarCtorCall.class), forTestClass(BarField.class), forTestClass(BarLocalVar.class),
                         forTestClass(BarLoopVar.class), forTestClass(BarParameter.class), forTestClass(BarRetVal.class),
                         forTestClass(BarTypeArg.class), forTestClass(Foo.class));

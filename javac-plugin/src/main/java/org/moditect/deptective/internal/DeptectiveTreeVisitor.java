@@ -15,6 +15,8 @@
  */
 package org.moditect.deptective.internal;
 
+import java.util.Map;
+
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.util.Elements;
 
@@ -43,37 +45,64 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
     private final Log log;
     private final Elements elements;
     private final PackageDependencies packageDependencies;
+    private final ReportingPolicy reportingPolicy;
+    private final ReportingPolicy unconfiguredPackageReportingPolicy;
+    private final Map<String, Boolean> reportedUnconfiguredPackages;
 
     private Package packageOfCurrentCompilationUnit;
-    private final ReportingPolicy reportingPolicy;
 
-    public  DeptectiveTreeVisitor(PackageDependencies packageDependencies, ReportingPolicy reportingPolicy, JavacTask task) {
+    public  DeptectiveTreeVisitor(PackageDependencies packageDependencies, DeptectiveOptions options, JavacTask task, Map<String, Boolean> reportedUnconfiguredPackages) {
         elements = task.getElements();
 
         Context context = ((BasicJavacTask) task).getContext();
         this.log = Log.instance(context);
         this.packageDependencies = packageDependencies;
-        this.reportingPolicy = reportingPolicy;
+        this.reportingPolicy = options.getReportingPolicy();
+        this.unconfiguredPackageReportingPolicy = options.getUnconfiguredPackageReportingPolicy();
+        this.reportedUnconfiguredPackages = reportedUnconfiguredPackages;
     }
 
     @Override
     public Void visitCompilationUnit(CompilationUnitTree tree, Void p) {
         log.useSource(tree.getSourceFile());
 
-        ExpressionTree packageName = tree.getPackageName();
-
-        if (packageName != null) {
-            packageOfCurrentCompilationUnit = packageDependencies.getPackage(packageName.toString());
-        }
-
-        if (packageOfCurrentCompilationUnit == null) {
-            throw new IllegalArgumentException("Package " +packageName + " is not configured.");
-        }
+        resetCurrentPackage(tree);
 
         return super.visitCompilationUnit(tree, p);
     }
 
+    private void resetCurrentPackage(CompilationUnitTree tree) {
+        ExpressionTree packageNameTree = tree.getPackageName();
 
+        // TODO deal with default package
+        if (packageNameTree == null) {
+            return;
+        }
+
+        String packageName = packageNameTree.toString();
+        packageOfCurrentCompilationUnit = packageDependencies.getPackage(packageName);
+
+        if (!packageOfCurrentCompilationUnit.isConfigured()) {
+            reportUnconfiguredPackageIfNeeded(tree, packageName);
+        }
+    }
+
+    private void reportUnconfiguredPackageIfNeeded(CompilationUnitTree tree, String packageName) {
+        boolean reportedBefore = Boolean.TRUE.equals(reportedUnconfiguredPackages.get(packageName));
+
+        if (!reportedBefore) {
+            com.sun.tools.javac.tree.JCTree jcTree = (com.sun.tools.javac.tree.JCTree)tree;
+
+            if (unconfiguredPackageReportingPolicy == ReportingPolicy.ERROR) {
+                log.error(jcTree.pos, DeptectiveMessages.PACKAGE_NOT_CONFIGURED, packageName);
+            }
+            else {
+                log.strictWarning(jcTree, DeptectiveMessages.PACKAGE_NOT_CONFIGURED, packageName);
+            }
+
+            reportedUnconfiguredPackages.put(packageName, true);
+        }
+    }
 
     //    @Override
     //    public Void visitImport(ImportTree node, Void p) {
@@ -180,6 +209,10 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
         }
 
         if (packageDependencies.isWhitelisted(qualifiedName)) {
+            return;
+        }
+
+        if (!packageOfCurrentCompilationUnit.isConfigured()) {
             return;
         }
 

@@ -57,7 +57,7 @@ and a `reads` property (list of strings representing the fully-qualified names o
 i.e. packages that always can be read by any other package.
 The `*` character can be used as a wildcard, so e.g. `java.util*` will whitelist the packages `java.util`, `java.util.concurrent` etc.
 
-_Note:_ access to the package `java.lang` is always allowed. 
+_Note:_ access to the package `java.lang` is always allowed.
 
 Place the configuration file in the root of your source directory (e.g. _src/main/java_ for Maven projects).
 Alternatively you can specify the location of the config file using the `-Adeptective.configfile` option (see below).
@@ -118,8 +118,9 @@ See _jitpack-example/pom.xml_ for a complete example.
 
 🕵 The following options can be provided when running the plug-in:
 
-* `-Adeptective.configfile=path/to/deptective.json`: Path of the configuration file in the file system
-* `-Adeptective.reportingpolicy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when spotting any illegal package dependencies (defaults to `ERROR`)
+* `-Adeptective.config_file=path/to/deptective.json`: Path of the configuration file in the file system
+* `-Adeptective.reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when spotting any illegal package dependencies (defaults to `ERROR`)
+* `-Adeptective.unconfigured_package_reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when detecting a package that's not configured in the config file (defaults to `WARN`)
 
 ## Contributing and Development
 
