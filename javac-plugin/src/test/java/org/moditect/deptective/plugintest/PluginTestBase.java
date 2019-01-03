@@ -35,7 +35,7 @@ public class PluginTestBase {
             throw new IllegalStateException("No config file found");
         }
 
-        return "-Adeptective.configfile=" + resource.getPath();
+        return "-Adeptective.config_file=" + resource.getPath();
     }
 
     protected JavaFileObject forTestClass(Class<?> clazz) {

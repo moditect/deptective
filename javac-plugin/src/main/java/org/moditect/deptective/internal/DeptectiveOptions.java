@@ -37,7 +37,7 @@ public class DeptectiveOptions {
     }
 
     public Optional<Path> getConfigFilePath() {
-        String path = options.get("deptective.configfile");
+        String path = options.get("deptective.config_file");
 
         if (path != null) {
             return Optional.of(new File(path).toPath());
@@ -51,7 +51,7 @@ public class DeptectiveOptions {
      * Returns the policy for reporting illegal package references.
      */
     public ReportingPolicy getReportingPolicy() {
-        String policy = options.get("deptective.reportingpolicy");
+        String policy = options.get("deptective.reporting_policy");
 
         if (policy != null) {
             return ReportingPolicy.valueOf(policy.trim().toUpperCase());

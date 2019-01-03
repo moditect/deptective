@@ -118,8 +118,8 @@ See _jitpack-example/pom.xml_ for a complete example.
 
 🕵 The following options can be provided when running the plug-in:
 
-* `-Adeptective.configfile=path/to/deptective.json`: Path of the configuration file in the file system
-* `-Adeptective.reportingpolicy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when spotting any illegal package dependencies (defaults to `ERROR`)
+* `-Adeptective.config_file=path/to/deptective.json`: Path of the configuration file in the file system
+* `-Adeptective.reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when spotting any illegal package dependencies (defaults to `ERROR`)
 * `-Adeptective.unconfigured_package_reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when detecting a package that's not configured in the config file (defaults to `WARN`)
 
 ## Contributing and Development
