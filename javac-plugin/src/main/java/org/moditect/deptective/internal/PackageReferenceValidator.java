@@ -15,19 +15,12 @@
  */
 package org.moditect.deptective.internal;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.tools.FileObject;
-import javax.tools.JavaFileManager;
-import javax.tools.StandardLocation;
-
-import org.moditect.deptective.internal.model.ConfigParser;
+import org.moditect.deptective.internal.model.ConfigLoader;
 import org.moditect.deptective.internal.model.Package;
 import org.moditect.deptective.internal.model.PackageDependencies;
 
@@ -56,7 +49,7 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
     public PackageReferenceValidator(Context context, Optional<Path> configFile,
             ReportingPolicy reportingPolicy, ReportingPolicy unconfiguredPackageReportingPolicy) {
         this.log = context.get(Log.logKey);
-        this.packageDependencies = getConfig(configFile, context);
+        this.packageDependencies = new ConfigLoader().getConfig(configFile, context);
         this.reportingPolicy = reportingPolicy;
         this.unconfiguredPackageReportingPolicy = unconfiguredPackageReportingPolicy;
         this.reportedUnconfiguredPackages = new HashMap<>();
@@ -136,43 +129,5 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
 
             reportedUnconfiguredPackages.put(packageName, true);
         }
-    }
-
-    private PackageDependencies getConfig(Optional<Path> configFile, Context context) {
-        try {
-            InputStream inputStream = getConfigStream(configFile, context);
-
-            if (inputStream == null) {
-                return null;
-            }
-
-            try (InputStream is = inputStream) {
-                return new ConfigParser(is).getPackageDependencies();
-            }
-        }
-        catch(Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private InputStream getConfigStream(Optional<Path> configFile, Context context) {
-        try {
-            if (configFile.isPresent()) {
-                    return Files.newInputStream(configFile.get());
-            }
-            else {
-                JavaFileManager jfm = context.get(JavaFileManager.class);
-                FileObject file = jfm.getFileForInput(StandardLocation.SOURCE_PATH, "", "deptective.json");
-
-                if (file != null) {
-                    return file.openInputStream();
-                }
-            }
-        }
-        catch (IOException e) {
-            throw new RuntimeException("Failed to load Deptective configuration file", e);
-        }
-
-        return null;
     }
 }

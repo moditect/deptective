@@ -148,6 +148,22 @@ public class PackageDependencies {
         return node;
     }
 
+    public String toDot() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("digraph \"package dependencies\"\n");
+        sb.append("{\n");
+
+        for (Package pakkage : packagesByName.values()) {
+            for (String referencedPackage : pakkage.getReads()) {
+                sb.append("    \"").append(pakkage.getName()).append("\" -> \"").append(referencedPackage).append("\";\n");
+            }
+        }
+
+        sb.append("}");
+
+        return sb.toString();
+    }
+
     public boolean isWhitelisted(String packageName) {
         return whitelisted.stream()
             .filter(w -> w.matches(packageName))

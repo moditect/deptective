@@ -36,6 +36,15 @@ public enum PluginTask {
           );
         }
     },
+    VISUALIZE {
+        @Override
+        public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Context context) {
+            return new PackageReferenceVisualizer(
+                    context,
+                    options.getConfigFilePath()
+          );
+        }
+    },
     ANALYZE {
         @Override
         public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Context context) {
