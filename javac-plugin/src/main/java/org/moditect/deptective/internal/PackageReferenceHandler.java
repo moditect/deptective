@@ -29,12 +29,15 @@ public interface PackageReferenceHandler {
      * Whether the plug-ins configuration is valid for the given handler. If that's
      * not the case, ASTs won't be traversed.
      */
-    public boolean configIsValid();
+    default public boolean configIsValid() {
+        return true;
+    }
 
     /**
      * Invoked when entering a new compilation unit.
      */
-    void onEnteringCompilationUnit(CompilationUnitTree tree);
+    default void onEnteringCompilationUnit(CompilationUnitTree tree) {
+    }
 
     /**
      * Invoked when referencing a package.
@@ -43,5 +46,12 @@ public interface PackageReferenceHandler {
      *                              variable or field.
      * @param referencedPackageName the name of the referenced package
      */
-    void onPackageReference(Tree referencingNode, String referencedPackageName);
+    default void onPackageReference(Tree referencingNode, String referencedPackageName) {
+    }
+
+    /**
+     * Invoked when the compilation is done.
+     */
+    default void onCompletingCompilation() {
+    }
 }

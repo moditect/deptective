@@ -68,6 +68,9 @@ public class DeptectivePlugin implements Plugin {
                         CompilationUnitTree compilationUnit = e.getCompilationUnit();
                         new DeptectiveTreeVisitor(options, task, handler).scan(compilationUnit, null);
                     }
+                    else if (e.getKind() == TaskEvent.Kind.COMPILATION) {
+                        handler.onCompletingCompilation();
+                    }
                 }
             });
         }

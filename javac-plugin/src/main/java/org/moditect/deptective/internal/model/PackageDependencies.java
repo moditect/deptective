@@ -22,16 +22,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class PackageDependencies {
 
     public static class Builder {
 
-        private final Map<String, Package> packagesByName = new HashMap<>();
+        private final Map<String, Package.Builder> packagesByName = new HashMap<>();
         private final Set<WhitelistedPackagePattern> whitelisted = new HashSet<>();
 
         public PackageDependencies build() {
-            return new PackageDependencies(packagesByName, whitelisted);
+            return new PackageDependencies(
+                    packagesByName.values()
+                        .stream()
+                        .map(Package.Builder::build)
+                        .collect(Collectors.toMap(Package::getName, Function.identity())),
+                    whitelisted);
         }
 
         public void addPackage(String name, List<String> reads) {
@@ -39,7 +53,12 @@ public class PackageDependencies {
                 throw new IllegalArgumentException("Package " + name + " may not be configured more than once.");
             }
 
-            packagesByName.put(name, new Package(name, reads));
+            packagesByName.put(name, Package.builder(name).addReads(reads));
+        }
+
+        public void addRead(String name, String readPackage) {
+            Package.Builder builder = packagesByName.computeIfAbsent(name, n -> Package.builder(n));
+            builder.addReads(readPackage);
         }
 
         public void addWhitelistedPackage(String pattern) {
@@ -92,6 +111,41 @@ public class PackageDependencies {
         }
         sb.append("}");
         return sb.toString();
+    }
+
+    public String toJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        ObjectNode root = mapper.createObjectNode();
+        ArrayNode packages = root.putArray("packages");
+
+        packagesByName.values()
+            .stream()
+            .sorted((c1, c2) -> c1.getName().compareTo(c2.getName()))
+            .forEach(p -> packages.add(toJsonNode(p, mapper)));
+
+        root.putArray("whitelisted");
+
+        try {
+            return mapper.writeValueAsString(root);
+        }
+        catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private JsonNode toJsonNode(Package pakkage, ObjectMapper mapper) {
+        ObjectNode node = mapper.createObjectNode();
+
+        node.put("name", pakkage.getName());
+        ArrayNode reads = node.putArray("reads");
+        pakkage.getReads()
+            .stream()
+            .sorted()
+            .forEach(r -> reads.add(r));
+
+        return node;
     }
 
     public boolean isWhitelisted(String packageName) {

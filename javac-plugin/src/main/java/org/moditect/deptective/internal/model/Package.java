@@ -15,8 +15,10 @@
  */
 package org.moditect.deptective.internal.model;
 
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Describes a Java package and its intended dependences to other packages.
@@ -25,27 +27,67 @@ import java.util.List;
  */
 public class Package {
 
-    public static final Package UNCONFIGURED = new Package("__unconfigured__", Collections.emptyList(), false);
+    public static class Builder {
+
+        private final String name;
+        private final Set<String> reads;
+
+        private Builder(String name) {
+            this.name = name;
+            this.reads = new HashSet<>();
+        }
+
+        public Builder addReads(String read, String... furtherReads) {
+            addRead(read);
+            if(furtherReads != null) {
+                addReads(Arrays.asList(furtherReads));
+            }
+            return this;
+        }
+
+        public Builder addReads(Iterable<String> reads) {
+            for (String read : reads) {
+                addRead(read);
+            }
+            return this;
+        }
+
+        private void addRead(String read) {
+            if (!read.isEmpty() && !read.equals(name)) {
+                reads.add(read);
+            }
+        }
+
+        public Package build() {
+            return new Package(name, reads);
+        }
+    }
+
+    public static final Package UNCONFIGURED = new Package("__unconfigured__", Collections.emptySet(), false);
 
     private final String name;
-    private final List<String> reads;
+    private final Set<String> reads;
     private final boolean configured;
 
-    Package(String name, List<String> reads) {
+    private Package(String name, Set<String> reads) {
         this(name, reads, true);
     }
 
-    private Package(String name, List<String> reads, boolean configured) {
+    private Package(String name, Set<String> reads, boolean configured) {
         this.name = name;
-        this.reads = Collections.unmodifiableList(reads);
+        this.reads = Collections.unmodifiableSet(reads);
         this.configured = configured;
+    }
+
+    public static Builder builder(String name) {
+        return new Builder(name);
     }
 
     public String getName() {
         return name;
     }
 
-    public List<String> getReads() {
+    public Set<String> getReads() {
         return reads;
     }
 
