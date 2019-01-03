@@ -18,6 +18,8 @@ package org.moditect.deptective.plugintest.basic.foo;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.moditect.deptective.plugintest.basic.baranparam.BarAnnotationParameter;
+import org.moditect.deptective.plugintest.basic.barclass.BarClass;
 import org.moditect.deptective.plugintest.basic.barclazzan.BarClazzAnnotation;
 import org.moditect.deptective.plugintest.basic.barctorcall.BarCtorCall;
 import org.moditect.deptective.plugintest.basic.barctorparam.BarCtorParam;
@@ -36,13 +38,14 @@ import org.moditect.deptective.plugintest.basic.barretvalgen.RetValGen;
 import org.moditect.deptective.plugintest.basic.barsuper.BarSuper;
 import org.moditect.deptective.plugintest.basic.bartypearg.BarTypeArg;
 
-@FooAnnotation
+@FooAnnotation(classParameter = BarAnnotationParameter.class)
 @BarClazzAnnotation
 public class Foo extends BarSuper implements BarInterface, /* allowed: */ IFoo {
 
-	@BarFieldAnnotation
+    @BarFieldAnnotation
     private String s;
     private final BarField bar = new BarField();
+    private Class<?> clazz = BarClass.class;
 
     public Foo(BarCtorParam bar) {
     }
@@ -71,10 +74,8 @@ public class Foo extends BarSuper implements BarInterface, /* allowed: */ IFoo {
     static class InvalidFooImplementation extends FooContainer<BarGenType> {}
 
     static interface InnerFoo extends BarInnerInterface {
-
     }
 
     static class InnerFooClass extends BarInnerSuperClass {
-
     }
 }

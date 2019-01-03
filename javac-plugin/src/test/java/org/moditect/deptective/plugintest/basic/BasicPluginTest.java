@@ -154,6 +154,19 @@ public class BasicPluginTest extends PluginTestBase {
     }
 
     @Test
+    public void shouldDetectInvalidAnnotationParameterReferences() {
+        Compilation compilation = compile();
+        assertThat(compilation).failed();
+// org.moditect.deptective.plugintest.basic.barclass
+
+        assertThat(compilation).hadErrorContaining(
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barclass"));
+
+        assertThat(compilation).hadErrorContaining(
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.baranparam"));
+    }
+
+    @Test
     public void shouldDetectInvalidReturnValueReferences() {
     	Compilation compilation = compile();
     	assertThat(compilation).failed();
