@@ -121,6 +121,7 @@ See _jitpack-example/pom.xml_ for a complete example.
 * `-Adeptective.config_file=path/to/deptective.json`: Path of the configuration file in the file system
 * `-Adeptective.reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when spotting any illegal package dependencies (defaults to `ERROR`)
 * `-Adeptective.unconfigured_package_reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when detecting a package that's not configured in the config file (defaults to `WARN`)
+* `-Adeptective.mode=(ANALYZE|VALIDATE)`: Whether the plug-in should validate the packages of the compiled package against the _deptective.json_ file (`VALIDATE`) or whether it should generate a template for that file based on the current actual package relationships (`ANALYZE`). The latter can be useful when introducing Deptective into an existing code base where writing the configuration from scratch might be too tedious. Generating the configuration from the current "is" state and iteratively refining it into an intended target state can be a useful approach in that case. Note then when using Deptective via the Maven compiler plug-in, you should make sure to set `<fork>` to `false` and `<showWarnings>` to `true` as otherwise the Maven compiler plug-in will not display the output produced by Deptective. Defaults to `VALIDATE`
 
 ## Contributing and Development
 

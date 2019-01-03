@@ -35,12 +35,12 @@ public enum PluginTask {
                     options.getUnconfiguredPackageReportingPolicy()
           );
         }
-//    },
-//    ANALYZE {
-//        @Override
-//        public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Context context) {
-//            return new PackageReferenceCollector();
-//        }
+    },
+    ANALYZE {
+        @Override
+        public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Context context) {
+            return new PackageReferenceCollector(context);
+        }
     };
 
     public abstract PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Context context);

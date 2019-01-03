@@ -19,13 +19,14 @@ import java.util.ListResourceBundle;
 
 public class DeptectiveMessages extends ListResourceBundle {
 
+    private static final String NOTE_PREFIX = "compiler.note.";
     private static final String ERROR_PREFIX = "compiler.err.";
     private static final String WARNING_PREFIX = "compiler.warn.";
 
     public static final String ILLEGAL_PACKAGE_DEPENDENCY = "deptective.illegalpackagedependency";
     public static final String NO_DEPTECTIVE_CONFIG_FOUND = "deptective.nodeptectiveconfigfound";
     public static final String PACKAGE_NOT_CONFIGURED = "deptective.packagenotconfigured";
-
+    public static final String GENERATED_CONFIG = "deptective.generatedconfig";
 
     @Override
     protected final Object[][] getContents() {
@@ -34,7 +35,8 @@ public class DeptectiveMessages extends ListResourceBundle {
             { WARNING_PREFIX + ILLEGAL_PACKAGE_DEPENDENCY, "package {0} must not access {1}" },
             { ERROR_PREFIX + PACKAGE_NOT_CONFIGURED, "no Deptective configuration found for package {0}" },
             { WARNING_PREFIX + PACKAGE_NOT_CONFIGURED, "no Deptective configuration found for package {0}" },
-            { ERROR_PREFIX + NO_DEPTECTIVE_CONFIG_FOUND, "Config file deptective.json was not found" }
+            { ERROR_PREFIX + NO_DEPTECTIVE_CONFIG_FOUND, "Config file deptective.json was not found" },
+            { NOTE_PREFIX + GENERATED_CONFIG, "Generated Deptective configuration:{0}{1}" }
         };
     }
 }
