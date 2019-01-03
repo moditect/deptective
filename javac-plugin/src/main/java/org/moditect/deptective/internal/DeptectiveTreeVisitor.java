@@ -15,18 +15,12 @@
  */
 package org.moditect.deptective.internal;
 
-import java.util.Map;
-
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.util.Elements;
-
-import org.moditect.deptective.internal.model.Package;
-import org.moditect.deptective.internal.model.PackageDependencies;
 
 import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.NewClassTree;
 import com.sun.source.tree.ParameterizedTypeTree;
@@ -44,64 +38,23 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
 
     private final Log log;
     private final Elements elements;
-    private final PackageDependencies packageDependencies;
-    private final ReportingPolicy reportingPolicy;
-    private final ReportingPolicy unconfiguredPackageReportingPolicy;
-    private final Map<String, Boolean> reportedUnconfiguredPackages;
+    private final PackageReferenceHandler packageReferenceHandler;
 
-    private Package packageOfCurrentCompilationUnit;
-
-    public  DeptectiveTreeVisitor(PackageDependencies packageDependencies, DeptectiveOptions options, JavacTask task, Map<String, Boolean> reportedUnconfiguredPackages) {
+    public DeptectiveTreeVisitor(DeptectiveOptions options, JavacTask task,
+            PackageReferenceHandler packageReferenceHandler) {
         elements = task.getElements();
 
         Context context = ((BasicJavacTask) task).getContext();
         this.log = Log.instance(context);
-        this.packageDependencies = packageDependencies;
-        this.reportingPolicy = options.getReportingPolicy();
-        this.unconfiguredPackageReportingPolicy = options.getUnconfiguredPackageReportingPolicy();
-        this.reportedUnconfiguredPackages = reportedUnconfiguredPackages;
+        this.packageReferenceHandler = packageReferenceHandler;
     }
 
     @Override
     public Void visitCompilationUnit(CompilationUnitTree tree, Void p) {
         log.useSource(tree.getSourceFile());
-
-        resetCurrentPackage(tree);
+        packageReferenceHandler.onEnteringCompilationUnit(tree);
 
         return super.visitCompilationUnit(tree, p);
-    }
-
-    private void resetCurrentPackage(CompilationUnitTree tree) {
-        ExpressionTree packageNameTree = tree.getPackageName();
-
-        // TODO deal with default package
-        if (packageNameTree == null) {
-            return;
-        }
-
-        String packageName = packageNameTree.toString();
-        packageOfCurrentCompilationUnit = packageDependencies.getPackage(packageName);
-
-        if (!packageOfCurrentCompilationUnit.isConfigured()) {
-            reportUnconfiguredPackageIfNeeded(tree, packageName);
-        }
-    }
-
-    private void reportUnconfiguredPackageIfNeeded(CompilationUnitTree tree, String packageName) {
-        boolean reportedBefore = Boolean.TRUE.equals(reportedUnconfiguredPackages.get(packageName));
-
-        if (!reportedBefore) {
-            com.sun.tools.javac.tree.JCTree jcTree = (com.sun.tools.javac.tree.JCTree)tree;
-
-            if (unconfiguredPackageReportingPolicy == ReportingPolicy.ERROR) {
-                log.error(jcTree.pos, DeptectiveMessages.PACKAGE_NOT_CONFIGURED, packageName);
-            }
-            else {
-                log.strictWarning(jcTree, DeptectiveMessages.PACKAGE_NOT_CONFIGURED, packageName);
-            }
-
-            reportedUnconfiguredPackages.put(packageName, true);
-        }
     }
 
     //    @Override
@@ -202,33 +155,6 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
     }
 
     protected void checkPackageAccess(Tree node, String qualifiedName) {
-        com.sun.tools.javac.tree.JCTree jcTree = (com.sun.tools.javac.tree.JCTree)node;
-
-        if ("java.lang".equals(qualifiedName)) {
-            return;
-        }
-
-        if (packageDependencies.isWhitelisted(qualifiedName)) {
-            return;
-        }
-
-        if (!packageOfCurrentCompilationUnit.isConfigured()) {
-            return;
-        }
-
-        if (packageOfCurrentCompilationUnit.getName().equals(qualifiedName)) {
-            return;
-        }
-
-        if (qualifiedName.isEmpty() || packageOfCurrentCompilationUnit.reads(qualifiedName)) {
-            return;
-        }
-
-        if (reportingPolicy == ReportingPolicy.ERROR) {
-            log.error(jcTree.pos, DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY, packageOfCurrentCompilationUnit, qualifiedName);
-        }
-        else {
-            log.strictWarning(jcTree, DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY, packageOfCurrentCompilationUnit, qualifiedName);
-        }
+        packageReferenceHandler.onPackageReference(node, qualifiedName);
     }
 }

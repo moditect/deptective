@@ -15,24 +15,12 @@
  */
 package org.moditect.deptective;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 import java.util.ResourceBundle;
-
-import javax.tools.FileObject;
-import javax.tools.JavaFileManager;
-import javax.tools.StandardLocation;
 
 import org.moditect.deptective.internal.DeptectiveMessages;
 import org.moditect.deptective.internal.DeptectiveOptions;
 import org.moditect.deptective.internal.DeptectiveTreeVisitor;
-import org.moditect.deptective.internal.model.ConfigParser;
-import org.moditect.deptective.internal.model.PackageDependencies;
+import org.moditect.deptective.internal.PackageReferenceHandler;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.JavacTask;
@@ -43,7 +31,6 @@ import com.sun.tools.javac.api.BasicJavacTask;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.JavacMessages;
-import com.sun.tools.javac.util.Log;
 
 public class DeptectivePlugin implements Plugin {
 
@@ -64,14 +51,11 @@ public class DeptectivePlugin implements Plugin {
         messages.add(l -> ResourceBundle.getBundle(DeptectiveMessages.class.getName(), l));
 
         DeptectiveOptions options = new DeptectiveOptions(JavacProcessingEnvironment.instance(context).getOptions());
-        PackageDependencies config = getConfig(context, options);
-        Map<String, Boolean> reportedUnconfiguredPackages = new HashMap<>();
 
-        if (config == null) {
-            Log log = context.get(Log.logKey);
-            log.error(DeptectiveMessages.NO_DEPTECTIVE_CONFIG_FOUND);
-        }
-        else {
+        PackageReferenceHandler handler = options.getPluginTask()
+                .getPackageReferenceHandler(options, context);
+
+        if (handler.configIsValid()) {
             task.addTaskListener(new TaskListener() {
 
                 @Override
@@ -82,49 +66,10 @@ public class DeptectivePlugin implements Plugin {
                 public void finished(TaskEvent e) {
                     if(e.getKind().equals(TaskEvent.Kind.ANALYZE)) {
                         CompilationUnitTree compilationUnit = e.getCompilationUnit();
-                        new DeptectiveTreeVisitor(config, options, task, reportedUnconfiguredPackages).scan(compilationUnit, null);
+                        new DeptectiveTreeVisitor(options, task, handler).scan(compilationUnit, null);
                     }
                 }
             });
         }
-
-    }
-
-    private PackageDependencies getConfig(Context context, DeptectiveOptions options) {
-        try {
-            InputStream inputStream = getConfig(options.getConfigFilePath(), context);
-
-            if (inputStream == null) {
-                return null;
-            }
-
-            try (InputStream is = inputStream) {
-                return new ConfigParser(is).getPackageDependencies();
-            }
-        }
-        catch(Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private InputStream getConfig(Optional<Path> configFile, Context context) {
-        try {
-            if (configFile.isPresent()) {
-                    return Files.newInputStream(configFile.get());
-            }
-            else {
-                JavaFileManager jfm = context.get(JavaFileManager.class);
-                FileObject file = jfm.getFileForInput(StandardLocation.SOURCE_PATH, "", "deptective.json");
-
-                if (file != null) {
-                    return file.openInputStream();
-                }
-            }
-        }
-        catch (IOException e) {
-            throw new RuntimeException("Failed to load Deptective configuration file", e);
-        }
-
-        return null;
     }
 }

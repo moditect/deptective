@@ -74,4 +74,18 @@ public class DeptectiveOptions {
             return ReportingPolicy.WARN;
         }
     }
+
+    /**
+     * Returns the task to be performed by the plug-in.
+     */
+    public PluginTask getPluginTask() {
+        String mode = options.get("deptective.mode");
+
+        if (mode != null) {
+            return PluginTask.valueOf(mode.trim().toUpperCase());
+        }
+        else {
+            return PluginTask.VALIDATE;
+        }
+    }
 }
