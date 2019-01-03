@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -27,8 +29,8 @@ import javax.tools.JavaFileManager;
 import javax.tools.StandardLocation;
 
 import org.moditect.deptective.internal.DeptectiveMessages;
+import org.moditect.deptective.internal.DeptectiveOptions;
 import org.moditect.deptective.internal.DeptectiveTreeVisitor;
-import org.moditect.deptective.internal.ReportingPolicy;
 import org.moditect.deptective.internal.model.ConfigParser;
 import org.moditect.deptective.internal.model.PackageDependencies;
 
@@ -62,16 +64,14 @@ public class DeptectivePlugin implements Plugin {
         messages.add(l -> ResourceBundle.getBundle(DeptectiveMessages.class.getName(), l));
 
         DeptectiveOptions options = new DeptectiveOptions(JavacProcessingEnvironment.instance(context).getOptions());
-
         PackageDependencies config = getConfig(context, options);
+        Map<String, Boolean> reportedUnconfiguredPackages = new HashMap<>();
 
         if (config == null) {
             Log log = context.get(Log.logKey);
             log.error(DeptectiveMessages.NO_DEPTECTIVE_CONFIG_FOUND);
         }
         else {
-            ReportingPolicy reportingPolicy = options.getReportingPolicy();
-
             task.addTaskListener(new TaskListener() {
 
                 @Override
@@ -82,7 +82,7 @@ public class DeptectivePlugin implements Plugin {
                 public void finished(TaskEvent e) {
                     if(e.getKind().equals(TaskEvent.Kind.ANALYZE)) {
                         CompilationUnitTree compilationUnit = e.getCompilationUnit();
-                        new DeptectiveTreeVisitor(config, reportingPolicy, task).scan(compilationUnit, null);
+                        new DeptectiveTreeVisitor(config, options, task, reportedUnconfiguredPackages).scan(compilationUnit, null);
                     }
                 }
             });

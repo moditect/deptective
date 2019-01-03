@@ -64,7 +64,9 @@ public class PackageDependencies {
             return null;
         }
 
-        return packagesByName.get(qualifiedName);
+        Package pakkage = packagesByName.get(qualifiedName);
+
+        return pakkage != null ? pakkage : Package.UNCONFIGURED;
     }
 
     @Override

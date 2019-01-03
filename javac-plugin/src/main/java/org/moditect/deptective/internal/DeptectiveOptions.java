@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.moditect.deptective;
+package org.moditect.deptective.internal;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -21,9 +21,14 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
-import org.moditect.deptective.internal.ReportingPolicy;
-
-class DeptectiveOptions {
+/**
+ * The options supported by the Deptective plug-in. To be given as annotation
+ * processor options ("-Adeptective.someoption=..."), as that's the only way to
+ * pass any options unknown to javac itself.
+ *
+ * @author Gunnar Morling
+ */
+public class DeptectiveOptions {
 
     private final Map<String, String> options;
 
@@ -42,6 +47,9 @@ class DeptectiveOptions {
         }
     }
 
+    /**
+     * Returns the policy for reporting illegal package references.
+     */
     public ReportingPolicy getReportingPolicy() {
         String policy = options.get("deptective.reportingpolicy");
 
@@ -50,6 +58,20 @@ class DeptectiveOptions {
         }
         else {
             return ReportingPolicy.ERROR;
+        }
+    }
+
+    /**
+     * Returns the policy for reporting unconfigured packages.
+     */
+    public ReportingPolicy getUnconfiguredPackageReportingPolicy() {
+        String policy = options.get("deptective.unconfigured_package_reporting_policy");
+
+        if (policy != null) {
+            return ReportingPolicy.valueOf(policy.trim().toUpperCase());
+        }
+        else {
+            return ReportingPolicy.WARN;
         }
     }
 }
