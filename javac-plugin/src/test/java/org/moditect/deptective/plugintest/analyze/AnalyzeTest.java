@@ -58,7 +58,7 @@ public class AnalyzeTest extends PluginTestBase {
                 "      \"reads\" : [ \"org.moditect.deptective.plugintest.analyze.qux\" ]\n" +
                 "    }, {\n" +
                 "      \"name\" : \"org.moditect.deptective.plugintest.analyze.foo\",\n" +
-                "      \"reads\" : [ \"java.lang\", \"java.math\", \"org.moditect.deptective.plugintest.analyze.qux\", \"org.moditect.deptective.plugintest.whitelist.bar\" ]\n" +
+                "      \"reads\" : [ \"java.math\", \"org.moditect.deptective.plugintest.analyze.qux\", \"org.moditect.deptective.plugintest.whitelist.bar\" ]\n" +
                 "    } ],\n" +
                 "    \"whitelisted\" : [ ]\n" +
                 "  }]";

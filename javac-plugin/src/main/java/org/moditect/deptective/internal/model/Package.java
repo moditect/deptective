@@ -53,7 +53,7 @@ public class Package {
         }
 
         private void addRead(String read) {
-            if (!read.isEmpty() && !read.equals(name)) {
+            if (!read.isEmpty() && !read.equals(name) && !read.equals("java.lang")) {
                 reads.add(read);
             }
         }
