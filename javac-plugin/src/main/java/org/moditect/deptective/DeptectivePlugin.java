@@ -17,11 +17,14 @@ package org.moditect.deptective;
 
 import java.util.ResourceBundle;
 
+import javax.tools.JavaFileManager;
+
 import org.moditect.deptective.internal.DeptectiveOptions;
 import org.moditect.deptective.internal.DeptectiveTreeVisitor;
 import org.moditect.deptective.internal.PackageReferenceHandler;
 import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
+import org.moditect.deptective.internal.model.ConfigLoader;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.JavacTask;
@@ -56,7 +59,11 @@ public class DeptectivePlugin implements Plugin {
         Log log = Log.getInstance(context.get(com.sun.tools.javac.util.Log.logKey));
 
         PackageReferenceHandler handler = options.getPluginTask()
-                .getPackageReferenceHandler(options, context, log);
+                .getPackageReferenceHandler(
+                        options,
+                        () -> new ConfigLoader().getConfig(options.getConfigFilePath(), context.get(JavaFileManager.class)),
+                        log
+                );
 
         if (handler.configIsValid()) {
             task.addTaskListener(new TaskListener() {

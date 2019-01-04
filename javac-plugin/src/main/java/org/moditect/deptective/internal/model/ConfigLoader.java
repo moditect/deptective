@@ -25,13 +25,11 @@ import javax.tools.FileObject;
 import javax.tools.JavaFileManager;
 import javax.tools.StandardLocation;
 
-import com.sun.tools.javac.util.Context;
-
 public class ConfigLoader {
 
-    public PackageDependencies getConfig(Optional<Path> configFile, Context context) {
+    public PackageDependencies getConfig(Optional<Path> configFile, JavaFileManager jfm) {
         try {
-            InputStream inputStream = getConfigStream(configFile, context);
+            InputStream inputStream = getConfigStream(configFile, jfm);
 
             if (inputStream == null) {
                 return null;
@@ -46,13 +44,12 @@ public class ConfigLoader {
         }
     }
 
-    private InputStream getConfigStream(Optional<Path> configFile, Context context) {
+    private InputStream getConfigStream(Optional<Path> configFile, JavaFileManager jfm) {
         try {
             if (configFile.isPresent()) {
                     return Files.newInputStream(configFile.get());
             }
             else {
-                JavaFileManager jfm = context.get(JavaFileManager.class);
                 FileObject file = jfm.getFileForInput(StandardLocation.SOURCE_PATH, "", "deptective.json");
 
                 if (file != null) {

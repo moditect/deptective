@@ -15,15 +15,9 @@
  */
 package org.moditect.deptective.internal;
 
-import java.nio.file.Path;
-import java.util.Optional;
-
 import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
-import org.moditect.deptective.internal.model.ConfigLoader;
 import org.moditect.deptective.internal.model.PackageDependencies;
-
-import com.sun.tools.javac.util.Context;
 
 /**
  * Emits the given {@code deptective.json} as Dot file (GraphViz).
@@ -35,9 +29,9 @@ public class PackageReferenceVisualizer implements PackageReferenceHandler {
     private final Log log;
     private final PackageDependencies packageDependencies;
 
-    public PackageReferenceVisualizer(Context context, Optional<Path> configFile, Log log) {
+    public PackageReferenceVisualizer(PackageDependencies packageDependencies, Log log) {
         this.log = log;
-        this.packageDependencies = new ConfigLoader().getConfig(configFile, context);
+        this.packageDependencies = packageDependencies;
     }
 
     @Override

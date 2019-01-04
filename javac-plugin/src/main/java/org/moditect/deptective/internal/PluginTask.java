@@ -15,9 +15,10 @@
  */
 package org.moditect.deptective.internal;
 
-import org.moditect.deptective.internal.log.Log;
+import java.util.function.Supplier;
 
-import com.sun.tools.javac.util.Context;
+import org.moditect.deptective.internal.log.Log;
+import org.moditect.deptective.internal.model.PackageDependencies;
 
 /**
  * Describes the {@link PackageReferenceHandler} to be invoked when traversing
@@ -29,10 +30,9 @@ public enum PluginTask {
 
     VALIDATE {
         @Override
-        public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Context context, Log log) {
+        public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Supplier<PackageDependencies> configSupplier, Log log) {
             return new PackageReferenceValidator(
-                    context,
-                    options.getConfigFilePath(),
+                    configSupplier.get(),
                     options.getReportingPolicy(),
                     options.getUnconfiguredPackageReportingPolicy(),
                     log
@@ -41,20 +41,19 @@ public enum PluginTask {
     },
     VISUALIZE {
         @Override
-        public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Context context, Log log) {
+        public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Supplier<PackageDependencies> configSupplier, Log log) {
             return new PackageReferenceVisualizer(
-                    context,
-                    options.getConfigFilePath(),
+                    configSupplier.get(),
                     log
           );
         }
     },
     ANALYZE {
         @Override
-        public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Context context, Log log) {
+        public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Supplier<PackageDependencies> configSupplier, Log log) {
             return new PackageReferenceCollector(log);
         }
     };
 
-    public abstract PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Context context, Log log);
+    public abstract PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Supplier<PackageDependencies> configSupplier, Log log);
 }

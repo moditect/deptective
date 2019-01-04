@@ -15,21 +15,17 @@
  */
 package org.moditect.deptective.internal;
 
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
-import org.moditect.deptective.internal.model.ConfigLoader;
 import org.moditect.deptective.internal.model.Package;
 import org.moditect.deptective.internal.model.PackageDependencies;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.Tree;
-import com.sun.tools.javac.util.Context;
 
 /**
  * Validates a project's package relationships against a given description of
@@ -47,10 +43,10 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
 
     private Package currentPackage;
 
-    public PackageReferenceValidator(Context context, Optional<Path> configFile,
+    public PackageReferenceValidator(PackageDependencies packageDependencies,
             ReportingPolicy reportingPolicy, ReportingPolicy unconfiguredPackageReportingPolicy, Log log) {
         this.log = log;
-        this.packageDependencies = new ConfigLoader().getConfig(configFile, context);
+        this.packageDependencies = packageDependencies;
         this.reportingPolicy = reportingPolicy;
         this.unconfiguredPackageReportingPolicy = unconfiguredPackageReportingPolicy;
         this.reportedUnconfiguredPackages = new HashMap<>();
