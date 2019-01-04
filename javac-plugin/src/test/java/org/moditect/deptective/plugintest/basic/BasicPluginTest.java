@@ -93,7 +93,7 @@ public class BasicPluginTest extends PluginTestBase {
                 .filter(e -> e.getMessage(null).indexOf("must not access org.moditect.deptective.plugintest.basic.bar")==-1)
                 .collect(Collectors.toList());
 
-        assertThat("Test-Class 'Foo' should not have any invalid dependencys beside those to 'org.moditect.deptective.plugintest.basic.bar*'",
+        assertThat("Test-Class 'Foo' should not have any invalid dependencies beside those to 'org.moditect.deptective.plugintest.basic.bar*'",
                 collect, Is.is(Lists.emptyList()));
     }
 
