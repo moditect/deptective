@@ -13,11 +13,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.moditect.deptective.internal;
+package org.moditect.deptective.internal.handler;
 
 import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
 import org.moditect.deptective.internal.model.PackageDependencies;
+import org.moditect.deptective.internal.options.ReportingPolicy;
 
 /**
  * Emits the given {@code deptective.json} as Dot file (GraphViz).

@@ -17,7 +17,7 @@ package org.moditect.deptective.internal.log;
 
 import javax.tools.JavaFileObject;
 
-import org.moditect.deptective.internal.ReportingPolicy;
+import org.moditect.deptective.internal.options.ReportingPolicy;
 
 import com.sun.tools.javac.util.JCDiagnostic.DiagnosticPosition;
 import com.sun.tools.javac.util.JCDiagnostic.Note;

@@ -22,6 +22,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+import org.moditect.deptective.internal.handler.PackageReferenceHandler;
 import org.moditect.deptective.internal.log.Log;
 
 import com.sun.source.tree.AnnotationTree;

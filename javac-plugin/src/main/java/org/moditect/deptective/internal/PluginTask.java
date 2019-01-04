@@ -17,8 +17,13 @@ package org.moditect.deptective.internal;
 
 import java.util.function.Supplier;
 
+import org.moditect.deptective.internal.handler.PackageReferenceCollector;
+import org.moditect.deptective.internal.handler.PackageReferenceHandler;
+import org.moditect.deptective.internal.handler.PackageReferenceValidator;
+import org.moditect.deptective.internal.handler.PackageReferenceVisualizer;
 import org.moditect.deptective.internal.log.Log;
 import org.moditect.deptective.internal.model.PackageDependencies;
+import org.moditect.deptective.internal.options.DeptectiveOptions;
 
 /**
  * Describes the {@link PackageReferenceHandler} to be invoked when traversing

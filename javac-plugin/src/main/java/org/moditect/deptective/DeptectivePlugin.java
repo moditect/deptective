@@ -19,12 +19,12 @@ import java.util.ResourceBundle;
 
 import javax.tools.JavaFileManager;
 
-import org.moditect.deptective.internal.DeptectiveOptions;
 import org.moditect.deptective.internal.DeptectiveTreeVisitor;
-import org.moditect.deptective.internal.PackageReferenceHandler;
+import org.moditect.deptective.internal.handler.PackageReferenceHandler;
 import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
 import org.moditect.deptective.internal.model.ConfigLoader;
+import org.moditect.deptective.internal.options.DeptectiveOptions;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.JavacTask;

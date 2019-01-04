@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.moditect.deptective.internal;
+package org.moditect.deptective.internal.options;
 
 /**
  * How illegal package dependencies should be reported.

@@ -13,13 +13,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.moditect.deptective.internal;
+package org.moditect.deptective.internal.options;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+
+import org.moditect.deptective.internal.PluginTask;
 
 /**
  * The options supported by the Deptective plug-in. To be given as annotation
