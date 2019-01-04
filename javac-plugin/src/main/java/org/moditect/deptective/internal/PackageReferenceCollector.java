@@ -15,14 +15,13 @@
  */
 package org.moditect.deptective.internal;
 
+import org.moditect.deptective.internal.log.DeptectiveMessages;
+import org.moditect.deptective.internal.log.Log;
 import org.moditect.deptective.internal.model.PackageDependencies;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.Tree;
-import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.JCDiagnostic.Note;
-import com.sun.tools.javac.util.Log;
 
 /**
  * A handler that produces a candidate {@code deptective.json} file based on the
@@ -37,8 +36,8 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
 
     private String currentPackageName;
 
-    public PackageReferenceCollector(Context context) {
-        this.log = context.get(Log.logKey);
+    public PackageReferenceCollector(Log log) {
+        this.log = log;
         builder = PackageDependencies.builder();
     }
 
@@ -62,12 +61,6 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
     @Override
     public void onCompletingCompilation() {
         log.useSource(null);
-        log.note(
-                new Note(
-                        "compiler",
-                        DeptectiveMessages.GENERATED_CONFIG, System.lineSeparator(),
-                        builder.build().toJson()
-                )
-        );
+        log.note(DeptectiveMessages.GENERATED_CONFIG, System.lineSeparator(), builder.build().toJson());
     }
 }

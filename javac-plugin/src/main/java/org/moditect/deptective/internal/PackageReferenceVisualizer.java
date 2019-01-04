@@ -18,12 +18,12 @@ package org.moditect.deptective.internal;
 import java.nio.file.Path;
 import java.util.Optional;
 
+import org.moditect.deptective.internal.log.DeptectiveMessages;
+import org.moditect.deptective.internal.log.Log;
 import org.moditect.deptective.internal.model.ConfigLoader;
 import org.moditect.deptective.internal.model.PackageDependencies;
 
 import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.JCDiagnostic.Note;
-import com.sun.tools.javac.util.Log;
 
 /**
  * Emits the given {@code deptective.json} as Dot file (GraphViz).
@@ -35,15 +35,15 @@ public class PackageReferenceVisualizer implements PackageReferenceHandler {
     private final Log log;
     private final PackageDependencies packageDependencies;
 
-    public PackageReferenceVisualizer(Context context, Optional<Path> configFile) {
-        this.log = context.get(Log.logKey);
+    public PackageReferenceVisualizer(Context context, Optional<Path> configFile, Log log) {
+        this.log = log;
         this.packageDependencies = new ConfigLoader().getConfig(configFile, context);
     }
 
     @Override
     public boolean configIsValid() {
         if (packageDependencies == null) {
-            log.error(DeptectiveMessages.NO_DEPTECTIVE_CONFIG_FOUND);
+            log.report(ReportingPolicy.ERROR, DeptectiveMessages.NO_DEPTECTIVE_CONFIG_FOUND);
             return false;
         }
 
@@ -53,12 +53,6 @@ public class PackageReferenceVisualizer implements PackageReferenceHandler {
     @Override
     public void onCompletingCompilation() {
         log.useSource(null);
-        log.note(
-                new Note(
-                        "compiler",
-                        DeptectiveMessages.GENERATED_CONFIG, System.lineSeparator(),
-                        packageDependencies.toDot()
-                )
-        );
+        log.note(DeptectiveMessages.GENERATED_DOT_REPRESENTATION, System.lineSeparator(), packageDependencies.toDot());
     }
 }

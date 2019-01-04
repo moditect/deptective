@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.moditect.deptective.internal.log.DeptectiveMessages;
+import org.moditect.deptective.internal.log.Log;
 import org.moditect.deptective.internal.model.ConfigLoader;
 import org.moditect.deptective.internal.model.Package;
 import org.moditect.deptective.internal.model.PackageDependencies;
@@ -28,7 +30,6 @@ import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.Tree;
 import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.Log;
 
 /**
  * Validates a project's package relationships against a given description of
@@ -47,8 +48,8 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
     private Package currentPackage;
 
     public PackageReferenceValidator(Context context, Optional<Path> configFile,
-            ReportingPolicy reportingPolicy, ReportingPolicy unconfiguredPackageReportingPolicy) {
-        this.log = context.get(Log.logKey);
+            ReportingPolicy reportingPolicy, ReportingPolicy unconfiguredPackageReportingPolicy, Log log) {
+        this.log = log;
         this.packageDependencies = new ConfigLoader().getConfig(configFile, context);
         this.reportingPolicy = reportingPolicy;
         this.unconfiguredPackageReportingPolicy = unconfiguredPackageReportingPolicy;
@@ -58,7 +59,7 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
     @Override
     public boolean configIsValid() {
         if (packageDependencies == null) {
-            log.error(DeptectiveMessages.NO_DEPTECTIVE_CONFIG_FOUND);
+            log.report(ReportingPolicy.ERROR, DeptectiveMessages.NO_DEPTECTIVE_CONFIG_FOUND);
             return false;
         }
 
@@ -84,8 +85,6 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
 
     @Override
     public void onPackageReference(Tree referencingNode, String referencedPackageName) {
-        com.sun.tools.javac.tree.JCTree jcTree = (com.sun.tools.javac.tree.JCTree)referencingNode;
-
         if ("java.lang".equals(referencedPackageName)) {
             return;
         }
@@ -106,26 +105,24 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
             return;
         }
 
-        if (reportingPolicy == ReportingPolicy.ERROR) {
-            log.error(jcTree.pos, DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY, currentPackage, referencedPackageName);
-        }
-        else {
-            log.strictWarning(jcTree, DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY, currentPackage, referencedPackageName);
-        }
+        log.report(
+                reportingPolicy,
+                (com.sun.tools.javac.tree.JCTree)referencingNode,
+                DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY,
+                currentPackage,
+                referencedPackageName
+        );
     }
 
     private void reportUnconfiguredPackageIfNeeded(CompilationUnitTree tree, String packageName) {
         boolean reportedBefore = Boolean.TRUE.equals(reportedUnconfiguredPackages.get(packageName));
 
         if (!reportedBefore) {
-            com.sun.tools.javac.tree.JCTree jcTree = (com.sun.tools.javac.tree.JCTree)tree;
-
-            if (unconfiguredPackageReportingPolicy == ReportingPolicy.ERROR) {
-                log.error(jcTree.pos, DeptectiveMessages.PACKAGE_NOT_CONFIGURED, packageName);
-            }
-            else {
-                log.strictWarning(jcTree, DeptectiveMessages.PACKAGE_NOT_CONFIGURED, packageName);
-            }
+            log.report(
+                    unconfiguredPackageReportingPolicy,
+                    (com.sun.tools.javac.tree.JCTree)tree,
+                    DeptectiveMessages.PACKAGE_NOT_CONFIGURED, packageName
+            );
 
             reportedUnconfiguredPackages.put(packageName, true);
         }

@@ -15,6 +15,8 @@
  */
 package org.moditect.deptective.internal;
 
+import org.moditect.deptective.internal.log.Log;
+
 import com.sun.tools.javac.util.Context;
 
 /**
@@ -27,30 +29,32 @@ public enum PluginTask {
 
     VALIDATE {
         @Override
-        public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Context context) {
+        public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Context context, Log log) {
             return new PackageReferenceValidator(
                     context,
                     options.getConfigFilePath(),
                     options.getReportingPolicy(),
-                    options.getUnconfiguredPackageReportingPolicy()
+                    options.getUnconfiguredPackageReportingPolicy(),
+                    log
           );
         }
     },
     VISUALIZE {
         @Override
-        public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Context context) {
+        public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Context context, Log log) {
             return new PackageReferenceVisualizer(
                     context,
-                    options.getConfigFilePath()
+                    options.getConfigFilePath(),
+                    log
           );
         }
     },
     ANALYZE {
         @Override
-        public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Context context) {
-            return new PackageReferenceCollector(context);
+        public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Context context, Log log) {
+            return new PackageReferenceCollector(log);
         }
     };
 
-    public abstract PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Context context);
+    public abstract PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Context context, Log log);
 }

@@ -17,10 +17,11 @@ package org.moditect.deptective;
 
 import java.util.ResourceBundle;
 
-import org.moditect.deptective.internal.DeptectiveMessages;
 import org.moditect.deptective.internal.DeptectiveOptions;
 import org.moditect.deptective.internal.DeptectiveTreeVisitor;
 import org.moditect.deptective.internal.PackageReferenceHandler;
+import org.moditect.deptective.internal.log.DeptectiveMessages;
+import org.moditect.deptective.internal.log.Log;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.JavacTask;
@@ -52,8 +53,10 @@ public class DeptectivePlugin implements Plugin {
 
         DeptectiveOptions options = new DeptectiveOptions(JavacProcessingEnvironment.instance(context).getOptions());
 
+        Log log = Log.getInstance(context.get(com.sun.tools.javac.util.Log.logKey));
+
         PackageReferenceHandler handler = options.getPluginTask()
-                .getPackageReferenceHandler(options, context);
+                .getPackageReferenceHandler(options, context, log);
 
         if (handler.configIsValid()) {
             task.addTaskListener(new TaskListener() {
@@ -66,7 +69,7 @@ public class DeptectivePlugin implements Plugin {
                 public void finished(TaskEvent e) {
                     if(e.getKind().equals(TaskEvent.Kind.ANALYZE)) {
                         CompilationUnitTree compilationUnit = e.getCompilationUnit();
-                        new DeptectiveTreeVisitor(options, task, handler).scan(compilationUnit, null);
+                        new DeptectiveTreeVisitor(task, log, handler).scan(compilationUnit, null);
                     }
                     else if (e.getKind() == TaskEvent.Kind.COMPILATION) {
                         handler.onCompletingCompilation();

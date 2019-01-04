@@ -22,6 +22,8 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+import org.moditect.deptective.internal.log.Log;
+
 import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
@@ -35,9 +37,6 @@ import com.sun.source.tree.VariableTree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.TreePathScanner;
 import com.sun.source.util.Trees;
-import com.sun.tools.javac.api.BasicJavacTask;
-import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.Log;
 
 public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
 
@@ -47,13 +46,11 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
     private final Trees trees;
     private final Types types;
 
-    public DeptectiveTreeVisitor(DeptectiveOptions options, JavacTask task,
-            PackageReferenceHandler packageReferenceHandler) {
+    public DeptectiveTreeVisitor(JavacTask task, Log log, PackageReferenceHandler packageReferenceHandler) {
         elements = task.getElements();
         types = task.getTypes();
         trees = Trees.instance(task);
-        Context context = ((BasicJavacTask) task).getContext();
-        this.log = Log.instance(context);
+        this.log = log;
         this.packageReferenceHandler = packageReferenceHandler;
     }
 
