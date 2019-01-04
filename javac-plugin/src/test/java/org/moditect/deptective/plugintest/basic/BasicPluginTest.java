@@ -16,7 +16,16 @@
 package org.moditect.deptective.plugintest.basic;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
+import static org.junit.Assert.assertThat;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.tools.Diagnostic;
+import javax.tools.JavaFileObject;
+
+import org.assertj.core.util.Lists;
+import org.hamcrest.core.Is;
 import org.junit.Test;
 import org.moditect.deptective.plugintest.PluginTestBase;
 import org.moditect.deptective.plugintest.basic.barctorcall.BarCtorCall;
@@ -62,6 +71,32 @@ public class BasicPluginTest extends PluginTestBase {
                 .compile(forTestClass(FooWithoutErrors.class));
         assertThat(compilation).succeeded();
     }
+
+    @Test
+    public void shouldDetectInvalidClassAssignment() {
+        Compilation compilation = compile();
+        assertThat(compilation).failed();
+
+        assertThat(compilation).hadErrorContaining(
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barclass"));
+    }
+
+    @Test
+    public void shouldNotReportValidReferences() {
+        // in our Testclass all "wanted" illegal references point to "org.moditect.deptective.plugintest.basic.bar*"
+        // so Deptective should only return those
+
+        Compilation compilation = compile();
+        assertThat(compilation).failed();
+
+        List<Diagnostic<? extends JavaFileObject>> collect = compilation.errors().stream()
+                .filter(e -> e.getMessage(null).indexOf("must not access org.moditect.deptective.plugintest.basic.bar")==-1)
+                .collect(Collectors.toList());
+
+        assertThat("Test-Class 'Foo' should not have any invalid dependencies beside those to 'org.moditect.deptective.plugintest.basic.bar*'",
+                collect, Is.is(Lists.emptyList()));
+    }
+
 
     @Test
     public void shouldDetectInvalidSuperClass() {
@@ -151,6 +186,18 @@ public class BasicPluginTest extends PluginTestBase {
                 packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barclazzan"));
         assertThat(compilation).hadErrorContaining(
                 packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barfieldan"));
+    }
+
+    @Test
+    public void shouldDetectInvalidAnnotationParameterReferences() {
+        Compilation compilation = compile();
+        assertThat(compilation).failed();
+
+        assertThat(compilation).hadErrorContaining(
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barclass"));
+
+        assertThat(compilation).hadErrorContaining(
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.baranparam"));
     }
 
     @Test
