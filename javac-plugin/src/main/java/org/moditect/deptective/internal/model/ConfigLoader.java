@@ -58,6 +58,12 @@ public class ConfigLoader {
                 if (file != null) {
                     return file.openInputStream();
                 }
+
+                file = jfm.getFileForInput(StandardLocation.CLASS_PATH, "", "META-INF/deptective.json");
+
+                if (file != null) {
+                    return file.openInputStream();
+                }
             }
         }
         catch (IOException e) {

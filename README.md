@@ -59,7 +59,8 @@ The `*` character can be used as a wildcard, so e.g. `java.util*` will whitelist
 
 _Note:_ access to the package `java.lang` is always allowed.
 
-Place the configuration file in the root of your source directory (e.g. _src/main/java_ for Maven projects).
+Place the configuration file in the root of your source directory (e.g. _src/main/java_ for Maven projects)
+or on the classpath at _META-INF/deptective.json_ (e.g. _META-INF/src/main/resources/deptective.json_ for Maven projects).
 Alternatively you can specify the location of the config file using the `-Adeptective.configfile` option (see below).
 
 Add _deptective-javac-plugin-1.0-SNAPSHOT.jar_ to your project's annotation processor path
