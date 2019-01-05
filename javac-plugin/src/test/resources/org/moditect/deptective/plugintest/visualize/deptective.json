@@ -1,0 +1,21 @@
+{
+    "packages" : [
+        {
+            "name" : "org.moditect.deptective.plugintest.visualize.bar",
+            "reads" : [
+                "org.moditect.deptective.plugintest.visualize.qux"
+            ]
+        },
+        {
+            "name" : "org.moditect.deptective.plugintest.visualize.qux"
+        },
+        {
+            "name" : "org.moditect.deptective.plugintest.visualize.foo",
+            "reads" : [
+                "org.moditect.deptective.plugintest.visualize.bar",
+                "org.moditect.deptective.plugintest.visualize.qux"
+            ]
+        }
+    ],
+    "whitelisted" : [ "java.math" ]
+}
