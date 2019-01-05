@@ -7,8 +7,8 @@ and fails the compilation when detecting any unintentional dependencies.
 * [Requirements](#requirements)
 * [Usage](#usage)
 * [Structure of <em>deptective.json</em>](#structure-of-deptectivejson)
-   * [Obtaining Deptective via Jitpack](#obtaining-deptective-via-jitpack)
    * [Configuration Options](#configuration-options)
+   * [Obtaining Deptective via Jitpack](#obtaining-deptective-via-jitpack)
 * [Contributing and Development](#contributing-and-development)
    * [IDE Set-Up](#ide-set-up)
 * [Related Work](#related-work)
@@ -100,6 +100,17 @@ When using Maven, the following configuration can be used:
 
 See _integration-test/pom.xml_ for a complete example.
 
+### Configuration Options
+
+🕵 The following options can be provided when running the plug-in:
+
+* `-Adeptective.config_file=path/to/deptective.json`: Path of the configuration file in the file system
+* `-Adeptective.reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when spotting any illegal package dependencies (defaults to `ERROR`)
+* `-Adeptective.unconfigured_package_reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when detecting a package that's not configured in the config file (defaults to `WARN`)
+* `-Adeptective.mode=(ANALYZE|VALIDATE|VISUALIZE)`: Whether the plug-in should validate the packages of the compiled package against the _deptective.json_ file (`VALIDATE`), whether the plug-in should visualize the configured _deptective.json_ file in DOT/GraphViz format (`VISUALIZE`) or whether it should generate a template for that file based on the current actual package relationships (`ANALYZE`). The latter can be useful when introducing Deptective into an existing code base where writing the configuration from scratch might be too tedious. Generating the configuration from the current "is" state and iteratively refining it into an intended target state can be a useful approach in that case. Note then when using Deptective via the Maven compiler plug-in, you should make sure to set `<fork>` to `false` and `<showWarnings>` to `true` as otherwise the Maven compiler plug-in will not display the output produced by Deptective. Defaults to `VALIDATE`
+* `Adeptective.whitelisted=...`: A comma-separated list of whitelist package patterns which will be applied in `ANALYZE` mode. Any reference to a whitelisted package will then not be added to the `reads` section of the referencing package in the generated descriptor template.
+The special value `*ALL_EXTERNAL*` can be used to automatically whitelist all packages which are not part of the current compilation (i.e. packages from dependencies). This can be useful if you're only interested in managing the relationships amongst the current project's packages themselves but not the relationships to external packages.
+
 ### Obtaining Deptective via Jitpack
 
 🕵 Deptective is not yet available in Maven Central.
@@ -119,17 +130,6 @@ Add the following repository to your project's _pom.xml_ or your Maven _settings
 Then reference the Deptective JAR using the GAV coordinates `com.github.moditect.deptective:deptective-javac-plugin:master-SNAPSHOT`.
 
 See _jitpack-example/pom.xml_ for a complete example.
-
-### Configuration Options
-
-🕵 The following options can be provided when running the plug-in:
-
-* `-Adeptective.config_file=path/to/deptective.json`: Path of the configuration file in the file system
-* `-Adeptective.reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when spotting any illegal package dependencies (defaults to `ERROR`)
-* `-Adeptective.unconfigured_package_reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when detecting a package that's not configured in the config file (defaults to `WARN`)
-* `-Adeptective.mode=(ANALYZE|VALIDATE|VISUALIZE)`: Whether the plug-in should validate the packages of the compiled package against the _deptective.json_ file (`VALIDATE`), whether the plug-in should visualize the configured _deptective.json_ file in DOT/GraphViz format (`VISUALIZE`) or whether it should generate a template for that file based on the current actual package relationships (`ANALYZE`). The latter can be useful when introducing Deptective into an existing code base where writing the configuration from scratch might be too tedious. Generating the configuration from the current "is" state and iteratively refining it into an intended target state can be a useful approach in that case. Note then when using Deptective via the Maven compiler plug-in, you should make sure to set `<fork>` to `false` and `<showWarnings>` to `true` as otherwise the Maven compiler plug-in will not display the output produced by Deptective. Defaults to `VALIDATE`
-* `Adeptective.whitelisted=...`: A comma-separated list of whitelist package patterns which will be applied in `ANALYZE` mode. Any reference to a whitelisted package will then not be added to the `reads` section of the referencing package in the generated descriptor template.
-The special value `*ALL_EXTERNAL*` can be used to automatically whitelist all packages which are not part of the current compilation (i.e. packages from dependencies). This can be useful if you're only interested in managing the relationships amongst the current project's packages themselves but not the relationships to external packages.
 
 ## Contributing and Development
 
@@ -165,6 +165,9 @@ Some related tools are:
 In contrast to Deptective it is not executed during compilation but via (JUnit) tests.
 * [JDepend](https://github.com/clarkware/jdepend) analyzes Java packages and produces metrics on them.
 * The Eclipse Java compiler allows to put access restrictions in place but they can only be used to limit access to types/packages in other JARs on the classpath, not to packages of the current compilation unit itself
+* [code-assert](https://github.com/nidi3/code-assert) allows to enforce dependency rules described in a Java DSL.
+Similarly to ArchUnit, these rules are executed as unit tests.
+* [Macker](https://innig.net/macker/) enforces architectural rules at build time via dedicated build tool plug-ins. (not actively maintained)
 
 ## License
 
