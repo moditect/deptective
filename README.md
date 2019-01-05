@@ -6,7 +6,8 @@ and fails the compilation when detecting any unintentional dependencies.
 
 * [Requirements](#requirements)
 * [Usage](#usage)
-* [Structure of <em>deptective.json</em>](#structure-of-deptectivejson)
+   * [Structure of <em>deptective.json</em>](#structure-of-deptectivejson)
+   * [Configuring the Java compiler](#configuring-the-java-compiler)
    * [Configuration Options](#configuration-options)
    * [Obtaining Deptective via Jitpack](#obtaining-deptective-via-jitpack)
 * [Contributing and Development](#contributing-and-development)
@@ -26,7 +27,7 @@ Support for _ecj_ may be added [later on](https://github.com/moditect/deptective
 
 🕵 Deptective is configured through a file _deptective.json_ which describes the allowed dependencies amongst the project's packages.
 
-## Structure of _deptective.json_
+### Structure of _deptective.json_
 
 🕵 The _deptective.json_ file is structured like this:
 
@@ -67,6 +68,8 @@ _Note:_ access to the package `java.lang` is always allowed.
 Place the configuration file in the root of your source directory (e.g. _src/main/java_ for Maven projects)
 or on the classpath at _META-INF/deptective.json_ (e.g. _META-INF/src/main/resources/deptective.json_ for Maven projects).
 Alternatively you can specify the location of the config file using the `-Adeptective.configfile` option (see below).
+
+### Configuring the Java compiler
 
 Add _deptective-javac-plugin-1.0-SNAPSHOT.jar_ to your project's annotation processor path
 and specify the option `-Xplugin:Deptective` when invoking _javac_.
