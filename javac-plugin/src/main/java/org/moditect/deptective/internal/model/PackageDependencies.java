@@ -18,6 +18,7 @@ package org.moditect.deptective.internal.model;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -61,8 +62,22 @@ public class PackageDependencies {
             builder.addReads(readPackage);
         }
 
-        public void addWhitelistedPackage(String pattern) {
-            this.whitelisted.add(new WhitelistedPackagePattern(pattern));
+        public void addWhitelistedPackage(WhitelistedPackagePattern pattern) {
+            if (pattern == null || pattern.toString().isEmpty()) {
+                return;
+            }
+
+            this.whitelisted.add(pattern);
+
+            for (Package.Builder pakkage : packagesByName.values()) {
+                Iterator<String> it = pakkage.getReads().iterator();
+                while(it.hasNext()) {
+                    String read = it.next();
+                    if (pattern.matches(read)) {
+                        it.remove();
+                    }
+                }
+            }
         }
     }
 
@@ -144,11 +159,14 @@ public class PackageDependencies {
         ObjectNode node = mapper.createObjectNode();
 
         node.put("name", pakkage.getName());
-        ArrayNode reads = node.putArray("reads");
-        pakkage.getReads()
+
+        if (!pakkage.getReads().isEmpty()) {
+            ArrayNode reads = node.putArray("reads");
+            pakkage.getReads()
             .stream()
             .sorted()
             .forEach(r -> reads.add(r));
+        }
 
         return node;
     }

@@ -16,7 +16,10 @@
 package org.moditect.deptective.internal.handler;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
@@ -38,17 +41,21 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
     private final Log log;
     private final PackageDependencies.Builder builder;
 
-    private String currentPackageName;
     private final List<WhitelistedPackagePattern> whitelistPatterns;
+    private final Set<String> packagesOfCurrentCompilation;
+    private final Set<String> referencedPackages;
+
+    private String currentPackageName;
+
 
     public PackageReferenceCollector(Log log, List<WhitelistedPackagePattern> whitelistPatterns) {
         this.log = log;
+
         this.whitelistPatterns = Collections.unmodifiableList(whitelistPatterns);
+        this.packagesOfCurrentCompilation = new HashSet<String>();
+        this.referencedPackages = new HashSet<String>();
 
         builder = PackageDependencies.builder();
-        for (WhitelistedPackagePattern string : whitelistPatterns) {
-            builder.addWhitelistedPackage(string.toString());
-        }
     }
 
     @Override
@@ -61,22 +68,41 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
         }
 
         currentPackageName = packageNameTree.toString();
+        packagesOfCurrentCompilation.add(currentPackageName);
     }
 
     @Override
     public void onPackageReference(Tree referencingNode, String referencedPackageName) {
-        for (WhitelistedPackagePattern whitelistedPackagePattern : whitelistPatterns) {
-            if (whitelistedPackagePattern.matches(referencedPackageName)) {
-                return;
-            }
-        }
-
+        referencedPackages.add(referencedPackageName);
         builder.addRead(currentPackageName, referencedPackageName);
     }
 
     @Override
     public void onCompletingCompilation() {
+        List<WhitelistedPackagePattern> effectiveWhitelistPatterns;
+
+        if (isWhitelistAllExternal()) {
+            Set<String> externalPackages = new HashSet<>(referencedPackages);
+            externalPackages.removeAll(packagesOfCurrentCompilation);
+            effectiveWhitelistPatterns = externalPackages.stream()
+                    .filter(p -> !p.equals("java.lang"))
+                    .map(WhitelistedPackagePattern::getPattern)
+                    .collect(Collectors.toList());
+        }
+        else {
+            effectiveWhitelistPatterns = whitelistPatterns;
+        }
+
+        for (WhitelistedPackagePattern whitelistedPackagePattern : effectiveWhitelistPatterns) {
+            // removes any explicit read to that package
+            builder.addWhitelistedPackage(whitelistedPackagePattern);
+        }
+
         log.useSource(null);
         log.note(DeptectiveMessages.GENERATED_CONFIG, System.lineSeparator(), builder.build().toJson());
+    }
+
+    private boolean isWhitelistAllExternal() {
+        return whitelistPatterns.contains(WhitelistedPackagePattern.ALL_EXTERNAL);
     }
 }

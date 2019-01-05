@@ -61,6 +61,10 @@ public class Package {
         public Package build() {
             return new Package(name, reads);
         }
+
+        public Set<String> getReads() {
+            return reads;
+        }
     }
 
     public static final Package UNCONFIGURED = new Package("__unconfigured__", Collections.emptySet(), false);

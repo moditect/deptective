@@ -102,7 +102,7 @@ public class DeptectiveOptions {
             String[] patterns = whitelisted.split(",");
             return Arrays.stream(patterns)
                 .map(String::trim)
-                .map(WhitelistedPackagePattern::new)
+                .map(WhitelistedPackagePattern::getPattern)
                 .collect(Collectors.toList());
         }
         else {

@@ -25,10 +25,21 @@ import java.util.regex.Pattern;
  */
 public class WhitelistedPackagePattern {
 
+    private static final String ALL_EXTERNAL_PATTERN = "*ALL_EXTERNAL*";
+    public static final WhitelistedPackagePattern ALL_EXTERNAL = new WhitelistedPackagePattern(ALL_EXTERNAL_PATTERN);
     private final Pattern pattern;
 
-    public WhitelistedPackagePattern(String pattern) {
+    private WhitelistedPackagePattern(String pattern) {
         this.pattern = Pattern.compile(pattern.replace("*", ".*"));
+    }
+
+    public static WhitelistedPackagePattern getPattern(String pattern) {
+        if (pattern.equals(ALL_EXTERNAL_PATTERN)) {
+            return ALL_EXTERNAL;
+        }
+        else {
+            return new WhitelistedPackagePattern(pattern);
+        }
     }
 
     public boolean matches(String packageName) {

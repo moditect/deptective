@@ -6,6 +6,7 @@ and fails the compilation when detecting any unintentional dependencies.
 
 * [Requirements](#requirements)
 * [Usage](#usage)
+* [Structure of <em>deptective.json</em>](#structure-of-deptectivejson)
    * [Obtaining Deptective via Jitpack](#obtaining-deptective-via-jitpack)
    * [Configuration Options](#configuration-options)
 * [Contributing and Development](#contributing-and-development)
@@ -23,7 +24,11 @@ Support for _ecj_ may be added [later on](https://github.com/moditect/deptective
 
 ## Usage
 
-🕵 Define a file _deptective.json_ which describes the allowed dependencies amongst the project's packages like so:
+🕵 Deptective is configured through a file _deptective.json_ which describes the allowed dependencies amongst the project's packages.
+
+## Structure of _deptective.json_
+
+🕵 The _deptective.json_ file is structured like this:
 
 ```
 {
@@ -123,6 +128,8 @@ See _jitpack-example/pom.xml_ for a complete example.
 * `-Adeptective.reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when spotting any illegal package dependencies (defaults to `ERROR`)
 * `-Adeptective.unconfigured_package_reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when detecting a package that's not configured in the config file (defaults to `WARN`)
 * `-Adeptective.mode=(ANALYZE|VALIDATE|VISUALIZE)`: Whether the plug-in should validate the packages of the compiled package against the _deptective.json_ file (`VALIDATE`), whether the plug-in should visualize the configured _deptective.json_ file in DOT/GraphViz format (`VISUALIZE`) or whether it should generate a template for that file based on the current actual package relationships (`ANALYZE`). The latter can be useful when introducing Deptective into an existing code base where writing the configuration from scratch might be too tedious. Generating the configuration from the current "is" state and iteratively refining it into an intended target state can be a useful approach in that case. Note then when using Deptective via the Maven compiler plug-in, you should make sure to set `<fork>` to `false` and `<showWarnings>` to `true` as otherwise the Maven compiler plug-in will not display the output produced by Deptective. Defaults to `VALIDATE`
+* `Adeptective.whitelisted=...`: A comma-separated list of whitelist package patterns which will be applied in `ANALYZE` mode. Any reference to a whitelisted package will then not be added to the `reads` section of the referencing package in the generated descriptor template.
+The special value `*ALL_EXTERNAL*` can be used to automatically whitelist all packages which are not part of the current compilation (i.e. packages from dependencies). This can be useful if you're only interested in managing the relationships amongst the current project's packages themselves but not the relationships to external packages.
 
 ## Contributing and Development
 

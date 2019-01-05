@@ -95,7 +95,8 @@ public class ConfigParser {
         if (whitelisted != null) {
             Iterator<JsonNode> it = whitelisted.iterator();
             while(it.hasNext()) {
-                builder.addWhitelistedPackage(it.next().asText());
+                WhitelistedPackagePattern pattern = WhitelistedPackagePattern.getPattern(it.next().asText());
+                builder.addWhitelistedPackage(pattern);
             }
         }
 
