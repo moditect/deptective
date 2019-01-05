@@ -125,7 +125,12 @@ public class PackageDependencies {
             .sorted((c1, c2) -> c1.getName().compareTo(c2.getName()))
             .forEach(p -> packages.add(toJsonNode(p, mapper)));
 
-        root.putArray("whitelisted");
+        ArrayNode whitelisted = root.putArray("whitelisted");
+
+        this.whitelisted.stream()
+            .map(WhitelistedPackagePattern::toString)
+            .sorted()
+            .forEach(whitelisted::add);
 
         try {
             return mapper.writeValueAsString(root);

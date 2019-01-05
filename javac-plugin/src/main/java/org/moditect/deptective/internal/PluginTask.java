@@ -56,7 +56,7 @@ public enum PluginTask {
     ANALYZE {
         @Override
         public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Supplier<PackageDependencies> configSupplier, Log log) {
-            return new PackageReferenceCollector(log);
+            return new PackageReferenceCollector(log, options.getWhitelistedPackagePatterns());
         }
     };
 

@@ -38,7 +38,8 @@ public class AnalyzeTest extends PluginTestBase {
         Compilation compilation = Compiler.javac()
             .withOptions(
                     "-Xplugin:Deptective",
-                    "-Adeptective.mode=ANALYZE"
+                    "-Adeptective.mode=ANALYZE",
+                    "-Adeptective.whitelisted=java.math"
             )
             .compile(
                     forTestClass(Bar.class),
@@ -58,9 +59,9 @@ public class AnalyzeTest extends PluginTestBase {
                 "      \"reads\" : [ \"org.moditect.deptective.plugintest.analyze.qux\" ]\n" +
                 "    }, {\n" +
                 "      \"name\" : \"org.moditect.deptective.plugintest.analyze.foo\",\n" +
-                "      \"reads\" : [ \"java.math\", \"org.moditect.deptective.plugintest.analyze.qux\", \"org.moditect.deptective.plugintest.whitelist.bar\" ]\n" +
+                "      \"reads\" : [ \"org.moditect.deptective.plugintest.analyze.qux\", \"org.moditect.deptective.plugintest.whitelist.bar\" ]\n" +
                 "    } ],\n" +
-                "    \"whitelisted\" : [ ]\n" +
+                "    \"whitelisted\" : [ \"java.math\" ]\n" +
                 "  }]";
 
         JSONAssert.assertEquals(expectedConfig, generatedConfig, JSONCompareMode.LENIENT);

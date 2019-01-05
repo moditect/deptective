@@ -27,7 +27,7 @@ public class WhitelistedPackagePattern {
 
     private final Pattern pattern;
 
-    WhitelistedPackagePattern(String pattern) {
+    public WhitelistedPackagePattern(String pattern) {
         this.pattern = Pattern.compile(pattern.replace("*", ".*"));
     }
 

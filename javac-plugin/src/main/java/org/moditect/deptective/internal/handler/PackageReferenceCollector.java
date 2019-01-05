@@ -15,9 +15,13 @@
  */
 package org.moditect.deptective.internal.handler;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
 import org.moditect.deptective.internal.model.PackageDependencies;
+import org.moditect.deptective.internal.model.WhitelistedPackagePattern;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
@@ -35,10 +39,16 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
     private final PackageDependencies.Builder builder;
 
     private String currentPackageName;
+    private final List<WhitelistedPackagePattern> whitelistPatterns;
 
-    public PackageReferenceCollector(Log log) {
+    public PackageReferenceCollector(Log log, List<WhitelistedPackagePattern> whitelistPatterns) {
         this.log = log;
+        this.whitelistPatterns = Collections.unmodifiableList(whitelistPatterns);
+
         builder = PackageDependencies.builder();
+        for (WhitelistedPackagePattern string : whitelistPatterns) {
+            builder.addWhitelistedPackage(string.toString());
+        }
     }
 
     @Override
@@ -55,6 +65,12 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
 
     @Override
     public void onPackageReference(Tree referencingNode, String referencedPackageName) {
+        for (WhitelistedPackagePattern whitelistedPackagePattern : whitelistPatterns) {
+            if (whitelistedPackagePattern.matches(referencedPackageName)) {
+                return;
+            }
+        }
+
         builder.addRead(currentPackageName, referencedPackageName);
     }
 

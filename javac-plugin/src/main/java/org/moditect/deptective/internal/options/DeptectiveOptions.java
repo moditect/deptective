@@ -17,11 +17,15 @@ package org.moditect.deptective.internal.options;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.moditect.deptective.internal.PluginTask;
+import org.moditect.deptective.internal.model.WhitelistedPackagePattern;
 
 /**
  * The options supported by the Deptective plug-in. To be given as annotation
@@ -88,6 +92,21 @@ public class DeptectiveOptions {
         }
         else {
             return PluginTask.VALIDATE;
+        }
+    }
+
+    public List<WhitelistedPackagePattern> getWhitelistedPackagePatterns() {
+        String whitelisted = options.get("deptective.whitelisted");
+
+        if (whitelisted != null) {
+            String[] patterns = whitelisted.split(",");
+            return Arrays.stream(patterns)
+                .map(String::trim)
+                .map(WhitelistedPackagePattern::new)
+                .collect(Collectors.toList());
+        }
+        else {
+            return Collections.emptyList();
         }
     }
 }
