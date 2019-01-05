@@ -37,8 +37,8 @@ public class DeptectiveMessages extends ListResourceBundle {
             { ERROR_PREFIX + PACKAGE_NOT_CONFIGURED, "no Deptective configuration found for package {0}" },
             { WARNING_PREFIX + PACKAGE_NOT_CONFIGURED, "no Deptective configuration found for package {0}" },
             { ERROR_PREFIX + NO_DEPTECTIVE_CONFIG_FOUND, "Config file deptective.json was not found" },
-            { NOTE_PREFIX + GENERATED_CONFIG, "Generated Deptective configuration:{0}{1}" },
-            { NOTE_PREFIX + GENERATED_DOT_REPRESENTATION, "Converted Deptective configuration to Dot graph:{0}{1}" }
+            { NOTE_PREFIX + GENERATED_CONFIG, "Generated Deptective configuration template at {0}" },
+            { NOTE_PREFIX + GENERATED_DOT_REPRESENTATION, "Created DOT file representing the Deptective configuration at {0}" }
         };
     }
 }

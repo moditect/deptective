@@ -15,11 +15,17 @@
  */
 package org.moditect.deptective.internal.handler;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.tools.FileObject;
+import javax.tools.JavaFileManager;
+import javax.tools.StandardLocation;
 
 import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
@@ -41,6 +47,7 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
     private final Log log;
     private final PackageDependencies.Builder builder;
 
+    private final JavaFileManager jfm;
     private final List<WhitelistedPackagePattern> whitelistPatterns;
     private final Set<String> packagesOfCurrentCompilation;
     private final Set<String> referencedPackages;
@@ -48,9 +55,10 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
     private String currentPackageName;
 
 
-    public PackageReferenceCollector(Log log, List<WhitelistedPackagePattern> whitelistPatterns) {
+    public PackageReferenceCollector(JavaFileManager jfm, Log log, List<WhitelistedPackagePattern> whitelistPatterns) {
         this.log = log;
 
+        this.jfm = jfm;
         this.whitelistPatterns = Collections.unmodifiableList(whitelistPatterns);
         this.packagesOfCurrentCompilation = new HashSet<String>();
         this.referencedPackages = new HashSet<String>();
@@ -99,7 +107,17 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
         }
 
         log.useSource(null);
-        log.note(DeptectiveMessages.GENERATED_CONFIG, System.lineSeparator(), builder.build().toJson());
+
+        try {
+            FileObject output = jfm.getFileForOutput(StandardLocation.CLASS_OUTPUT, "", "deptective.json", null);
+            log.note(DeptectiveMessages.GENERATED_CONFIG, output.toUri());
+            Writer writer = output.openWriter();
+            writer.append(builder.build().toJson());
+            writer.close();
+        }
+        catch (IOException e) {
+            throw new RuntimeException("Failed to write deptective.json file", e);
+        }
     }
 
     private boolean isWhitelistAllExternal() {

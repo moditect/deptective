@@ -18,10 +18,13 @@ package org.moditect.deptective.plugintest.analyzewhitelistallexternal;
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import javax.tools.Diagnostic;
+import java.util.Optional;
+
 import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
 
 import org.junit.Test;
+import org.moditect.deptective.internal.util.Strings;
 import org.moditect.deptective.plugintest.PluginTestBase;
 import org.moditect.deptective.plugintest.analyzewhitelistallexternal.bar.Bar;
 import org.moditect.deptective.plugintest.analyzewhitelistallexternal.foo.Foo;
@@ -48,10 +51,8 @@ public class AnalyzeWhitelistAllExternalTest extends PluginTestBase {
 
         assertThat(compilation).succeeded();
 
-        assertThat(compilation.notes()).hasSize(1);
-        Diagnostic<? extends JavaFileObject> note = compilation.notes().get(0);
-        String message = note.getMessage(null);
-        String generatedConfig = message.substring(message.indexOf(System.lineSeparator()) + 1);
+        assertThat(compilation).hadNoteContaining("Generated Deptective configuration template at mem:///CLASS_OUTPUT/deptective.json");
+        assertThat(compilation).hadNoteCount(1);
 
         String expectedConfig = "{\n" +
                 "    \"packages\" : [ {\n" +
@@ -62,6 +63,10 @@ public class AnalyzeWhitelistAllExternalTest extends PluginTestBase {
                 "    } ],\n" +
                 "    \"whitelisted\" : [ \"java.io\", \"java.math\", \"java.net\" ]\n" +
                 "  }]";
+
+        Optional<JavaFileObject> deptectiveFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT, "deptective.json");
+        assertThat(deptectiveFile.isPresent()).isTrue();
+        String generatedConfig = Strings.readToString(deptectiveFile.get().openInputStream());
 
         JSONAssert.assertEquals(expectedConfig, generatedConfig, JSONCompareMode.LENIENT);
     }
