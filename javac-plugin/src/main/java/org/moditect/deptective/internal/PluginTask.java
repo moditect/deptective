@@ -17,6 +17,8 @@ package org.moditect.deptective.internal;
 
 import java.util.function.Supplier;
 
+import javax.tools.JavaFileManager;
+
 import org.moditect.deptective.internal.handler.PackageReferenceCollector;
 import org.moditect.deptective.internal.handler.PackageReferenceHandler;
 import org.moditect.deptective.internal.handler.PackageReferenceValidator;
@@ -35,7 +37,7 @@ public enum PluginTask {
 
     VALIDATE {
         @Override
-        public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Supplier<PackageDependencies> configSupplier, Log log) {
+        public PackageReferenceHandler getPackageReferenceHandler(JavaFileManager jfm, DeptectiveOptions options, Supplier<PackageDependencies> configSupplier, Log log) {
             return new PackageReferenceValidator(
                     configSupplier.get(),
                     options.getReportingPolicy(),
@@ -46,8 +48,9 @@ public enum PluginTask {
     },
     VISUALIZE {
         @Override
-        public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Supplier<PackageDependencies> configSupplier, Log log) {
+        public PackageReferenceHandler getPackageReferenceHandler(JavaFileManager jfm, DeptectiveOptions options, Supplier<PackageDependencies> configSupplier, Log log) {
             return new PackageReferenceVisualizer(
+                    jfm,
                     configSupplier.get(),
                     log
           );
@@ -55,10 +58,10 @@ public enum PluginTask {
     },
     ANALYZE {
         @Override
-        public PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Supplier<PackageDependencies> configSupplier, Log log) {
-            return new PackageReferenceCollector(log, options.getWhitelistedPackagePatterns());
+        public PackageReferenceHandler getPackageReferenceHandler(JavaFileManager jfm, DeptectiveOptions options, Supplier<PackageDependencies> configSupplier, Log log) {
+            return new PackageReferenceCollector(jfm, log, options.getWhitelistedPackagePatterns());
         }
     };
 
-    public abstract PackageReferenceHandler getPackageReferenceHandler(DeptectiveOptions options, Supplier<PackageDependencies> configSupplier, Log log);
+    public abstract PackageReferenceHandler getPackageReferenceHandler(JavaFileManager jfm, DeptectiveOptions options, Supplier<PackageDependencies> configSupplier, Log log);
 }

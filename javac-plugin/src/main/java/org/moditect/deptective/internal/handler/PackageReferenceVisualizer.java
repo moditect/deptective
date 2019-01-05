@@ -15,6 +15,13 @@
  */
 package org.moditect.deptective.internal.handler;
 
+import java.io.IOException;
+import java.io.Writer;
+
+import javax.tools.FileObject;
+import javax.tools.JavaFileManager;
+import javax.tools.StandardLocation;
+
 import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
 import org.moditect.deptective.internal.model.PackageDependencies;
@@ -29,8 +36,10 @@ public class PackageReferenceVisualizer implements PackageReferenceHandler {
 
     private final Log log;
     private final PackageDependencies packageDependencies;
+    private final JavaFileManager jfm;
 
-    public PackageReferenceVisualizer(PackageDependencies packageDependencies, Log log) {
+    public PackageReferenceVisualizer( JavaFileManager jfm, PackageDependencies packageDependencies, Log log) {
+        this.jfm = jfm;
         this.log = log;
         this.packageDependencies = packageDependencies;
     }
@@ -48,6 +57,16 @@ public class PackageReferenceVisualizer implements PackageReferenceHandler {
     @Override
     public void onCompletingCompilation() {
         log.useSource(null);
-        log.note(DeptectiveMessages.GENERATED_DOT_REPRESENTATION, System.lineSeparator(), packageDependencies.toDot());
+
+        try {
+            FileObject output = jfm.getFileForOutput(StandardLocation.CLASS_OUTPUT, "", "deptective.dot", null);
+            log.note(DeptectiveMessages.GENERATED_DOT_REPRESENTATION, output.toUri());
+            Writer writer = output.openWriter();
+            writer.append(packageDependencies.toDot());
+            writer.close();
+        }
+        catch (IOException e) {
+            throw new RuntimeException("Failed to write deptective.dot file", e);
+        }
     }
 }

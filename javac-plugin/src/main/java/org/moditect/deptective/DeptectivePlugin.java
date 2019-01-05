@@ -60,6 +60,7 @@ public class DeptectivePlugin implements Plugin {
 
         PackageReferenceHandler handler = options.getPluginTask()
                 .getPackageReferenceHandler(
+                        context.get(JavaFileManager.class),
                         options,
                         () -> new ConfigLoader().getConfig(options.getConfigFilePath(), context.get(JavaFileManager.class)),
                         log
