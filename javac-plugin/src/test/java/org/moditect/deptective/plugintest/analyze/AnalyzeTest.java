@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.moditect.deptective.plugintest.PluginTestBase;
 import org.moditect.deptective.plugintest.analyze.bar.Bar;
 import org.moditect.deptective.plugintest.analyze.foo.Foo;
+import org.moditect.deptective.plugintest.analyze.qux.Qux;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
@@ -43,7 +44,8 @@ public class AnalyzeTest extends PluginTestBase {
             )
             .compile(
                     forTestClass(Bar.class),
-                    forTestClass(Foo.class)
+                    forTestClass(Foo.class),
+                    forTestClass(Qux.class)
             );
 
         assertThat(compilation).succeeded();
@@ -59,7 +61,7 @@ public class AnalyzeTest extends PluginTestBase {
                 "      \"reads\" : [ \"org.moditect.deptective.plugintest.analyze.qux\" ]\n" +
                 "    }, {\n" +
                 "      \"name\" : \"org.moditect.deptective.plugintest.analyze.foo\",\n" +
-                "      \"reads\" : [ \"org.moditect.deptective.plugintest.analyze.qux\", \"org.moditect.deptective.plugintest.whitelist.bar\" ]\n" +
+                "      \"reads\" : [ \"org.moditect.deptective.plugintest.analyze.qux\", \"org.moditect.deptective.plugintest.analyze.bar\" ]\n" +
                 "    } ],\n" +
                 "    \"whitelisted\" : [ \"java.math\" ]\n" +
                 "  }]";
