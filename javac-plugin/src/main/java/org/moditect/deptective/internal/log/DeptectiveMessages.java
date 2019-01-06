@@ -19,9 +19,9 @@ import java.util.ListResourceBundle;
 
 public class DeptectiveMessages extends ListResourceBundle {
 
-    private static final String NOTE_PREFIX = "compiler.note.";
-    private static final String ERROR_PREFIX = "compiler.err.";
-    private static final String WARNING_PREFIX = "compiler.warn.";
+    public static final String NOTE_PREFIX = "compiler.note.";
+    public static final String ERROR_PREFIX = "compiler.err.";
+    public static final String WARNING_PREFIX = "compiler.warn.";
 
     public static final String ILLEGAL_PACKAGE_DEPENDENCY = "deptective.illegalpackagedependency";
     public static final String NO_DEPTECTIVE_CONFIG_FOUND = "deptective.nodeptectiveconfigfound";
@@ -40,5 +40,15 @@ public class DeptectiveMessages extends ListResourceBundle {
             { NOTE_PREFIX + GENERATED_CONFIG, "Generated Deptective configuration template at {0}" },
             { NOTE_PREFIX + GENERATED_DOT_REPRESENTATION, "Created DOT file representing the Deptective configuration at {0}" }
         };
+    }
+
+    public String getFormat(String prefix, String key) {
+        for (Object[] message : getContents()) {
+            if (message[0].equals(prefix + key)) {
+                return (String) message[1];
+            }
+        }
+
+        throw new IllegalArgumentException("No message found for prefix " + prefix + " and key " + key);
     }
 }

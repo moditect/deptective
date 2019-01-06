@@ -15,13 +15,10 @@
  */
 package org.moditect.deptective;
 
-import java.util.ResourceBundle;
-
 import javax.tools.JavaFileManager;
 
 import org.moditect.deptective.internal.DeptectiveTreeVisitor;
 import org.moditect.deptective.internal.handler.PackageReferenceHandler;
-import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
 import org.moditect.deptective.internal.model.ConfigLoader;
 import org.moditect.deptective.internal.options.DeptectiveOptions;
@@ -30,6 +27,7 @@ import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.Plugin;
 import com.sun.source.util.TaskEvent;
+import com.sun.source.util.TaskEvent.Kind;
 import com.sun.source.util.TaskListener;
 import com.sun.tools.javac.api.BasicJavacTask;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
@@ -37,6 +35,20 @@ import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.JavacMessages;
 
 public class DeptectivePlugin implements Plugin {
+
+    /**
+     * {@link TaskEvent.Kind} doesn't support COMPILATION on JDK 8, hence it's
+     * resembled here.
+     */
+    private enum TaskEventKind {
+        PARSE,
+        ANALYZE,
+        LAST_ANALYZE,
+        COMPILATION,
+        OTHER;
+    }
+
+    private static final boolean HAS_KIND_COMPILATION = hasKindCompilation();
 
     @Override
     public String getName() {
@@ -47,16 +59,12 @@ public class DeptectivePlugin implements Plugin {
     public void init(JavacTask task, String... args) {
         Context context = ((BasicJavacTask) task).getContext();
 
-        // Without touch the class here, I'm getting a weird classloading error
-        // when using Maven and not having <fork>true</fork> :(
-        DeptectiveMessages.class.getName();
-
-        JavacMessages messages = context.get(JavacMessages.messagesKey);
-        messages.add(l -> ResourceBundle.getBundle(DeptectiveMessages.class.getName(), l));
-
         DeptectiveOptions options = new DeptectiveOptions(JavacProcessingEnvironment.instance(context).getOptions());
 
-        Log log = Log.getInstance(context.get(com.sun.tools.javac.util.Log.logKey));
+        Log log = Log.getInstance(
+                context.get(com.sun.tools.javac.util.Log.logKey),
+                context.get(JavacMessages.messagesKey)
+        );
 
         PackageReferenceHandler handler = options.getPluginTask()
                 .getPackageReferenceHandler(
@@ -66,8 +74,12 @@ public class DeptectivePlugin implements Plugin {
                         log
                 );
 
+
         if (handler.configIsValid()) {
             task.addTaskListener(new TaskListener() {
+
+                private int sourceFileCount = 0;
+                private int analyzed = 0;
 
                 @Override
                 public void started(TaskEvent e) {
@@ -75,15 +87,59 @@ public class DeptectivePlugin implements Plugin {
 
                 @Override
                 public void finished(TaskEvent e) {
-                    if(e.getKind().equals(TaskEvent.Kind.ANALYZE)) {
+                    TaskEventKind kind = getTaskEventKind(e.getKind(), sourceFileCount, analyzed);
+
+                    if (kind == TaskEventKind.PARSE) {
+                        sourceFileCount++;
+                    }
+                    else if(kind == TaskEventKind.ANALYZE || kind == TaskEventKind.LAST_ANALYZE) {
+                        analyzed++;
+
                         CompilationUnitTree compilationUnit = e.getCompilationUnit();
                         new DeptectiveTreeVisitor(task, log, handler).scan(compilationUnit, null);
+
+                        // On JDK 8 there's no callback for the completion of the compilation,
+                        // so this handler is invoked after analyzing the last source file
+                        if (kind == TaskEventKind.LAST_ANALYZE) {
+                            handler.onCompletingCompilation();
+                        }
                     }
-                    else if (e.getKind() == TaskEvent.Kind.COMPILATION) {
+                    else if (kind == TaskEventKind.COMPILATION) {
                         handler.onCompletingCompilation();
                     }
                 }
             });
         }
+    }
+
+    private TaskEventKind getTaskEventKind(TaskEvent.Kind kind, int totalSourceFiles, int analyzedSourceFiles) {
+        if (kind == Kind.PARSE) {
+            return TaskEventKind.PARSE;
+        }
+        else if (kind == Kind.ANALYZE) {
+            if (!HAS_KIND_COMPILATION && analyzedSourceFiles >= totalSourceFiles - 1) {
+                return TaskEventKind.LAST_ANALYZE;
+            }
+            else {
+                return TaskEventKind.ANALYZE;
+            }
+
+        }
+        else if (kind.name().equals("COMPILATION")) {
+            return TaskEventKind.COMPILATION;
+        }
+        else {
+            return TaskEventKind.OTHER;
+        }
+    }
+
+    private static boolean hasKindCompilation() {
+        for (TaskEvent.Kind kind : TaskEvent.Kind.values()) {
+            if (kind.name().equals("COMPILATION")) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

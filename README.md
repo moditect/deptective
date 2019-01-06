@@ -17,8 +17,7 @@ and fails the compilation when detecting any unintentional dependencies.
 
 ## Requirements
 
-🕵 JDK 11 is needed to run Deptective.
-Support for JDK 8 may be added later on.
+🕵 JDK 8 or later is needed to run Deptective.
 
 The plug-in is specific to _javac_, i.e. the compiler coming with the JDK, it does not work with other compilers such as the _Eclipse Batch Compiler_ (_ecj_).
 Support for _ecj_ may be added [later on](https://github.com/moditect/deptective/issues/2).
@@ -82,6 +81,7 @@ When using Maven, the following configuration can be used:
         <plugin>
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
+                <showWarnings>true</showWarnings>
                 <compilerArgs>
                     <arg>-Xplugin:Deptective</arg>
                     <!-- specify options like so -->
@@ -108,7 +108,7 @@ See _integration-test/pom.xml_ for a complete example.
 🕵 The following options can be provided when running the plug-in:
 
 * `-Adeptective.config_file=path/to/deptective.json`: Path of the configuration file in the file system
-* `-Adeptective.reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when spotting any illegal package dependencies (defaults to `ERROR`)
+* `-Adeptective.reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when spotting any illegal package dependencies (defaults to `ERROR`; make sure to set `<showWarnings>` to `true` when using the plug-in via Maven)
 * `-Adeptective.unconfigured_package_reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when detecting a package that's not configured in the config file (defaults to `WARN`)
 * `-Adeptective.mode=(ANALYZE|VALIDATE|VISUALIZE)`: Whether the plug-in should validate the packages of the compiled package against the _deptective.json_ file (`VALIDATE`), whether the plug-in should visualize the configured _deptective.json_ file in DOT/GraphViz format (`VISUALIZE`) or whether it should generate a template for that file based on the current actual package relationships (`ANALYZE`). The latter can be useful when introducing Deptective into an existing code base where writing the configuration from scratch might be too tedious. Generating the configuration from the current "is" state and iteratively refining it into an intended target state can be a useful approach in that case. The JSON/DOT files created by `ANALYZE` and `VISUALIZE` are created in the compiler's class output path, e.g. _target/classes_ in case of Maven. Defaults to `VALIDATE`
 * `Adeptective.whitelisted=...`: A comma-separated list of whitelist package patterns which will be applied in `ANALYZE` mode. Any reference to a whitelisted package will then not be added to the `reads` section of the referencing package in the generated descriptor template.
