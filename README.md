@@ -15,12 +15,34 @@ and fails the compilation when detecting any unintentional dependencies.
 * [Related Work](#related-work)
 * [License](#license)
 
+## Why Deptective?
+
+🕵 In order to implement comprehensible and maintainable software systems, a well-defined structure between their components is needed.
+While module systems (multi-module builds, the Java Module System, OSGi etc.) provides proven means of structuring large code bases,
+software structure should also be defined and enforced at a lower level, i.e. within individual modules or by defining which APIs should be accessed across module boundaries.
+
+Deptective helps with this task by allowing you to define a software system's structure in terms of intended package relationships (e.g. `com.example.service` may read `com.example.persistence`, but not the other way around)
+and enforcing these relationships at compile time.
+Implemented as a plug-in for the _javac_ compiler, Deptective will abort the compilation when detecting unwanted package dependencies, allowing you to fix the issue at the earliest time possible.
+Compared to traditional architecture monitoring tools (that for instance run once nightly on a CI server and whose reports are easy to ignore), hooking right into the compiler itself allows for very fast feedback cycles.
+
+The following shows an example when using Deptective via Maven:
+
+![Unwanted package relationship causes compilation error](images/compilation_error.png)
+
+Optionally, you also can visualize the package relationships via GraphViz, highlighting any unwanted relationships.
+The following shows an example from the [Spring PetClinic](https://github.com/spring-projects/spring-petclinic) sample application, which has been modified to have an undesired reference from the `model` to the `visit` package:
+
+![GraphViz representation of package relationships](images/petclinic.png)
+
 ## Requirements
 
 🕵 JDK 8 or later is needed to run Deptective.
 
 The plug-in is specific to _javac_, i.e. the compiler coming with the JDK, it does not work with other compilers such as the _Eclipse Batch Compiler_ (_ecj_).
 Support for _ecj_ may be added [later on](https://github.com/moditect/deptective/issues/2).
+
+Deptective can be used with any Java build system such as Maven, Gradle etc.
 
 ## Usage
 
@@ -110,7 +132,9 @@ See _integration-test/pom.xml_ for a complete example.
 * `-Adeptective.config_file=path/to/deptective.json`: Path of the configuration file in the file system
 * `-Adeptective.reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when spotting any illegal package dependencies (defaults to `ERROR`; make sure to set `<showWarnings>` to `true` when using the plug-in via Maven)
 * `-Adeptective.unconfigured_package_reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when detecting a package that's not configured in the config file (defaults to `WARN`)
-* `-Adeptective.mode=(ANALYZE|VALIDATE)`: Whether the plug-in should validate the packages of the compiled package against the _deptective.json_ file (`VALIDATE`) or whether it should generate a template for that file based on the current actual package relationships (`ANALYZE`). The latter can be useful when introducing Deptective into an existing code base where writing the configuration from scratch might be too tedious. Generating the configuration from the current "is" state and iteratively refining it into an intended target state can be a useful approach in that case. The JSON/DOT files created by `ANALYZE` and `VISUALIZE` are created in the compiler's class output path, e.g. _target/classes_ in case of Maven. Defaults to `VALIDATE`
+* `-Adeptective.mode=(ANALYZE|VALIDATE)`: Whether the plug-in should validate the packages of the compiled package against the _deptective.json_ file (`VALIDATE`) or whether it should generate a template for that file based on the current actual package relationships (`ANALYZE`).
+The latter can be useful when introducing Deptective into an existing code base where writing the configuration from scratch might be too tedious. Generating the configuration from the current "is" state and iteratively refining it into an intended target state can be a useful approach in that case.
+The generated JSON/DOT files are created in the compiler's class output path, e.g. _target/classes_ in case of Maven. Defaults to `VALIDATE`
 * `-Adeptective.whitelisted=...`: A comma-separated list of whitelist package patterns which will be applied in `ANALYZE` mode. Any reference to a whitelisted package will then not be added to the `reads` section of the referencing package in the generated descriptor template.
 The special value `*ALL_EXTERNAL*` can be used to automatically whitelist all packages which are not part of the current compilation (i.e. packages from dependencies). This can be useful if you're only interested in managing the relationships amongst the current project's packages themselves but not the relationships to external packages.
 * `-Adeptective.visualize=(true|false)`: Whether to create a GraphVize (DOT) file representing generated configuration template (in `ANALYZE` mode) or the dependency configuration and (if present) any illegal package dependencies (in `VALIDATE` mode). Defaults to `false`
