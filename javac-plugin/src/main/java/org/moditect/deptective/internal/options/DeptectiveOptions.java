@@ -95,6 +95,12 @@ public class DeptectiveOptions {
         }
     }
 
+    public boolean createDotFile() {
+        String visualize = options.get("deptective.visualize");
+
+        return visualize != null && Boolean.parseBoolean(visualize.trim());
+    }
+
     public List<WhitelistedPackagePattern> getWhitelistedPackagePatterns() {
         String whitelisted = options.get("deptective.whitelisted");
 

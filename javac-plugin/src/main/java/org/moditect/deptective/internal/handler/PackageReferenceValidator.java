@@ -15,12 +15,19 @@
  */
 package org.moditect.deptective.internal.handler;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.tools.FileObject;
+import javax.tools.JavaFileManager;
+import javax.tools.StandardLocation;
 
 import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
 import org.moditect.deptective.internal.model.Package;
+import org.moditect.deptective.internal.model.Package.ReadKind;
 import org.moditect.deptective.internal.model.PackageDependencies;
 import org.moditect.deptective.internal.options.ReportingPolicy;
 
@@ -37,25 +44,33 @@ import com.sun.source.tree.Tree;
 public class PackageReferenceValidator implements PackageReferenceHandler {
 
     private final Log log;
-    private final PackageDependencies packageDependencies;
+    private final PackageDependencies allowedPackageDependencies;
+    private final JavaFileManager jfm;
     private final ReportingPolicy reportingPolicy;
+    private final boolean createDotFile;
     private final ReportingPolicy unconfiguredPackageReportingPolicy;
     private final Map<String, Boolean> reportedUnconfiguredPackages;
 
+    private final PackageDependencies.Builder actualPackageDependencies;
+
     private Package currentPackage;
 
-    public PackageReferenceValidator(PackageDependencies packageDependencies,
-            ReportingPolicy reportingPolicy, ReportingPolicy unconfiguredPackageReportingPolicy, Log log) {
+    public PackageReferenceValidator(JavaFileManager jfm, PackageDependencies packageDependencies,
+            ReportingPolicy reportingPolicy, ReportingPolicy unconfiguredPackageReportingPolicy, boolean createDotFile,
+            Log log) {
         this.log = log;
-        this.packageDependencies = packageDependencies;
+        this.allowedPackageDependencies = packageDependencies;
+        this.jfm = jfm;
         this.reportingPolicy = reportingPolicy;
         this.unconfiguredPackageReportingPolicy = unconfiguredPackageReportingPolicy;
         this.reportedUnconfiguredPackages = new HashMap<>();
+        this.actualPackageDependencies = PackageDependencies.builder();
+        this.createDotFile = createDotFile;
     }
 
     @Override
     public boolean configIsValid() {
-        if (packageDependencies == null) {
+        if (allowedPackageDependencies == null) {
             log.report(ReportingPolicy.ERROR, DeptectiveMessages.NO_DEPTECTIVE_CONFIG_FOUND);
             return false;
         }
@@ -73,7 +88,7 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
         }
 
         String packageName = packageNameTree.toString();
-        currentPackage = packageDependencies.getPackage(packageName);
+        currentPackage = allowedPackageDependencies.getPackage(packageName);
 
         if (!currentPackage.isConfigured()) {
             reportUnconfiguredPackageIfNeeded(tree, packageName);
@@ -82,33 +97,64 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
 
     @Override
     public void onPackageReference(Tree referencingNode, String referencedPackageName) {
-        if ("java.lang".equals(referencedPackageName)) {
+        if (isIgnoredDependency(referencedPackageName)) {
             return;
         }
 
-        if (packageDependencies.isWhitelisted(referencedPackageName)) {
-            return;
+        ReadKind readKind;
+
+        if (!currentPackage.isConfigured()) {
+            readKind = ReadKind.UKNOWN;
         }
+        else if (currentPackage.allowedToRead(referencedPackageName)) {
+            readKind = ReadKind.ALLOWED;
+        }
+        else {
+            readKind = ReadKind.DISALLOWED;
+        }
+
+        actualPackageDependencies.addRead(currentPackage.getName(), referencedPackageName, readKind);
 
         if (!currentPackage.isConfigured()) {
             return;
         }
 
-        if (currentPackage.getName().equals(referencedPackageName)) {
-            return;
-        }
-
-        if (referencedPackageName.isEmpty() || currentPackage.reads(referencedPackageName)) {
-            return;
-        }
-
-        log.report(
+        if (!currentPackage.allowedToRead(referencedPackageName)) {
+            log.report(
                 reportingPolicy,
                 (com.sun.tools.javac.tree.JCTree)referencingNode,
                 DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY,
                 currentPackage,
                 referencedPackageName
-        );
+            );
+        }
+    }
+
+    @Override
+    public void onCompletingCompilation() {
+        log.useSource(null);
+
+        if (!createDotFile) {
+            return;
+        }
+
+        try {
+            FileObject output = jfm.getFileForOutput(StandardLocation.CLASS_OUTPUT, "", "deptective.dot", null);
+            log.note(DeptectiveMessages.GENERATED_DOT_REPRESENTATION, output.toUri());
+            Writer writer = output.openWriter();
+            writer.append(actualPackageDependencies.build().toDot());
+            writer.close();
+        }
+        catch (IOException e) {
+            throw new RuntimeException("Failed to write deptective.dot file", e);
+        }
+    }
+
+    private boolean isIgnoredDependency(String referencedPackageName) {
+        return "java.lang".equals(referencedPackageName) ||
+                allowedPackageDependencies.isWhitelisted(referencedPackageName) ||
+                currentPackage.getName().equals(referencedPackageName) ||
+                referencedPackageName.isEmpty();
     }
 
     private void reportUnconfiguredPackageIfNeeded(CompilationUnitTree tree, String packageName) {

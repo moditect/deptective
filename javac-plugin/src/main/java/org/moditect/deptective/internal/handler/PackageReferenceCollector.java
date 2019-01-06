@@ -29,6 +29,7 @@ import javax.tools.StandardLocation;
 
 import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
+import org.moditect.deptective.internal.model.Package.ReadKind;
 import org.moditect.deptective.internal.model.PackageDependencies;
 import org.moditect.deptective.internal.model.WhitelistedPackagePattern;
 
@@ -45,6 +46,7 @@ import com.sun.source.tree.Tree;
 public class PackageReferenceCollector implements PackageReferenceHandler {
 
     private final Log log;
+    private final boolean createDotFile;
     private final PackageDependencies.Builder builder;
 
     private final JavaFileManager jfm;
@@ -55,11 +57,12 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
     private String currentPackageName;
 
 
-    public PackageReferenceCollector(JavaFileManager jfm, Log log, List<WhitelistedPackagePattern> whitelistPatterns) {
+    public PackageReferenceCollector(JavaFileManager jfm, Log log, List<WhitelistedPackagePattern> whitelistPatterns, boolean createDotFile) {
         this.log = log;
-
         this.jfm = jfm;
         this.whitelistPatterns = Collections.unmodifiableList(whitelistPatterns);
+        this.createDotFile = createDotFile;
+
         this.packagesOfCurrentCompilation = new HashSet<String>();
         this.referencedPackages = new HashSet<String>();
 
@@ -82,7 +85,7 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
     @Override
     public void onPackageReference(Tree referencingNode, String referencedPackageName) {
         referencedPackages.add(referencedPackageName);
-        builder.addRead(currentPackageName, referencedPackageName);
+        builder.addRead(currentPackageName, referencedPackageName, ReadKind.ALLOWED);
     }
 
     @Override
@@ -106,17 +109,32 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
             builder.addWhitelistedPackage(whitelistedPackagePattern);
         }
 
+        PackageDependencies packageDependencies = builder.build();
+
         log.useSource(null);
 
         try {
             FileObject output = jfm.getFileForOutput(StandardLocation.CLASS_OUTPUT, "", "deptective.json", null);
             log.note(DeptectiveMessages.GENERATED_CONFIG, output.toUri());
             Writer writer = output.openWriter();
-            writer.append(builder.build().toJson());
+            writer.append(packageDependencies.toJson());
             writer.close();
         }
         catch (IOException e) {
             throw new RuntimeException("Failed to write deptective.json file", e);
+        }
+
+        if (createDotFile) {
+            try {
+                FileObject output = jfm.getFileForOutput(StandardLocation.CLASS_OUTPUT, "", "deptective.dot", null);
+                log.note(DeptectiveMessages.GENERATED_DOT_REPRESENTATION, output.toUri());
+                Writer writer = output.openWriter();
+                writer.append(packageDependencies.toDot());
+                writer.close();
+            }
+            catch (IOException e) {
+                throw new RuntimeException("Failed to write deptective.dot file", e);
+            }
         }
     }
 

@@ -53,13 +53,13 @@ public class ConfigParsingTest {
 
         Package ui = dependencies.getPackage("com.example.ui");
         assertThat(ui).isNotNull();
-        assertThat(ui.reads("com.example.service")).isTrue();
-        assertThat(ui.reads("com.example.persistence")).isTrue();
+        assertThat(ui.allowedToRead("com.example.service")).isTrue();
+        assertThat(ui.allowedToRead("com.example.persistence")).isTrue();
 
         Package service = dependencies.getPackage("com.example.service");
         assertThat(service).isNotNull();
-        assertThat(service.reads("com.example.ui")).isFalse();
-        assertThat(service.reads("com.example.persistence")).isTrue();
+        assertThat(service.allowedToRead("com.example.ui")).isFalse();
+        assertThat(service.allowedToRead("com.example.persistence")).isTrue();
 
         assertThat(dependencies.isWhitelisted("java.awt")).isTrue();
         assertThat(dependencies.isWhitelisted("java.awt.color")).isTrue();

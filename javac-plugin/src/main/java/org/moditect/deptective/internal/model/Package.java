@@ -15,10 +15,9 @@
  */
 package org.moditect.deptective.internal.model;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Describes a Java package and its intended dependences to other packages.
@@ -30,76 +29,74 @@ public class Package {
     public static class Builder {
 
         private final String name;
-        private final Set<String> reads;
+        private final boolean configured;
+        private final Map<String, ReadKind> reads;
 
-        private Builder(String name) {
+        private Builder(String name, boolean configured) {
             this.name = name;
-            this.reads = new HashSet<>();
-        }
-
-        public Builder addReads(String read, String... furtherReads) {
-            addRead(read);
-            if(furtherReads != null) {
-                addReads(Arrays.asList(furtherReads));
-            }
-            return this;
+            this.configured = configured;
+            this.reads = new HashMap<>();
         }
 
         public Builder addReads(Iterable<String> reads) {
             for (String read : reads) {
-                addRead(read);
+                addRead(read, ReadKind.ALLOWED);
             }
             return this;
         }
 
-        private void addRead(String read) {
+        public void addRead(String read, ReadKind readKind) {
             if (!read.isEmpty() && !read.equals(name) && !read.equals("java.lang")) {
-                reads.add(read);
+                reads.put(read, readKind);
             }
         }
 
         public Package build() {
-            return new Package(name, reads);
+            return new Package(name, reads, configured);
         }
 
-        public Set<String> getReads() {
+        public Map<String, ReadKind> getReads() {
             return reads;
         }
     }
 
-    public static final Package UNCONFIGURED = new Package("__unconfigured__", Collections.emptySet(), false);
+    public enum ReadKind {
+        ALLOWED,
+        DISALLOWED,
+        UKNOWN;
+    }
 
     private final String name;
-    private final Set<String> reads;
+    private final Map<String, ReadKind> reads;
     private final boolean configured;
 
-    private Package(String name, Set<String> reads) {
+    private Package(String name, Map<String, ReadKind> reads) {
         this(name, reads, true);
     }
 
-    private Package(String name, Set<String> reads, boolean configured) {
+    private Package(String name, Map<String, ReadKind> reads, boolean configured) {
         this.name = name;
-        this.reads = Collections.unmodifiableSet(reads);
+        this.reads = Collections.unmodifiableMap(reads);
         this.configured = configured;
     }
 
-    public static Builder builder(String name) {
-        return new Builder(name);
+    public static Builder builder(String name, boolean configured) {
+        return new Builder(name, configured);
     }
 
     public String getName() {
         return name;
     }
 
-    public Set<String> getReads() {
+    public Map<String, ReadKind> getReads() {
         return reads;
     }
 
     /**
-     * Whether this package reads the given other package.
+     * Whether this package is allowed to read the given other package.
      */
-    public boolean reads(String qualifiedName) {
-        return reads.contains(qualifiedName);
+    public boolean allowedToRead(String qualifiedName) {
+        return reads.get(qualifiedName) == ReadKind.ALLOWED;
     }
 
     public boolean isConfigured() {

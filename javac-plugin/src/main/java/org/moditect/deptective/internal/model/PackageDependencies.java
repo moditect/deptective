@@ -18,13 +18,18 @@ package org.moditect.deptective.internal.model;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.moditect.deptective.internal.model.Package.ReadKind;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -54,12 +59,12 @@ public class PackageDependencies {
                 throw new IllegalArgumentException("Package " + name + " may not be configured more than once.");
             }
 
-            packagesByName.put(name, Package.builder(name).addReads(reads));
+            packagesByName.put(name, Package.builder(name, true).addReads(reads));
         }
 
-        public void addRead(String name, String readPackage) {
-            Package.Builder builder = packagesByName.computeIfAbsent(name, n -> Package.builder(n));
-            builder.addReads(readPackage);
+        public void addRead(String name, String readPackage, ReadKind readKind) {
+            Package.Builder builder = packagesByName.computeIfAbsent(name, n -> Package.builder(n, true));
+            builder.addRead(readPackage, readKind);
         }
 
         public void addWhitelistedPackage(WhitelistedPackagePattern pattern) {
@@ -70,13 +75,9 @@ public class PackageDependencies {
             this.whitelisted.add(pattern);
 
             for (Package.Builder pakkage : packagesByName.values()) {
-                Iterator<String> it = pakkage.getReads().iterator();
-                while(it.hasNext()) {
-                    String read = it.next();
-                    if (pattern.matches(read)) {
-                        it.remove();
-                    }
-                }
+                pakkage.getReads()
+                    .entrySet()
+                    .removeIf(r -> pattern.matches(r.getKey()));
             }
         }
     }
@@ -100,7 +101,7 @@ public class PackageDependencies {
 
         Package pakkage = packagesByName.get(qualifiedName);
 
-        return pakkage != null ? pakkage : Package.UNCONFIGURED;
+        return pakkage != null ? pakkage : Package.builder(qualifiedName, false).build();
     }
 
     @Override
@@ -163,9 +164,10 @@ public class PackageDependencies {
         if (!pakkage.getReads().isEmpty()) {
             ArrayNode reads = node.putArray("reads");
             pakkage.getReads()
-            .stream()
-            .sorted()
-            .forEach(r -> reads.add(r));
+                .keySet()
+                .stream()
+                .sorted()
+                .forEach(r -> reads.add(r));
         }
 
         return node;
@@ -176,15 +178,64 @@ public class PackageDependencies {
         sb.append("digraph \"package dependencies\"\n");
         sb.append("{\n");
 
+        SortedSet<String> allPackages = new TreeSet<>();
+        SortedMap<String, SortedSet<String>> allowedReads = new TreeMap<>();
+        SortedMap<String, SortedSet<String>> disallowedReads = new TreeMap<>();
+        SortedMap<String, SortedSet<String>> unknownReads = new TreeMap<>();
+
         for (Package pakkage : packagesByName.values()) {
-            for (String referencedPackage : pakkage.getReads()) {
-                sb.append("    \"").append(pakkage.getName()).append("\" -> \"").append(referencedPackage).append("\";\n");
+            allPackages.add(pakkage.getName());
+
+            SortedSet<String> allowed = new TreeSet<>();
+            allowedReads.put(pakkage.getName(), allowed);
+
+            SortedSet<String> disallowed = new TreeSet<>();
+            disallowedReads.put(pakkage.getName(), disallowed);
+
+            SortedSet<String> unknown = new TreeSet<>();
+            unknownReads.put(pakkage.getName(), unknown);
+
+            for (Entry<String, ReadKind> referencedPackage : pakkage.getReads().entrySet()) {
+                String referencedPackageName = referencedPackage.getKey();
+                allPackages.add(referencedPackageName);
+
+                if (referencedPackage.getValue() == ReadKind.ALLOWED) {
+                    allowed.add(referencedPackageName);
+                }
+                else if (referencedPackage.getValue() == ReadKind.DISALLOWED) {
+                    disallowed.add(referencedPackageName);
+                }
+                else {
+                    unknown.add(referencedPackageName);
+                }
             }
         }
+
+        for (String pakkage : allPackages) {
+            sb.append("  \"").append(pakkage).append("\";").append(System.lineSeparator());
+        }
+
+        addSubGraph(sb, allowedReads, "Allowed", null);
+        addSubGraph(sb, disallowedReads, "Disallowed", "red");
+        addSubGraph(sb, unknownReads, "Unknown", "yellow");
 
         sb.append("}");
 
         return sb.toString();
+    }
+
+    private void addSubGraph(StringBuilder sb, SortedMap<String, SortedSet<String>> readsOfKind, String kind, String color) {
+        sb.append("  subgraph " + kind + " {").append(System.lineSeparator());
+        if (color != null) {
+            sb.append("    edge [color=" + color + "]").append(System.lineSeparator());
+        }
+        for (Entry<String, SortedSet<String>> reads : readsOfKind.entrySet()) {
+            for (String read : reads.getValue()) {
+                sb.append("    \"").append(reads.getKey()).append("\" -> \"").append(read).append("\";\n");
+            }
+        }
+
+        sb.append("  }").append(System.lineSeparator());
     }
 
     public boolean isWhitelisted(String packageName) {

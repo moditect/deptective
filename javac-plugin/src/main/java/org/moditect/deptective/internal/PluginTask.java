@@ -22,7 +22,6 @@ import javax.tools.JavaFileManager;
 import org.moditect.deptective.internal.handler.PackageReferenceCollector;
 import org.moditect.deptective.internal.handler.PackageReferenceHandler;
 import org.moditect.deptective.internal.handler.PackageReferenceValidator;
-import org.moditect.deptective.internal.handler.PackageReferenceVisualizer;
 import org.moditect.deptective.internal.log.Log;
 import org.moditect.deptective.internal.model.PackageDependencies;
 import org.moditect.deptective.internal.options.DeptectiveOptions;
@@ -39,27 +38,24 @@ public enum PluginTask {
         @Override
         public PackageReferenceHandler getPackageReferenceHandler(JavaFileManager jfm, DeptectiveOptions options, Supplier<PackageDependencies> configSupplier, Log log) {
             return new PackageReferenceValidator(
+                    jfm,
                     configSupplier.get(),
                     options.getReportingPolicy(),
                     options.getUnconfiguredPackageReportingPolicy(),
+                    options.createDotFile(),
                     log
-          );
-        }
-    },
-    VISUALIZE {
-        @Override
-        public PackageReferenceHandler getPackageReferenceHandler(JavaFileManager jfm, DeptectiveOptions options, Supplier<PackageDependencies> configSupplier, Log log) {
-            return new PackageReferenceVisualizer(
-                    jfm,
-                    configSupplier.get(),
-                    log
-          );
+            );
         }
     },
     ANALYZE {
         @Override
         public PackageReferenceHandler getPackageReferenceHandler(JavaFileManager jfm, DeptectiveOptions options, Supplier<PackageDependencies> configSupplier, Log log) {
-            return new PackageReferenceCollector(jfm, log, options.getWhitelistedPackagePatterns());
+            return new PackageReferenceCollector(
+                    jfm,
+                    log,
+                    options.getWhitelistedPackagePatterns(),
+                    options.createDotFile()
+            );
         }
     };
 

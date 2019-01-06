@@ -17,8 +17,8 @@ package org.moditect.deptective.plugintest.visualize.foo;
 
 import java.math.BigDecimal;
 
-import org.moditect.deptective.plugintest.analyze.bar.Bar;
-import org.moditect.deptective.plugintest.analyze.qux.Qux;
+import org.moditect.deptective.plugintest.visualize.bar.Bar;
+import org.moditect.deptective.plugintest.visualize.qux.Qux;
 
 public class Foo {
 

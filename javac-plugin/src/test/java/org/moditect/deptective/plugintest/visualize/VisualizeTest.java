@@ -36,11 +36,60 @@ import com.google.testing.compile.Compiler;
 public class VisualizeTest extends PluginTestBase {
 
     @Test
-    public void shouldGenerateConfig() throws Exception {
+    public void shouldGenerateDotFileForAnalyse() throws Exception {
         Compilation compilation = Compiler.javac()
             .withOptions(
                     "-Xplugin:Deptective",
-                    "-Adeptective.mode=VISUALIZE",
+                    "-Adeptective.mode=ANALYZE",
+                    "-Adeptective.visualize=true",
+                    "-Adeptective.whitelisted=java.math",
+                    getConfigFileOption()
+            )
+            .compile(
+                    forTestClass(Bar.class),
+                    forTestClass(Foo.class),
+                    forTestClass(Qux.class)
+            );
+
+        assertThat(compilation).succeeded();
+
+        assertThat(compilation).hadNoteContaining("Created DOT file representing the Deptective configuration at mem:///CLASS_OUTPUT/deptective.dot");
+        assertThat(compilation).hadNoteCount(2);
+
+        String expectedConfig = "digraph \"package dependencies\"\n" +
+                "{\n" +
+                "  \"org.moditect.deptective.plugintest.visualize.bar\";\n" +
+                "  \"org.moditect.deptective.plugintest.visualize.foo\";\n" +
+                "  \"org.moditect.deptective.plugintest.visualize.qux\";\n" +
+                "  subgraph Allowed {\n" +
+                "    \"org.moditect.deptective.plugintest.visualize.bar\" -> \"org.moditect.deptective.plugintest.visualize.qux\";\n" +
+                "    \"org.moditect.deptective.plugintest.visualize.foo\" -> \"org.moditect.deptective.plugintest.visualize.bar\";\n" +
+                "    \"org.moditect.deptective.plugintest.visualize.foo\" -> \"org.moditect.deptective.plugintest.visualize.qux\";\n" +
+                "    \"org.moditect.deptective.plugintest.visualize.qux\" -> \"org.moditect.deptective.plugintest.visualize.bar\";\n" +
+                "  }\n" +
+                "  subgraph Disallowed {\n" +
+                "    edge [color=red]\n" +
+                "  }\n" +
+                "  subgraph Unknown {\n" +
+                "    edge [color=yellow]\n" +
+                "  }\n" +
+                "}";
+
+        Optional<JavaFileObject> deptectiveFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT, "deptective.dot");
+        assertThat(deptectiveFile.isPresent()).isTrue();
+        String generatedConfig = Strings.readToString(deptectiveFile.get().openInputStream());
+
+        assertThat(generatedConfig).isEqualTo(expectedConfig);
+    }
+
+    @Test
+    public void shouldGenerateDotFileForValidate() throws Exception {
+        Compilation compilation = Compiler.javac()
+            .withOptions(
+                    "-Xplugin:Deptective",
+                    "-Adeptective.visualize=true",
+                    "-Adeptective.whitelisted=java.math",
+                    "-Adeptective.reporting_policy=WARN",
                     getConfigFileOption()
             )
             .compile(
@@ -56,9 +105,21 @@ public class VisualizeTest extends PluginTestBase {
 
         String expectedConfig = "digraph \"package dependencies\"\n" +
                 "{\n" +
+                "  \"org.moditect.deptective.plugintest.visualize.bar\";\n" +
+                "  \"org.moditect.deptective.plugintest.visualize.foo\";\n" +
+                "  \"org.moditect.deptective.plugintest.visualize.qux\";\n" +
+                "  subgraph Allowed {\n" +
                 "    \"org.moditect.deptective.plugintest.visualize.bar\" -> \"org.moditect.deptective.plugintest.visualize.qux\";\n" +
-                "    \"org.moditect.deptective.plugintest.visualize.foo\" -> \"org.moditect.deptective.plugintest.visualize.bar\";\n" +
                 "    \"org.moditect.deptective.plugintest.visualize.foo\" -> \"org.moditect.deptective.plugintest.visualize.qux\";\n" +
+                "  }\n" +
+                "  subgraph Disallowed {\n" +
+                "    edge [color=red]\n" +
+                "    \"org.moditect.deptective.plugintest.visualize.foo\" -> \"org.moditect.deptective.plugintest.visualize.bar\";\n" +
+                "  }\n" +
+                "  subgraph Unknown {\n" +
+                "    edge [color=yellow]\n" +
+                "    \"org.moditect.deptective.plugintest.visualize.qux\" -> \"org.moditect.deptective.plugintest.visualize.bar\";\n" +
+                "  }\n" +
                 "}";
 
         Optional<JavaFileObject> deptectiveFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT, "deptective.dot");

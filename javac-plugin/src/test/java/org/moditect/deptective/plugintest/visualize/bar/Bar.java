@@ -15,7 +15,7 @@
  */
 package org.moditect.deptective.plugintest.visualize.bar;
 
-import org.moditect.deptective.plugintest.analyze.qux.Qux;
+import org.moditect.deptective.plugintest.visualize.qux.Qux;
 
 public class Bar {
 
