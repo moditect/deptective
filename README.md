@@ -4,6 +4,7 @@
 amongst a project's packages against a description of allowed dependences
 and fails the compilation when detecting any unintentional dependencies.
 
+* [Why Deptective?](#why-deptective)
 * [Requirements](#requirements)
 * [Usage](#usage)
    * [Structure of <em>deptective.json</em>](#structure-of-deptectivejson)
