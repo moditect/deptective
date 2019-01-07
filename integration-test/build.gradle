@@ -1,0 +1,25 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+
+dependencies {
+    annotationProcessor 'org.moditect.deptective:deptective-javac-plugin:1.0-SNAPSHOT'
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs = [
+            '-Xplugin:Deptective',
+            '-Adeptective.mode=VALIDATE',
+            '-Adeptective.reporting_policy=ERROR',
+            '-Adeptective.visualize=true',
+            "-Adeptective.config_file=${projectDir}/src/main/resources/META-INF/deptective.json"
+
+    ]
+}

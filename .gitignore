@@ -20,8 +20,10 @@ nb-configuration.xml
 # Build
 /**/target/
 test-output
+/**/build/
 
 # Misc.
 .DS_Store
 /**/dependency-reduced-pom.xml
+.gradle
 
