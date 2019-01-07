@@ -9,6 +9,8 @@ and fails the compilation when detecting any unintentional dependencies.
 * [Usage](#usage)
    * [Structure of <em>deptective.json</em>](#structure-of-deptectivejson)
    * [Configuring the Java compiler](#configuring-the-java-compiler)
+      * [Apache Maven](#apache-maven)
+      * [Gradle](#gradle)
    * [Configuration Options](#configuration-options)
    * [Obtaining Deptective via Jitpack](#obtaining-deptective-via-jitpack)
 * [Contributing and Development](#contributing-and-development)
@@ -94,9 +96,11 @@ Alternatively you can specify the location of the config file using the `-Adepte
 
 ### Configuring the Java compiler
 
-🕵 Add _deptective-javac-plugin-1.0-SNAPSHOT.jar_ to your project's annotation processor path
-and specify the option `-Xplugin:Deptective` when invoking _javac_.
-When using Maven, the following configuration can be used:
+🕵 In order to use Deptective, add _deptective-javac-plugin-1.0-SNAPSHOT.jar_ to your project's annotation processor path and specify the option `-Xplugin:Deptective` when invoking _javac_.
+
+#### Apache Maven
+
+🕵 When using Maven, add the following configuration to your _pom.xml_:
 
 ```
 ...
@@ -125,7 +129,31 @@ When using Maven, the following configuration can be used:
 ...
 ```
 
-See _integration-test/pom.xml_ for a complete example.
+See [integration-test/pom.xml](integration-test/pom.xml) for a complete example.
+
+#### Gradle
+
+🕵 When using Gradle, add the following configuration to your _build.gradle_:
+
+```
+...
+dependencies {
+    annotationProcessor 'org.moditect.deptective:deptective-javac-plugin:1.0-SNAPSHOT'
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs = [
+            '-Xplugin:Deptective',
+            '-Adeptective.mode=VALIDATE',
+            '-Adeptective.reporting_policy=ERROR',
+            '-Adeptective.visualize=true',
+            "-Adeptective.config_file=${projectDir}/src/main/resources/META-INF/deptective.json"
+    ]
+}
+...
+```
+
+See [integration-test/build.gradle](build.gradle) for a complete example.
 
 ### Configuration Options
 
@@ -159,7 +187,18 @@ Add the following repository to your project's _pom.xml_ or your Maven _settings
 
 Then reference the Deptective JAR using the GAV coordinates `com.github.moditect.deptective:deptective-javac-plugin:master-SNAPSHOT`.
 
-See _jitpack-example/pom.xml_ for a complete example.
+See [jitpack-example/pom.xml](jitpack-example/pom.xml) for a complete example.
+
+For Gradle, add the repo like this:
+
+```
+allprojects {
+		repositories {
+			  ...
+			  maven { url 'https://jitpack.io' }
+		}
+}
+```
 
 ## Contributing and Development
 
