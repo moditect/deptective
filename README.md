@@ -19,20 +19,21 @@ and fails the compilation when detecting any unintentional dependencies.
 ## Why Deptective?
 
 🕵 In order to implement comprehensible and maintainable software systems, a well-defined structure between their components is needed.
-While module systems (multi-module builds, the Java Module System, OSGi etc.) provides proven means of structuring large code bases,
-software structure should also be defined and enforced at a lower level, i.e. within individual modules or by defining which APIs should be accessed across module boundaries.
+While module systems (multi-module builds, the Java Module System, OSGi etc.) are proven means of structuring large code bases,
+software structure should also be defined and enforced at a lower level, i.e. within individual modules and by defining which APIs should be accessed across module boundaries.
 
 Deptective helps with this task by allowing you to define a software system's structure in terms of intended package relationships (e.g. `com.example.service` may read `com.example.persistence`, but not the other way around)
 and enforcing these relationships at compile time.
 Implemented as a plug-in for the _javac_ compiler, Deptective will abort the compilation when detecting unwanted package dependencies, allowing you to fix the issue at the earliest time possible.
 Compared to traditional architecture monitoring tools (that for instance run once nightly on a CI server and whose reports are easy to ignore), hooking right into the compiler itself allows for very fast feedback cycles.
+The overhead is very low, e.g. less than 1 sec for a medium-sized code base such as Hibernate Validator (740 classes).
 
 The following shows an example when using Deptective via Maven:
 
 ![Unwanted package relationship causes compilation error](images/compilation_error.png)
 
 Optionally, you also can visualize the package relationships via GraphViz, highlighting any unwanted relationships.
-The following shows an example from the [Spring PetClinic](https://github.com/spring-projects/spring-petclinic) sample application, which has been modified to have an undesired reference from the `model` to the `visit` package:
+The following shows an example from the [Spring PetClinic](https://github.com/moditect/deptective-spring-petclinic-example) sample application, which has been modified to have an undesired reference from the `model` to the `visit` package:
 
 ![GraphViz representation of package relationships](images/petclinic.png)
 
