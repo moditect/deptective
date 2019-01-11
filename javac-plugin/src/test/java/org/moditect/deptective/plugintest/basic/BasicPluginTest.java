@@ -82,6 +82,72 @@ public class BasicPluginTest extends PluginTestBase {
     }
 
     @Test
+    public void shouldDetectInvalidQualifiedClassReference() {
+        Compilation compilation = compile();
+        assertThat(compilation).failed();
+
+        assertThat(compilation).hadErrorContaining(
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barqualified"));
+    }
+
+//    @Test
+//    public void shouldDetectInvalidUnusedImport() {
+//        Compilation compilation = compile();
+//        assertThat(compilation).failed();
+//
+//        assertThat(compilation).hadErrorContaining(
+//                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barunused"));
+//    }
+
+    @Test
+    public void shouldDetectInvalidStarImport() {
+        Compilation compilation = compile();
+        assertThat(compilation).failed();
+
+        assertThat(compilation).hadErrorContaining(
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.bardemand"));
+    }
+
+    @Test
+    public void shouldDetectInvalidQualifiedReferenceToStaticMethod() {
+        Compilation compilation = compile();
+        assertThat(compilation).failed();
+
+        assertThat(compilation).hadErrorContaining(
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barstatic"));
+    }
+
+    @Test
+    public void shouldDetectInvalidQualifiedReferenceToStaticField() {
+        Compilation compilation = compile();
+        assertThat(compilation).failed();
+
+        assertThat(compilation).hadErrorContaining(
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barstaticfield"));
+    }
+
+
+    @Test
+    public void shouldDetectInvalidClassLiteralReference() {
+        Compilation compilation = compile();
+        assertThat(compilation).failed();
+
+        assertThat(compilation).hadErrorContaining(
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barclsliteral"));
+    }
+
+    @Test
+    public void shouldDetectInvalidReferencesInGenericBounds() {
+        Compilation compilation = compile();
+        assertThat(compilation).failed();
+
+        assertThat(compilation).hadErrorContaining(
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.bargenericbound"));
+
+    }
+
+
+    @Test
     public void shouldNotReportValidReferences() {
         // in our Testclass all "wanted" illegal references point to "org.moditect.deptective.plugintest.basic.bar*"
         // so Deptective should only return those
@@ -186,6 +252,8 @@ public class BasicPluginTest extends PluginTestBase {
                 packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barclazzan"));
         assertThat(compilation).hadErrorContaining(
                 packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barfieldan"));
+        assertThat(compilation).hadErrorContaining(
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barvalueann"));
     }
 
     @Test
