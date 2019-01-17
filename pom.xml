@@ -80,6 +80,11 @@
                     <artifactId>maven-clean-plugin</artifactId>
                     <version>3.0.0</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>3.0.0-M2</version>
+                </plugin>
                 <!-- see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
@@ -127,6 +132,12 @@
                         <exclude>**/generate-readme-toc.sh</exclude>
                         <exclude>jitpack.yml</exclude>
                         <exclude>LICENSE.txt</exclude>
+                        <exclude>**/bin/**</exclude>
+                        <exclude>**/.gradle/**</exclude>
+                        <exclude>**/gradle/**</exclude>
+                        <exclude>**/gradlew</exclude>
+                        <exclude>**/gradlew.bat</exclude>
+                        <exclude>**/build/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -134,6 +145,25 @@
                         <goals>
                             <goal>check</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-java</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>[11.0,)</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

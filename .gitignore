@@ -26,4 +26,4 @@ test-output
 .DS_Store
 /**/dependency-reduced-pom.xml
 .gradle
-
+bin
