@@ -15,32 +15,36 @@
  */
 package org.moditect.deptective.internal.graph;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.moditect.deptective.internal.graph.Dependency;
 
-import java.util.List;
+public class Dependency {
 
-import org.junit.Test;
-import org.moditect.deptective.internal.graph.fwk.TestModelCreator;
+	private Node from;
+	private Node to;
+	private int aggregatdWeight;
+	
+	public Dependency(Node from, Node to, int aggregatdWeight) {
+		this.from = from;
+		this.to = to;
+		this.aggregatdWeight = aggregatdWeight;
+		
+		from.addOutgoingDependency(this);
+	}
 
-/**
- * 
- * @author Gerd W&uuml;therich (gw@code-kontor.io)
- */
-public class CyclesTest {
+	public Node getFrom() {
+		return from;
+	}
 
-	@Test
-	public void detectCycle() {
+	public Node getTo() {
+		return to;
+	}
 
-		//
-		List<Node> nodes = TestModelCreator.createDummyModel();
+	public int getAggregatedWeight() {
+		return aggregatdWeight;
+	}
 
-		//
-		List<List<Node>> cycles = GraphUtils.detectCycles(nodes);
-
-		//
-		assertThat(cycles).hasSize(1);
-
-		//
-		assertThat(cycles.get(0)).contains(nodes.get(2)).contains(nodes.get(3));
+	@Override
+	public String toString() {
+		return "SimpleDependency [from=" + from + ", to=" + to + ", aggregatdWeight=" + aggregatdWeight + "]";
 	}
 }

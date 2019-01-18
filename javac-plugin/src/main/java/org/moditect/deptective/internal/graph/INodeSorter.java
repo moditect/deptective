@@ -20,11 +20,8 @@ import java.util.List;
 /**
  * 
  * @author Gerd W&uuml;therich (gw@code-kontor.io)
- *
- * @param <N>
- * @param <D>
  */
-public interface INodeSorter<N extends INode, D extends IDependency> {
+public interface INodeSorter {
 
 	/**
 	 * <p>
@@ -33,27 +30,24 @@ public interface INodeSorter<N extends INode, D extends IDependency> {
 	 * @param artifacts
 	 * @return
 	 */
-	SortResult<N, D> sort(List<N> node);
+	SortResult sort(List<Node> node);
 
 	/**
 	 * 
 	 * @author Gerd W&uuml;therich (gw@code-kontor.io)
-	 *
-	 * @param <N>
-	 * @param <D>
 	 */
-	public interface SortResult<N extends INode, D extends IDependency> {
+	public interface SortResult {
 
 		/**
 		 * 
 		 * @return
 		 */
-		List<N> getOrderedNodes();
+		List<Node> getOrderedNodes();
 
 		/**
 		 * 
 		 * @return
 		 */
-		List<D> getUpwardsDependencies();
+		List<Dependency> getUpwardsDependencies();
 	}
 }

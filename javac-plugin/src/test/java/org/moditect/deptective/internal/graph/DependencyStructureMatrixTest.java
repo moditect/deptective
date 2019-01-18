@@ -32,10 +32,10 @@ public class DependencyStructureMatrixTest {
 	public void detectCycle() {
 
 		//
-		List<INode> nodes = TestModelCreator.createDummyModel();
+		List<Node> nodes = TestModelCreator.createDummyModel();
 
 		//
-		IDependencyStructureMatrix<INode, IDependency> dsm = GraphUtils.createDependencyStructureMatrix(nodes);
+		IDependencyStructureMatrix dsm = GraphUtils.createDependencyStructureMatrix(nodes);
 
 		//
 		assertThat(dsm.getOrderedNodes()).hasSize(4).containsExactly(nodes.get(0), nodes.get(1), nodes.get(2),

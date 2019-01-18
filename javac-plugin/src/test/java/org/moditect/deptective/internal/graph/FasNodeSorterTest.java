@@ -29,13 +29,13 @@ public class FasNodeSorterTest {
 	public void sortNodes() {
 
 		//
-		List<INode> nodes = TestModelCreator.createDummyModel();
+		List<Node> nodes = TestModelCreator.createDummyModel();
 
 		//
-		INodeSorter<INode, IDependency> nodeSorter = GraphUtils.createFasNodeSorter();
+		INodeSorter nodeSorter = GraphUtils.createFasNodeSorter();
 
 		//
-		SortResult<INode, IDependency> sortResult = nodeSorter.sort(nodes);
+		SortResult sortResult = nodeSorter.sort(nodes);
 		
 		//
 		assertThat(sortResult.getUpwardsDependencies()).hasSize(1);

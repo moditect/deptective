@@ -19,7 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.moditect.deptective.internal.graph.INode;
+import org.moditect.deptective.internal.graph.Dependency;
+import org.moditect.deptective.internal.graph.Node;
 
 /**
  * 
@@ -31,17 +32,17 @@ public class TestModelCreator {
 	 * 
 	 * @return
 	 */
-	public static List<INode> createDummyModel() {
+	public static List<Node> createDummyModel() {
 		
-		TestNode p1 = new TestNode("p1");
-		TestNode p2 = new TestNode("p2");
-		TestNode p3 = new TestNode("p3");
-		TestNode p4 = new TestNode("p4");
+		Node p1 = new Node("p1");
+		Node p2 = new Node("p2");
+		Node p3 = new Node("p3");
+		Node p4 = new Node("p4");
 		
-		new TestDependency(p1, p2, 13);
-		new TestDependency(p2, p3, 57);
-		new TestDependency(p3, p4, 45);
-		new TestDependency(p4, p3, 3);
+		new Dependency(p1, p2, 13);
+		new Dependency(p2, p3, 57);
+		new Dependency(p3, p4, 45);
+		new Dependency(p4, p3, 3);
 		
 		return new ArrayList<>(Arrays.asList(p1, p2, p3, p4));
 	}

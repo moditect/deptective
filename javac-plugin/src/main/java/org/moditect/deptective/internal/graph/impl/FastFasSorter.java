@@ -19,18 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.moditect.deptective.internal.graph.GraphUtils;
-import org.moditect.deptective.internal.graph.IDependency;
-import org.moditect.deptective.internal.graph.INode;
+import org.moditect.deptective.internal.graph.Dependency;
+import org.moditect.deptective.internal.graph.Node;
 import org.moditect.deptective.internal.graph.INodeSorter;
 
-public class FastFasSorter<T extends INode, D extends IDependency> implements INodeSorter<T, D> {
+public class FastFasSorter implements INodeSorter {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public SortResult<T, D> sort(List<T> artifacts) {
+	public SortResult sort(List<Node> artifacts) {
 
 		// we have to compute the adjacency matrix first
 		int[][] adjacencyMatrix = GraphUtils.computeAdjacencyMatrix(artifacts);
@@ -63,21 +60,21 @@ public class FastFasSorter<T extends INode, D extends IDependency> implements IN
 		// reverse it
 		ordered = FastFAS.reverse(ordered);
 
-		// create the result list
-		List<T> resultNodes = new ArrayList<T>(artifacts.size());
+		// create the result nodes list
+		List<Node> resultNodes = new ArrayList<>(artifacts.size());
 		for (int index : ordered) {
 			resultNodes.add(artifacts.get(index));
 		}
 
-		//
-		List<D> upwardsDependencies = new ArrayList<>();
+		// create the list of upwards dependencies
+		List<Dependency> upwardsDependencies = new ArrayList<>();
 		for (Integer[] values : fastFAS.getSkippedEdge()) {
-			INode source = artifacts.get(values[0]);
-			INode target = artifacts.get(values[1]);
-			upwardsDependencies.add((D) source.getOutgoingDependencyTo(target));
+			Node source = artifacts.get(values[0]);
+			Node target = artifacts.get(values[1]);
+			upwardsDependencies.add(source.getOutgoingDependencyTo(target));
 		}
 
-		//
+		// return the result
 		return new SortResult() {
 
 			@Override

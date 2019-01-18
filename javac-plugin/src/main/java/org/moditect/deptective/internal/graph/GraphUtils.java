@@ -29,22 +29,19 @@ import org.moditect.deptective.internal.graph.impl.DependencyStructureMatrix;
 import org.moditect.deptective.internal.graph.impl.FastFasSorter;
 import org.moditect.deptective.internal.graph.impl.Tarjan;
 
-/**
- * 
- * @author Gerd W&uuml;therich (gw@code-kontor.io)
- */
 public class GraphUtils {
 
 	/**
-	 * A directed graph is called strongly connected if there is a path in each direction between each pair of vertices of the graph.
-	 * A strongly connected component (SCC) of a directed graph is a maximal strongly connected subgraph. 
+	 * A directed graph is called strongly connected if there is a path in each direction between each pair of vertices 
+	 * of the graph. A strongly connected component (SCC) of a directed graph is a maximal strongly connected subgraph. 
 	 * 
 	 * @param nodes the collection of nodes (the directed graph)
-	 * @return a list of strongly connected components (SCCs). Note that the result also contains components that contain only a single node.
+	 * @return a list of strongly connected components (SCCs). Note that the result also contains components that 
+	 * contain only a single node.
 	 */
-	public static <N extends INode> List<List<N>> detectStronglyConnectedComponents(Collection<? extends N> nodes) {
+	public static  List<List<Node>> detectStronglyConnectedComponents(Collection<Node> nodes) {
 
-		return new Tarjan<N>().detectStronglyConnectedComponents(checkNotNull(nodes));
+		return new Tarjan<Node>().detectStronglyConnectedComponents(checkNotNull(nodes));
 	}
 
 	/**
@@ -52,8 +49,8 @@ public class GraphUtils {
 	 * @param nodes
 	 * @return
 	 */
-	public static <N extends INode> List<List<N>> detectCycles(Collection<N> nodes) {
-		return new Tarjan<N>().detectStronglyConnectedComponents(nodes).stream().filter(cycle -> cycle.size() > 1)
+	public static  List<List<Node>> detectCycles(Collection<Node> nodes) {
+		return new Tarjan<Node>().detectStronglyConnectedComponents(nodes).stream().filter(cycle -> cycle.size() > 1)
 				.collect(Collectors.toList());
 	}
 
@@ -62,8 +59,8 @@ public class GraphUtils {
 	 * @param nodes
 	 * @return
 	 */
-	public static <N extends INode, D extends IDependency> IDependencyStructureMatrix<N, D> createDependencyStructureMatrix(Collection<N> nodes) {
-		return new DependencyStructureMatrix<N, D>(nodes);
+	public static <N extends Node, D extends Dependency> DependencyStructureMatrix createDependencyStructureMatrix(Collection<Node> nodes) {
+		return new DependencyStructureMatrix(nodes);
 	}
 
 	/**
@@ -73,13 +70,13 @@ public class GraphUtils {
 	 * @param artifacts
 	 * @return
 	 */
-	public static int[][] computeAdjacencyMatrix(Collection<? extends INode> artifacts) {
+	public static int[][] computeAdjacencyMatrix(Collection<Node> artifacts) {
 
 		//
 		checkNotNull(artifacts);
 
 		//
-		return computeAdjacencyMatrix((INode[]) artifacts.toArray(new INode[artifacts.size()]));
+		return computeAdjacencyMatrix((Node[]) artifacts.toArray(new Node[artifacts.size()]));
 	}
 
 	/**
@@ -90,7 +87,7 @@ public class GraphUtils {
 	 * @param artifacts
 	 * @return
 	 */
-	public static int[][] computeAdjacencyMatrix(INode... artifacts) {
+	public static int[][] computeAdjacencyMatrix(Node... artifacts) {
 
 		//
 		int[][] result = new int[artifacts.length][artifacts.length];
@@ -100,7 +97,7 @@ public class GraphUtils {
 			for (int j = 0; j < result.length; j++) {
 
 				// get the dependency
-				IDependency dependency = artifacts[i].getOutgoingDependencyTo(artifacts[j]);
+				Dependency dependency = artifacts[i].getOutgoingDependencyTo(artifacts[j]);
 				result[i][j] = dependency != null ? dependency.getAggregatedWeight() : 0;
 			}
 		}
@@ -116,24 +113,24 @@ public class GraphUtils {
 	 * @param artifacts
 	 * @return
 	 */
-	public static int[][] computeAdjacencyList(Collection<INode> artifacts) {
+	public static int[][] computeAdjacencyList(Collection<Node> artifacts) {
 		checkNotNull(artifacts);
 
-		return computeAdjacencyList((INode[]) artifacts.toArray(new INode[artifacts.size()]));
+		return computeAdjacencyList((Node[]) artifacts.toArray(new Node[artifacts.size()]));
 	}
 
 	/**
 	 * @param nodes
 	 */
-	public static int[][] computeAdjacencyList(INode... nodes) {
+	public static int[][] computeAdjacencyList(Node... nodes) {
 
 		//
 		int[][] matrix;
 
 		// prepare
 		int i = 0;
-		Map<INode, Integer> map = new HashMap<INode, Integer>();
-		for (INode iArtifact : nodes) {
+		Map<Node, Integer> map = new HashMap<Node, Integer>();
+		for (Node iArtifact : nodes) {
 			map.put(iArtifact, i);
 			i++;
 		}
@@ -141,10 +138,10 @@ public class GraphUtils {
 		matrix = new int[nodes.length][];
 
 		//
-		for (INode node : nodes) {
+		for (Node node : nodes) {
 
 			// get the referenced artifacts
-			Collection<IDependency> dependencies = node.getOutgoingDependenciesTo(Arrays.asList(nodes));
+			Collection<Dependency> dependencies = node.getOutgoingDependenciesTo(Arrays.asList(nodes));
 
 			if (dependencies == null) {
 				dependencies = Collections.emptyList();
@@ -156,7 +153,7 @@ public class GraphUtils {
 
 			//
 			int count = 0;
-			for (IDependency dependency : dependencies) {
+			for (Dependency dependency : dependencies) {
 				matrix[index][count] = map.get(dependency.getTo());
 				count++;
 			}
@@ -170,8 +167,7 @@ public class GraphUtils {
 	 * 
 	 * @return
 	 */
-	public static <N extends INode, D extends IDependency> INodeSorter<N, D> createFasNodeSorter() {
-
-		return new FastFasSorter<>();
+	public static INodeSorter createFasNodeSorter() {
+		return new FastFasSorter();
 	}
 }

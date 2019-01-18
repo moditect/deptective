@@ -32,19 +32,19 @@ import java.util.Set;
 public class FastFAS {
 
 	/** the set of vertices */
-	private Set<Integer> _vertices;
+	private Set<Integer> vertices;
 
 	/** the adjacency matrix */
-	int[][] _adjacencyMatrix;
+	int[][] adjacencyMatrix;
 
 	/** the result list 's1' */
-	private List<Integer> _s1;
+	private List<Integer> s1;
 
 	/** the result list 's2' */
-	private List<Integer> _s2;
+	private List<Integer> s2;
 
 	/** the skipped edges */
-	private List<Integer[]> _skippedEdge;
+	private List<Integer[]> skippedEdge;
 
 	/**
 	 * <p>
@@ -54,11 +54,7 @@ public class FastFAS {
 	 * @param adjacencyMatrix the adjacency matrix
 	 */
 	public FastFAS(int[][] adjacencyMatrix) {
-
-		// Assert
-
-		//
-		_adjacencyMatrix = adjacencyMatrix;
+		this.adjacencyMatrix = checkNotNull(adjacencyMatrix);
 	}
 
 	/**
@@ -71,20 +67,20 @@ public class FastFAS {
 	public int[] getOrderedSequence() {
 
 		// create the skipped edges list
-		_skippedEdge = new ArrayList<>();
+		skippedEdge = new ArrayList<>();
 
 		// create the vertices set
-		_vertices = new HashSet<Integer>();
-		for (int i = 0; i < _adjacencyMatrix.length; i++) {
-			_vertices.add(i);
+		vertices = new HashSet<Integer>();
+		for (int i = 0; i < this.adjacencyMatrix.length; i++) {
+			vertices.add(i);
 		}
 
 		// create the internal result lists
-		_s1 = new ArrayList<Integer>();
-		_s2 = new ArrayList<Integer>();
+		s1 = new ArrayList<Integer>();
+		s2 = new ArrayList<Integer>();
 
 		// the main loop
-		while (!_vertices.isEmpty()) {
+		while (!vertices.isEmpty()) {
 			if (findSink()) {
 				continue;
 			} else if (findSource()) {
@@ -95,20 +91,13 @@ public class FastFAS {
 		}
 
 		// convert to result array
-		return convertToArray(_s1, _s2);
+		return convertToArray(s1, s2);
 	}
 	
 	public List<Integer[]> getSkippedEdge() {
-		return _skippedEdge;
+		return skippedEdge;
 	}
 
-	/**
-	 * <p>
-	 * </p>
-	 * 
-	 * @param sequence
-	 * @return
-	 */
 	public static int[] reverse(int[] sequence) {
 
 		//
@@ -137,10 +126,10 @@ public class FastFAS {
 		int sink = -1;
 
 		// try to find a sink...
-		for (Integer i : _vertices) {
+		for (Integer i : vertices) {
 			sink = i;
-			for (Integer j : _vertices) {
-				if (i != j && _adjacencyMatrix[i][j] != 0) {
+			for (Integer j : vertices) {
+				if (i != j && this.adjacencyMatrix[i][j] != 0) {
 					sink = -1;
 					break;
 				}
@@ -152,8 +141,8 @@ public class FastFAS {
 
 		// if a sink was found, remove it and return true...
 		if (sink != -1) {
-			_vertices.remove(sink);
-			_s2.add(0, sink);
+			vertices.remove(sink);
+			s2.add(0, sink);
 			return true;
 		}
 		// ...otherwise return false
@@ -175,10 +164,10 @@ public class FastFAS {
 		int source = -1;
 
 		// try to find a source...
-		for (Integer i : _vertices) {
+		for (Integer i : vertices) {
 			source = i;
-			for (Integer j : _vertices) {
-				if (i != j && _adjacencyMatrix[j][i] != 0) {
+			for (Integer j : vertices) {
+				if (i != j && this.adjacencyMatrix[j][i] != 0) {
 					source = -1;
 					break;
 				}
@@ -190,8 +179,8 @@ public class FastFAS {
 
 		// if a source was found, remove it and return true...
 		if (source != -1) {
-			_vertices.remove(source);
-			_s1.add(source);
+			vertices.remove(source);
+			s1.add(source);
 			return true;
 		}
 		// ...otherwise return false
@@ -213,7 +202,7 @@ public class FastFAS {
 		int currentVertex = Integer.MIN_VALUE;
 
 		// find the vertex with the highest maximum
-		for (Integer vertex : _vertices) {
+		for (Integer vertex : vertices) {
 			int delta = getDelta(vertex);
 			if (currentVertex == Integer.MIN_VALUE || currentMaximum < delta) {
 				currentMaximum = delta;
@@ -222,16 +211,16 @@ public class FastFAS {
 		}
 		
 		// remove vertex and return true...
-		_vertices.remove(currentVertex);
+		vertices.remove(currentVertex);
 		
 		// 
-		for (Integer j : _vertices) {
-			if (currentVertex != j && _adjacencyMatrix[j][currentVertex] != 0) {
-				_skippedEdge.add(new Integer[]{j, currentVertex});	
+		for (Integer j : vertices) {
+			if (currentVertex != j && this.adjacencyMatrix[j][currentVertex] != 0) {
+				skippedEdge.add(new Integer[]{j, currentVertex});	
 			}
 		}
 		
-		_s1.add(currentVertex);
+		s1.add(currentVertex);
 		return false;
 	}
 
@@ -247,10 +236,10 @@ public class FastFAS {
 		int in = 0;
 		int out = 0;
 
-		for (Integer j : _vertices) {
+		for (Integer j : vertices) {
 			if (vertex != j) {
-				in = in + _adjacencyMatrix[j][vertex];
-				out = out + _adjacencyMatrix[vertex][j];
+				in = in + this.adjacencyMatrix[j][vertex];
+				out = out + this.adjacencyMatrix[vertex][j];
 			}
 		}
 
@@ -279,46 +268,5 @@ public class FastFAS {
 			index++;
 		}
 		return result;
-	}
-
-	/**
-	 * <p>
-	 * </p>
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args) {
-
-		int[][] testMatrix = new int[][] { { 1, 3, 5 }, { 0, 9, 2 }, { 0, 12, 33 } };
-
-		//
-		FastFAS fas = new FastFAS(testMatrix);
-		int[] result = fas.getOrderedSequence();
-
-		System.out.println("Beziehungen abw?rts:");
-		for (int i = 0; i < result.length; i++) {
-			System.out.println(result[i]);
-			for (int j = i; j < result.length; j++) {
-				if (i != j && fas._adjacencyMatrix[result[i]][result[j]] > 0) {
-					System.out.println(
-							" - " + result[i] + ":" + result[j] + " -> " + fas._adjacencyMatrix[result[i]][result[j]]);
-				}
-			}
-		}
-
-		System.out.println("Beziehungen aufw?rts:");
-		int[] reverseResult = new int[result.length];
-		for (int i = 0; i < result.length; i++) {
-			reverseResult[result.length - (1 + i)] = result[i];
-		}
-		for (int i = 0; i < reverseResult.length; i++) {
-			System.out.println(reverseResult[i]);
-			for (int j = i; j < reverseResult.length; j++) {
-				if (i != j && fas._adjacencyMatrix[reverseResult[i]][reverseResult[j]] > 0) {
-					System.out.println(" - " + reverseResult[i] + ":" + reverseResult[j] + " -> "
-							+ fas._adjacencyMatrix[reverseResult[i]][reverseResult[j]]);
-				}
-			}
-		}
 	}
 }

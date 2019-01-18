@@ -29,8 +29,8 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.moditect.deptective.internal.graph.DefaultDependency;
-import org.moditect.deptective.internal.graph.DefaultNode;
+import org.moditect.deptective.internal.graph.Dependency;
+import org.moditect.deptective.internal.graph.Node;
 import org.moditect.deptective.internal.graph.GraphUtils;
 import org.moditect.deptective.internal.graph.INode;
 import org.moditect.deptective.internal.model.Package.ReadKind;
@@ -252,24 +252,24 @@ public class PackageDependencies {
     public String toCycleReport() {
     	
     	//
-    	Map<String, DefaultNode> graphNodeMap = new HashMap<>();
+    	Map<String, Node> graphNodeMap = new HashMap<>();
     	
     	// create the nodes
-    	packagesByName.values().forEach(p -> graphNodeMap.put(p.getName(), new DefaultNode(p.getName())));
+    	packagesByName.values().forEach(p -> graphNodeMap.put(p.getName(), new Node(p.getName())));
     	
     	// create the dependencies
     	packagesByName.values().forEach(p -> {
-    		DefaultNode sourceNode = graphNodeMap.get(p.getName());
+    		Node sourceNode = graphNodeMap.get(p.getName());
     		p.getReads().keySet().forEach(target -> {
-    			DefaultNode targetNode = graphNodeMap.get(p.getName());
+    			Node targetNode = graphNodeMap.get(p.getName());
     			// TODO: WEIGHT
-    			DefaultDependency defaultDependency = new DefaultDependency(sourceNode, targetNode, 1);
+    			Dependency defaultDependency = new Dependency(sourceNode, targetNode, 1);
     			sourceNode.addOutgoingDependency(defaultDependency);
     		});
     	});
     	
     	//
-    	List<List<DefaultNode>> cycles = GraphUtils.detectCycles(graphNodeMap.values());
+    	List<List<Node>> cycles = GraphUtils.detectCycles(graphNodeMap.values());
     	
     	//
     	if (!cycles.isEmpty()) {

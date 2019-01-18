@@ -21,19 +21,19 @@ import java.util.List;
  * 
  * @author Gerd W&uuml;therich (gw@code-kontor.io)
  */
-public interface IDependencyStructureMatrix<N extends INode, D extends IDependency> {
+public interface IDependencyStructureMatrix {
 
 	/**
 	 * 
 	 * @return
 	 */
-	List<N> getOrderedNodes();
+	List<Node> getOrderedNodes();
 
 	/**
 	 * 
 	 * @return
 	 */
-	List<D> getUpwardDependencies();
+	List<Dependency> getUpwardDependencies();
 
 	/**
 	 * 

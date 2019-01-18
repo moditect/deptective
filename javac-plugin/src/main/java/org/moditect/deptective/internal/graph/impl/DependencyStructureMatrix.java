@@ -23,162 +23,120 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.moditect.deptective.internal.graph.IDependency;
+import org.moditect.deptective.internal.graph.Dependency;
 import org.moditect.deptective.internal.graph.IDependencyStructureMatrix;
-import org.moditect.deptective.internal.graph.INode;
-import org.moditect.deptective.internal.graph.INodeSorter;
 import org.moditect.deptective.internal.graph.INodeSorter.SortResult;
+import org.moditect.deptective.internal.graph.Node;
+import org.moditect.deptective.internal.graph.INodeSorter;
 
-/**
- * <p>
- * </p>
- * 
- * @author Gerd W&uuml;therich (gerd@gerd-wuetherich.de)
- */
-public class DependencyStructureMatrix<N extends INode, D extends IDependency> implements IDependencyStructureMatrix<N, D> {
+public class DependencyStructureMatrix implements IDependencyStructureMatrix {
 
-	/** - */
-	private List<List<N>> _cycles;
+	private List<List<Node>> cycles;
 
-	/** - */
-	private int[][] _cycleArray;
+	private int[][] cycleArray;
 
-	/** - */
-	private List<N> _nodes;
+	private List<Node> nodes;
 	
-	/** - */
-	private List<D> _upwardDependencies;
+	private List<Dependency> upwardDependencies;
 
-	/**
-	 * <p>
-	 * Creates a new instance of type {@link DependencyStructureMatrix}.
-	 * </p>
-	 * 
-	 * @param unorderedArtifacts
-	 */
-	public DependencyStructureMatrix(Collection<N> nodes) {
+	public DependencyStructureMatrix(Collection<Node> nodes) {
 		initialize(nodes);
 	}
 	
 	@Override
-	public List<D> getUpwardDependencies() {
-		return _upwardDependencies;
+	public List<Dependency> getUpwardDependencies() {
+		return upwardDependencies;
 	}
 
 	@Override
 	public int getWeight(int i, int j) {
 
-		//
-		if (i < 0 || i >= _nodes.size() || j < 0 || j >= _nodes.size()) {
+		if (i < 0 || i >= nodes.size() || j < 0 || j >= nodes.size()) {
 			return -1;
 		}
 
-		//
-		IDependency dependency = _nodes.get(i).getOutgoingDependencyTo(_nodes.get(j));
+		Dependency dependency = nodes.get(i).getOutgoingDependencyTo(nodes.get(j));
 
-		//
 		return dependency != null ? dependency.getAggregatedWeight() : 0;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public List<N> getOrderedNodes() {
-		return _nodes;
+	public List<Node> getOrderedNodes() {
+		return nodes;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isRowInCycle(int i) {
 		return isCellInCycle(i, i);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isCellInCycle(int i, int j) {
 
-		//
-		if (i < 0 || i >= _nodes.size() || j < 0 || j >= _nodes.size()) {
+		if (i < 0 || i >= nodes.size() || j < 0 || j >= nodes.size()) {
 			return false;
 		}
 
-		//
-		for (List<N> cycle : _cycles) {
-			if (cycle.size() > 1 && cycle.contains(_nodes.get(i)) && cycle.contains(_nodes.get(j))) {
+		for (List<Node> cycle : cycles) {
+			if (cycle.size() > 1 && cycle.contains(nodes.get(i)) && cycle.contains(nodes.get(j))) {
 				return true;
 			}
 		}
 
-		//
 		return false;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int[][] getCycleArray() {
-		return _cycleArray;
+		return cycleArray;
 	}
 
-	/**
-	 * 
-	 * @param unorderedArtifacts
-	 */
-	private void initialize(Collection<N> unorderedArtifacts) {
+	private void initialize(Collection<Node> unorderedArtifacts) {
 
 		checkNotNull(unorderedArtifacts);
 		
-		_upwardDependencies = new ArrayList<>();
+		upwardDependencies = new ArrayList<>();
 
-		_cycles = new Tarjan<N>().detectStronglyConnectedComponents(unorderedArtifacts);
-		INodeSorter<N, D> artifactSorter = new FastFasSorter<N, D>();
-		for (List<N> cycle : _cycles) {
+		cycles = new Tarjan<Node>().detectStronglyConnectedComponents(unorderedArtifacts);
+		INodeSorter artifactSorter = new FastFasSorter();
+		for (List<Node> cycle : cycles) {
 			if (cycle.size() > 1) {
-				SortResult<N, D> sortResult = artifactSorter.sort(cycle);
+				SortResult sortResult = artifactSorter.sort(cycle);
 				cycle = sortResult.getOrderedNodes();
-				_upwardDependencies.addAll(sortResult.getUpwardsDependencies());
+				upwardDependencies.addAll(sortResult.getUpwardsDependencies());
 			}
 		}
 
-		//
-		List<N> orderedArtifacts = new ArrayList<>();
+		List<Node> orderedArtifacts = new ArrayList<>();
 
 		// optimize: un-cycled artifacts without dependencies first
-		for (List<N> artifactList : _cycles) {
+		for (List<Node> artifactList : cycles) {
 			if (artifactList.size() == 1 && !artifactList.get(0).hasOutgoingDependencies()) {
 				orderedArtifacts.add(artifactList.get(0));
 			}
 		}
 
-		//
-		for (List<N> cycle : _cycles) {
-			for (N node : cycle) {
+		for (List<Node> cycle : cycles) {
+			for (Node node : cycle) {
 				if (!orderedArtifacts.contains(node)) {
 					orderedArtifacts.add(node);
 				}
 			}
 		}
 		Collections.reverse(orderedArtifacts);
-		_nodes = orderedArtifacts;
+		nodes = orderedArtifacts;
 
-		//
-		List<int[]> cycles = new LinkedList<int[]>();
-		for (List<N> artifactList : _cycles) {
+		List<int[]> cyc = new LinkedList<int[]>();
+		for (List<Node> artifactList : cycles) {
 			if (artifactList.size() > 1) {
 				int[] cycle = new int[artifactList.size()];
 				for (int i = 0; i < cycle.length; i++) {
 					cycle[cycle.length - (i + 1)] = orderedArtifacts.indexOf(artifactList.get(i));
 				}
-				cycles.add(cycle);
+				cyc.add(cycle);
 			}
 		}
 
-		_cycleArray = cycles.toArray(new int[0][0]);
+		cycleArray = cyc.toArray(new int[0][0]);
 	}
 }

@@ -32,16 +32,16 @@ public class StronglyConnectedComponentsTest {
 	public void detectCycle() {
 
 		//
-		List<INode> nodes = TestModelCreator.createDummyModel();
+		List<Node> nodes = TestModelCreator.createDummyModel();
 
 		//
-		List<List<INode>> stronglyConnectedComponents = GraphUtils.detectStronglyConnectedComponents(nodes);
+		List<List<Node>> stronglyConnectedComponents = GraphUtils.detectStronglyConnectedComponents(nodes);
 
 		//
 		assertThat(stronglyConnectedComponents).hasSize(3);
 
 		//
-		for (List<INode> scc : stronglyConnectedComponents) {
+		for (List<Node> scc : stronglyConnectedComponents) {
 			if (scc.size() == 2) {
 				assertThat(scc).contains(nodes.get(2)).contains(nodes.get(3));
 			}

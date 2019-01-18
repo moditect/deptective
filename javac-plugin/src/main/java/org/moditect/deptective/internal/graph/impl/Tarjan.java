@@ -22,47 +22,29 @@ import java.util.Collection;
 import java.util.List;
 
 import org.moditect.deptective.internal.graph.GraphUtils;
-import org.moditect.deptective.internal.graph.INode;
+import org.moditect.deptective.internal.graph.Node;
 
-/**
- */
-public class Tarjan<T extends INode> {
+public class Tarjan<T extends Node> {
 
-  /** - */
   private int                     _index                       = 0;
-
-  /** - */
   private ArrayList<Integer>      _stack                       = new ArrayList<Integer>();
-
-  /** - */
   private List<List<T>>           _stronglyConnectedComponents = new ArrayList<List<T>>();
-
-  /** - */
   int[]                           _vlowlink;
-
-  /** - */
   int[]                           _vindex;
 
-  /** - */
-  private INode[] _artifacts;
+  private Node[] _artifacts;
 
-  /**
-   * @param artifacts
-   * @return
-   */
   public List<List<T>> detectStronglyConnectedComponents(Collection<? extends T> artifacts) {
     checkNotNull(artifacts);
 
-    _artifacts = artifacts.toArray(new INode[0]);
+    _artifacts = artifacts.toArray(new Node[0]);
     int[][] adjacencyList = GraphUtils.computeAdjacencyList(_artifacts);
     return executeTarjan(adjacencyList);
   }
 
-  //
   private List<List<T>> executeTarjan(int[][] graph) {
     checkNotNull(graph);
 
-    // clear
     _stronglyConnectedComponents.clear();
     _index = 0;
     _stack.clear();
@@ -73,14 +55,12 @@ public class Tarjan<T extends INode> {
       _vindex[i] = -1;
     }
 
-    //
     for (int i = 0; i < graph.length; i++) {
       if (_vindex[i] == -1) {
         tarjan(i, graph);
       }
     }
 
-    //
     return _stronglyConnectedComponents;
   }
 
