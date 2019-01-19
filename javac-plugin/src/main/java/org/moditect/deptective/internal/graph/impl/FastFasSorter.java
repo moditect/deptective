@@ -25,67 +25,68 @@ import org.moditect.deptective.internal.graph.INodeSorter;
 
 public class FastFasSorter implements INodeSorter {
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-	public SortResult sort(List<Node> artifacts) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public SortResult sort(List<Node> artifacts) {
 
-		// we have to compute the adjacency matrix first
-		int[][] adjacencyMatrix = GraphUtils.computeAdjacencyMatrix(artifacts);
+        // we have to compute the adjacency matrix first
+        int[][] adjacencyMatrix = GraphUtils.computeAdjacencyMatrix(artifacts);
 
-		// the ordered sequence (highest first!)
-		FastFAS fastFAS = new FastFAS(adjacencyMatrix);
-		int[] ordered = fastFAS.getOrderedSequence();
+        // the ordered sequence (highest first!)
+        FastFAS fastFAS = new FastFAS(adjacencyMatrix);
+        int[] ordered = fastFAS.getOrderedSequence();
 
-		// Bubbles
-		for (int outerIndex = 1; outerIndex < ordered.length; outerIndex++) {
-			for (int index = outerIndex; index >= 1; index--) {
+        // Bubbles
+        for (int outerIndex = 1; outerIndex < ordered.length; outerIndex++) {
+            for (int index = outerIndex; index >= 1; index--) {
 
-				//
-				if (adjacencyMatrix[ordered[index]][ordered[index
-						- 1]] > adjacencyMatrix[ordered[index - 1]][ordered[index]]) {
+                //
+                if (adjacencyMatrix[ordered[index]][ordered[index
+                        - 1]] > adjacencyMatrix[ordered[index - 1]][ordered[index]]) {
 
-					// swap...
-					int temp = ordered[index];
-					ordered[index] = ordered[index - 1];
-					ordered[index - 1] = temp;
+                    // swap...
+                    int temp = ordered[index];
+                    ordered[index] = ordered[index - 1];
+                    ordered[index - 1] = temp;
 
-				} else {
+                }
+                else {
 
-					// stop bubbling...
-					break;
-				}
-			}
-		}
+                    // stop bubbling...
+                    break;
+                }
+            }
+        }
 
-		// reverse it
-		ordered = FastFAS.reverse(ordered);
+        // reverse it
+        ordered = FastFAS.reverse(ordered);
 
-		// create the result nodes list
-		List<Node> resultNodes = new ArrayList<>(artifacts.size());
-		for (int index : ordered) {
-			resultNodes.add(artifacts.get(index));
-		}
+        // create the result nodes list
+        List<Node> resultNodes = new ArrayList<>(artifacts.size());
+        for (int index : ordered) {
+            resultNodes.add(artifacts.get(index));
+        }
 
-		// create the list of upwards dependencies
-		List<Dependency> upwardsDependencies = new ArrayList<>();
-		for (Integer[] values : fastFAS.getSkippedEdge()) {
-			Node source = artifacts.get(values[0]);
-			Node target = artifacts.get(values[1]);
-			upwardsDependencies.add(source.getOutgoingDependencyTo(target));
-		}
+        // create the list of upwards dependencies
+        List<Dependency> upwardsDependencies = new ArrayList<>();
+        for (Integer[] values : fastFAS.getSkippedEdge()) {
+            Node source = artifacts.get(values[0]);
+            Node target = artifacts.get(values[1]);
+            upwardsDependencies.add(source.getOutgoingDependencyTo(target));
+        }
 
-		// return the result
-		return new SortResult() {
+        // return the result
+        return new SortResult() {
 
-			@Override
-			public List getOrderedNodes() {
-				return resultNodes;
-			}
+            @Override
+            public List getOrderedNodes() {
+                return resultNodes;
+            }
 
-			@Override
-			public List getUpwardsDependencies() {
-				return upwardsDependencies;
-			}
-		};
-	}
+            @Override
+            public List getUpwardsDependencies() {
+                return upwardsDependencies;
+            }
+        };
+    }
 }

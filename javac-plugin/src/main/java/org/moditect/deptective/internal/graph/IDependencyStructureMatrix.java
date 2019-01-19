@@ -18,46 +18,19 @@ package org.moditect.deptective.internal.graph;
 import java.util.List;
 
 /**
- * 
  * @author Gerd W&uuml;therich (gw@code-kontor.io)
  */
 public interface IDependencyStructureMatrix {
 
-	/**
-	 * 
-	 * @return
-	 */
-	List<Node> getOrderedNodes();
+    List<Node> getOrderedNodes();
 
-	/**
-	 * 
-	 * @return
-	 */
-	List<Dependency> getUpwardDependencies();
+    List<Dependency> getUpwardDependencies();
 
-	/**
-	 * 
-	 * @return
-	 */
-	int[][] getCycleArray();
+    List<List<Node>> getCycles();
 
-	/**
-	 * 
-	 * @return
-	 */
-	boolean isCellInCycle(int i, int j);
+    boolean isCellInCycle(int i, int j);
 
-	/**
-	 * 
-	 * @return
-	 */
-	boolean isRowInCycle(int i);
+    boolean isRowInCycle(int i);
 
-	/**
-	 * 
-	 * @param i
-	 * @param j
-	 * @return
-	 */
-	int getWeight(int i, int j);
+    int getWeight(int i, int j);
 }

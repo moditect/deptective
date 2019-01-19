@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 
 import org.junit.Test;
-import org.moditect.deptective.internal.graph.fwk.TestModelCreator;
 
 /**
  * 
@@ -28,23 +27,23 @@ import org.moditect.deptective.internal.graph.fwk.TestModelCreator;
  */
 public class StronglyConnectedComponentsTest {
 
-	@Test
-	public void detectCycle() {
+    @Test
+    public void detectCycle() {
 
-		//
-		List<Node> nodes = TestModelCreator.createDummyModel();
+        //
+        List<Node> nodes = TestModelCreator.createDummyModel();
 
-		//
-		List<List<Node>> stronglyConnectedComponents = GraphUtils.detectStronglyConnectedComponents(nodes);
+        //
+        List<List<Node>> stronglyConnectedComponents = GraphUtils.detectStronglyConnectedComponents(nodes);
 
-		//
-		assertThat(stronglyConnectedComponents).hasSize(3);
+        //
+        assertThat(stronglyConnectedComponents).hasSize(3);
 
-		//
-		for (List<Node> scc : stronglyConnectedComponents) {
-			if (scc.size() == 2) {
-				assertThat(scc).contains(nodes.get(2)).contains(nodes.get(3));
-			}
-		}
-	}
+        //
+        for (List<Node> scc : stronglyConnectedComponents) {
+            if (scc.size() == 2) {
+                assertThat(scc).contains(nodes.get(2)).contains(nodes.get(3));
+            }
+        }
+    }
 }

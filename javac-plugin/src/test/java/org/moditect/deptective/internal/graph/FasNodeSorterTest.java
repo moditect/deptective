@@ -21,23 +21,22 @@ import java.util.List;
 
 import org.junit.Test;
 import org.moditect.deptective.internal.graph.INodeSorter.SortResult;
-import org.moditect.deptective.internal.graph.fwk.TestModelCreator;
 
 public class FasNodeSorterTest {
 
-	@Test
-	public void sortNodes() {
+    @Test
+    public void sortNodes() {
 
-		//
-		List<Node> nodes = TestModelCreator.createDummyModel();
+        //
+        List<Node> nodes = TestModelCreator.createDummyModel();
 
-		//
-		INodeSorter nodeSorter = GraphUtils.createFasNodeSorter();
+        //
+        INodeSorter nodeSorter = GraphUtils.createFasNodeSorter();
 
-		//
-		SortResult sortResult = nodeSorter.sort(nodes);
-		
-		//
-		assertThat(sortResult.getUpwardsDependencies()).hasSize(1);
-	}
+        //
+        SortResult sortResult = nodeSorter.sort(nodes);
+
+        //
+        assertThat(sortResult.getUpwardsDependencies()).hasSize(1);
+    }
 }

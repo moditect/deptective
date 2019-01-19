@@ -29,10 +29,6 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.moditect.deptective.internal.graph.Dependency;
-import org.moditect.deptective.internal.graph.Node;
-import org.moditect.deptective.internal.graph.GraphUtils;
-import org.moditect.deptective.internal.graph.INode;
 import org.moditect.deptective.internal.model.Package.ReadKind;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -249,36 +245,5 @@ public class PackageDependencies {
                 .filter(w -> w.matches(packageName))
                 .findFirst()
                 .isPresent();
-    }
-    
-    public String toCycleReport() {
-    	
-    	//
-    	Map<String, Node> graphNodeMap = new HashMap<>();
-    	
-    	// create the nodes
-    	packagesByName.values().forEach(p -> graphNodeMap.put(p.getName(), new Node(p.getName())));
-    	
-    	// create the dependencies
-    	packagesByName.values().forEach(p -> {
-    		Node sourceNode = graphNodeMap.get(p.getName());
-    		p.getReads().keySet().forEach(target -> {
-    			Node targetNode = graphNodeMap.get(p.getName());
-    			// TODO: WEIGHT
-    			Dependency defaultDependency = new Dependency(sourceNode, targetNode, 1);
-    			sourceNode.addOutgoingDependency(defaultDependency);
-    		});
-    	});
-    	
-    	//
-    	List<List<Node>> cycles = GraphUtils.detectCycles(graphNodeMap.values());
-    	
-    	//
-    	if (!cycles.isEmpty()) {
-    		
-    		// FAIL!
-    	}
-    	
-    	return "TODO";
     }
 }

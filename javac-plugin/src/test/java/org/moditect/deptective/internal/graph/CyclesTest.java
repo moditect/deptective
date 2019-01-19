@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 
 import org.junit.Test;
-import org.moditect.deptective.internal.graph.fwk.TestModelCreator;
 
 /**
  * 
@@ -28,19 +27,19 @@ import org.moditect.deptective.internal.graph.fwk.TestModelCreator;
  */
 public class CyclesTest {
 
-	@Test
-	public void detectCycle() {
+    @Test
+    public void detectCycle() {
 
-		//
-		List<Node> nodes = TestModelCreator.createDummyModel();
+        //
+        List<Node> nodes = TestModelCreator.createDummyModel();
 
-		//
-		List<List<Node>> cycles = GraphUtils.detectCycles(nodes);
+        //
+        List<List<Node>> cycles = GraphUtils.detectCycles(nodes);
 
-		//
-		assertThat(cycles).hasSize(1);
+        //
+        assertThat(cycles).hasSize(1);
 
-		//
-		assertThat(cycles.get(0)).contains(nodes.get(2)).contains(nodes.get(3));
-	}
+        //
+        assertThat(cycles.get(0)).contains(nodes.get(2)).contains(nodes.get(3));
+    }
 }

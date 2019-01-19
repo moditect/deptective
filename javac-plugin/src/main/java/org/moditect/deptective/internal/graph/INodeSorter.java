@@ -18,36 +18,16 @@ package org.moditect.deptective.internal.graph;
 import java.util.List;
 
 /**
- * 
  * @author Gerd W&uuml;therich (gw@code-kontor.io)
  */
 public interface INodeSorter {
 
-	/**
-	 * <p>
-	 * </p>
-	 * 
-	 * @param artifacts
-	 * @return
-	 */
-	SortResult sort(List<Node> node);
+    SortResult sort(List<Node> node);
 
-	/**
-	 * 
-	 * @author Gerd W&uuml;therich (gw@code-kontor.io)
-	 */
-	public interface SortResult {
+    public interface SortResult {
 
-		/**
-		 * 
-		 * @return
-		 */
-		List<Node> getOrderedNodes();
+        List<Node> getOrderedNodes();
 
-		/**
-		 * 
-		 * @return
-		 */
-		List<Dependency> getUpwardsDependencies();
-	}
+        List<Dependency> getUpwardsDependencies();
+    }
 }

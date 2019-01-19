@@ -29,145 +29,130 @@ import org.moditect.deptective.internal.graph.impl.DependencyStructureMatrix;
 import org.moditect.deptective.internal.graph.impl.FastFasSorter;
 import org.moditect.deptective.internal.graph.impl.Tarjan;
 
+/**
+ * 
+ * @author Gerd W&uuml;therich (gw@code-kontor.io)
+ */
 public class GraphUtils {
 
-	/**
-	 * A directed graph is called strongly connected if there is a path in each direction between each pair of vertices 
-	 * of the graph. A strongly connected component (SCC) of a directed graph is a maximal strongly connected subgraph. 
-	 * 
-	 * @param nodes the collection of nodes (the directed graph)
-	 * @return a list of strongly connected components (SCCs). Note that the result also contains components that 
-	 * contain only a single node.
-	 */
-	public static  List<List<Node>> detectStronglyConnectedComponents(Collection<Node> nodes) {
+    /**
+     * A directed graph is called strongly connected if there is a path in each direction between each pair of vertices
+     * of the graph. A strongly connected component (SCC) of a directed graph is a maximal strongly connected subgraph.
+     * 
+     * @param nodes the collection of nodes (the directed graph)
+     * @return a list of strongly connected components (SCCs). Note that the result also contains components that
+     *         contain just a single node. If you want to detect 'real' cycle (size > 1) please use {@link GraphUtils#detectCycles(Collection)}.
+     */
+    public static List<List<Node>> detectStronglyConnectedComponents(Collection<Node> nodes) {
+        return new Tarjan<Node>().detectStronglyConnectedComponents(checkNotNull(nodes));
+    }
 
-		return new Tarjan<Node>().detectStronglyConnectedComponents(checkNotNull(nodes));
-	}
+    /**
+     * Returns all strongly connected subgraphs (size > 1) of the specified graph. 
+     * 
+     * @param nodes 
+     * @return a list of strongly connected components (SCCs) with a size > 1.
+     */
+    public static List<List<Node>> detectCycles(Collection<Node> nodes) {
+        return new Tarjan<Node>().detectStronglyConnectedComponents(nodes).stream().filter(cycle -> cycle.size() > 1)
+                .collect(Collectors.toList());
+    }
 
-	/**
-	 * 
-	 * @param nodes
-	 * @return
-	 */
-	public static  List<List<Node>> detectCycles(Collection<Node> nodes) {
-		return new Tarjan<Node>().detectStronglyConnectedComponents(nodes).stream().filter(cycle -> cycle.size() > 1)
-				.collect(Collectors.toList());
-	}
+    /**
+     * Creates a dependency structure matrix (DSM) for the given graph nodes. 
+     * 
+     * @param nodes the collection of nodes
+     * @return
+     */
+    public static IDependencyStructureMatrix createDependencyStructureMatrix(
+            Collection<Node> nodes) {
+        return new DependencyStructureMatrix(nodes);
+    }
 
-	/**
-	 * 
-	 * @param nodes
-	 * @return
-	 */
-	public static <N extends Node, D extends Dependency> DependencyStructureMatrix createDependencyStructureMatrix(Collection<Node> nodes) {
-		return new DependencyStructureMatrix(nodes);
-	}
+    /**
+     * An adjacency matrix is a square matrix used to represent a finite graph. The elements of the matrix 
+     * indicate whether pairs of vertices are connected (adjacent) or not in the graph.
+     * 
+     * @param nodes the collection of nodes
+     * @return the adjacency matrix for the given list of nodes
+     */
+    public static int[][] computeAdjacencyMatrix(List<Node> nodes) {
+        checkNotNull(nodes);
+        return computeAdjacencyMatrix((Node[]) nodes.toArray(new Node[nodes.size()]));
+    }
 
-	/**
-	 * <p>
-	 * </p>
-	 * 
-	 * @param artifacts
-	 * @return
-	 */
-	public static int[][] computeAdjacencyMatrix(Collection<Node> artifacts) {
+    /**
+     * An adjacency matrix is a square matrix used to represent a finite graph. The elements of the matrix 
+     * indicate whether pairs of vertices are connected (adjacent) or not in the graph.
+     * 
+     * @param nodes the array of nodes
+     * @return the adjacency matrix for the given list of nodes
+     */
+    public static int[][] computeAdjacencyMatrix(Node... nodes) {
+        int[][] result = new int[nodes.length][nodes.length];
+        for (int i = 0; i < result.length; i++) {
+            for (int j = 0; j < result.length; j++) {
+                Dependency dependency = nodes[i].getOutgoingDependencyTo(nodes[j]);
+                result[i][j] = dependency != null ? dependency.getAggregatedWeight() : 0;
+            }
+        }
+        return result;
+    }
 
-		//
-		checkNotNull(artifacts);
+    /**
+     * An adjacency list is a collection of (unordered) lists used to represent a finite graph. Each list 
+     * describes the set of neighbors of a node. 
+     * 
+     * @param nodes the array of nodes
+     * @return the adjacency list for the given list of nodes
+     */
+    public static int[][] computeAdjacencyList(Collection<Node> nodes) {
+        checkNotNull(nodes);
+        return computeAdjacencyList((Node[]) nodes.toArray(new Node[nodes.size()]));
+    }
 
-		//
-		return computeAdjacencyMatrix((Node[]) artifacts.toArray(new Node[artifacts.size()]));
-	}
+    /**
+     * An adjacency list is a collection of (unordered) lists used to represent a finite graph. Each list 
+     * describes the set of neighbors of a node. 
+     * 
+     * @param nodes the array of nodes
+     * @return the adjacency list for the given list of nodes
+     */
+    public static int[][] computeAdjacencyList(Node... nodes) {
+       
+        int[][] matrix;
 
-	/**
-	 * <p>
-	 * </p>
-	 * 
-	 * @param monitor
-	 * @param artifacts
-	 * @return
-	 */
-	public static int[][] computeAdjacencyMatrix(Node... artifacts) {
+        // prepare
+        int i = 0;
+        Map<Node, Integer> map = new HashMap<Node, Integer>();
+        for (Node iArtifact : nodes) {
+            map.put(iArtifact, i);
+            i++;
+        }
+        matrix = new int[nodes.length][];
 
-		//
-		int[][] result = new int[artifacts.length][artifacts.length];
+        for (Node node : nodes) {
+            Collection<Dependency> dependencies = node.getOutgoingDependenciesTo(Arrays.asList(nodes));
+            if (dependencies == null) {
+                dependencies = Collections.emptyList();
+            }
+            int index = map.get(node);
+            matrix[index] = new int[dependencies.size()];
+            int count = 0;
+            for (Dependency dependency : dependencies) {
+                matrix[index][count] = map.get(dependency.getTo());
+                count++;
+            }
+        }
+        return matrix;
+    }
 
-		//
-		for (int i = 0; i < result.length; i++) {
-			for (int j = 0; j < result.length; j++) {
-
-				// get the dependency
-				Dependency dependency = artifacts[i].getOutgoingDependencyTo(artifacts[j]);
-				result[i][j] = dependency != null ? dependency.getAggregatedWeight() : 0;
-			}
-		}
-
-		// return the matrix
-		return result;
-	}
-
-	/**
-	 * <p>
-	 * </p>
-	 * 
-	 * @param artifacts
-	 * @return
-	 */
-	public static int[][] computeAdjacencyList(Collection<Node> artifacts) {
-		checkNotNull(artifacts);
-
-		return computeAdjacencyList((Node[]) artifacts.toArray(new Node[artifacts.size()]));
-	}
-
-	/**
-	 * @param nodes
-	 */
-	public static int[][] computeAdjacencyList(Node... nodes) {
-
-		//
-		int[][] matrix;
-
-		// prepare
-		int i = 0;
-		Map<Node, Integer> map = new HashMap<Node, Integer>();
-		for (Node iArtifact : nodes) {
-			map.put(iArtifact, i);
-			i++;
-		}
-
-		matrix = new int[nodes.length][];
-
-		//
-		for (Node node : nodes) {
-
-			// get the referenced artifacts
-			Collection<Dependency> dependencies = node.getOutgoingDependenciesTo(Arrays.asList(nodes));
-
-			if (dependencies == null) {
-				dependencies = Collections.emptyList();
-			}
-
-			//
-			int index = map.get(node);
-			matrix[index] = new int[dependencies.size()];
-
-			//
-			int count = 0;
-			for (Dependency dependency : dependencies) {
-				matrix[index][count] = map.get(dependency.getTo());
-				count++;
-			}
-		}
-
-		//
-		return matrix;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public static INodeSorter createFasNodeSorter() {
-		return new FastFasSorter();
-	}
+    /**
+     * Creates a FastFAS based {@link INodeSorter}.
+     * 
+     * @return a FastFAS based {@link INodeSorter}.
+     */
+    public static INodeSorter createFasNodeSorter() {
+        return new FastFasSorter();
+    }
 }

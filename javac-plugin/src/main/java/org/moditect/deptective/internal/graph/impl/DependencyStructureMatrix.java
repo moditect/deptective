@@ -20,123 +20,111 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.moditect.deptective.internal.graph.Dependency;
+import org.moditect.deptective.internal.graph.GraphUtils;
 import org.moditect.deptective.internal.graph.IDependencyStructureMatrix;
+import org.moditect.deptective.internal.graph.INodeSorter;
 import org.moditect.deptective.internal.graph.INodeSorter.SortResult;
 import org.moditect.deptective.internal.graph.Node;
-import org.moditect.deptective.internal.graph.INodeSorter;
 
 public class DependencyStructureMatrix implements IDependencyStructureMatrix {
 
-	private List<List<Node>> cycles;
+    private List<List<Node>> cycles;
 
-	private int[][] cycleArray;
+    private List<Node> nodes;
 
-	private List<Node> nodes;
-	
-	private List<Dependency> upwardDependencies;
+    private List<Dependency> upwardDependencies;
 
-	public DependencyStructureMatrix(Collection<Node> nodes) {
-		initialize(nodes);
-	}
-	
-	@Override
-	public List<Dependency> getUpwardDependencies() {
-		return upwardDependencies;
-	}
+    public DependencyStructureMatrix(Collection<Node> nodes) {
+        initialize(nodes);
+    }
 
-	@Override
-	public int getWeight(int i, int j) {
+    @Override
+    public List<Dependency> getUpwardDependencies() {
+        return upwardDependencies;
+    }
 
-		if (i < 0 || i >= nodes.size() || j < 0 || j >= nodes.size()) {
-			return -1;
-		}
+    @Override
+    public int getWeight(int i, int j) {
 
-		Dependency dependency = nodes.get(i).getOutgoingDependencyTo(nodes.get(j));
+        if (i < 0 || i >= nodes.size() || j < 0 || j >= nodes.size()) {
+            return -1;
+        }
 
-		return dependency != null ? dependency.getAggregatedWeight() : 0;
-	}
+        Dependency dependency = nodes.get(i).getOutgoingDependencyTo(nodes.get(j));
 
-	@Override
-	public List<Node> getOrderedNodes() {
-		return nodes;
-	}
+        return dependency != null ? dependency.getAggregatedWeight() : 0;
+    }
 
-	@Override
-	public boolean isRowInCycle(int i) {
-		return isCellInCycle(i, i);
-	}
+    @Override
+    public List<Node> getOrderedNodes() {
+        return nodes;
+    }
 
-	@Override
-	public boolean isCellInCycle(int i, int j) {
+    @Override
+    public boolean isRowInCycle(int i) {
+        return isCellInCycle(i, i);
+    }
 
-		if (i < 0 || i >= nodes.size() || j < 0 || j >= nodes.size()) {
-			return false;
-		}
+    @Override
+    public boolean isCellInCycle(int i, int j) {
 
-		for (List<Node> cycle : cycles) {
-			if (cycle.size() > 1 && cycle.contains(nodes.get(i)) && cycle.contains(nodes.get(j))) {
-				return true;
-			}
-		}
+        if (i < 0 || i >= nodes.size() || j < 0 || j >= nodes.size()) {
+            return false;
+        }
 
-		return false;
-	}
+        for (List<Node> cycle : cycles) {
+            if (cycle.size() > 1 && cycle.contains(nodes.get(i)) && cycle.contains(nodes.get(j))) {
+                return true;
+            }
+        }
 
-	@Override
-	public int[][] getCycleArray() {
-		return cycleArray;
-	}
+        return false;
+    }
 
-	private void initialize(Collection<Node> unorderedArtifacts) {
+    @Override
+    public List<List<Node>> getCycles() {
+        return cycles;
+    }
 
-		checkNotNull(unorderedArtifacts);
-		
-		upwardDependencies = new ArrayList<>();
+    private void initialize(Collection<Node> unorderedArtifacts) {
 
-		cycles = new Tarjan<Node>().detectStronglyConnectedComponents(unorderedArtifacts);
-		INodeSorter artifactSorter = new FastFasSorter();
-		for (List<Node> cycle : cycles) {
-			if (cycle.size() > 1) {
-				SortResult sortResult = artifactSorter.sort(cycle);
-				cycle = sortResult.getOrderedNodes();
-				upwardDependencies.addAll(sortResult.getUpwardsDependencies());
-			}
-		}
+        checkNotNull(unorderedArtifacts);
 
-		List<Node> orderedArtifacts = new ArrayList<>();
+        upwardDependencies = new ArrayList<>();
 
-		// optimize: un-cycled artifacts without dependencies first
-		for (List<Node> artifactList : cycles) {
-			if (artifactList.size() == 1 && !artifactList.get(0).hasOutgoingDependencies()) {
-				orderedArtifacts.add(artifactList.get(0));
-			}
-		}
+        List<List<Node>> c = GraphUtils.detectStronglyConnectedComponents(unorderedArtifacts);
+        INodeSorter artifactSorter = new FastFasSorter();
+        for (List<Node> cycle : c) {
+            SortResult sortResult = artifactSorter.sort(cycle);
+            cycle.clear();
+            cycle.addAll(sortResult.getOrderedNodes());
+            upwardDependencies.addAll(sortResult.getUpwardsDependencies());
+        }
 
-		for (List<Node> cycle : cycles) {
-			for (Node node : cycle) {
-				if (!orderedArtifacts.contains(node)) {
-					orderedArtifacts.add(node);
-				}
-			}
-		}
-		Collections.reverse(orderedArtifacts);
-		nodes = orderedArtifacts;
+        List<Node> orderedArtifacts = new ArrayList<>();
 
-		List<int[]> cyc = new LinkedList<int[]>();
-		for (List<Node> artifactList : cycles) {
-			if (artifactList.size() > 1) {
-				int[] cycle = new int[artifactList.size()];
-				for (int i = 0; i < cycle.length; i++) {
-					cycle[cycle.length - (i + 1)] = orderedArtifacts.indexOf(artifactList.get(i));
-				}
-				cyc.add(cycle);
-			}
-		}
+        // optimize: un-cycled artifacts without dependencies first
+        for (List<Node> artifactList : c) {
+            if (artifactList.size() == 1 && !artifactList.get(0).hasOutgoingDependencies()) {
+                orderedArtifacts.add(artifactList.get(0));
+            }
+        }
 
-		cycleArray = cyc.toArray(new int[0][0]);
-	}
+        for (List<Node> cycle : c) {
+            for (Node node : cycle) {
+                if (!orderedArtifacts.contains(node)) {
+                    orderedArtifacts.add(node);
+                }
+            }
+        }
+        Collections.reverse(orderedArtifacts);
+        nodes = orderedArtifacts;
+        
+        //
+        cycles = c.stream().filter(nodeList -> nodeList.size() > 1).collect(Collectors.toList());
+    }
 }
