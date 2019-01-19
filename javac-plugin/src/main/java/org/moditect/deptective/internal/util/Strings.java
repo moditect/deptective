@@ -25,4 +25,15 @@ public class Strings {
             return s.hasNext() ? s.next() : "";
         }
     }
+
+    public static String lines(String line, String... furtherLines) {
+        StringBuilder sb = new StringBuilder(line);
+        sb.append(System.lineSeparator());
+
+        if (furtherLines != null) {
+            sb.append(String.join(System.lineSeparator(), furtherLines));
+        }
+
+        return sb.toString();
+    }
 }

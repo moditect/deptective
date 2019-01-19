@@ -56,24 +56,24 @@ public class VisualizeTest extends PluginTestBase {
         assertThat(compilation).hadNoteContaining("Created DOT file representing the Deptective configuration at mem:///CLASS_OUTPUT/deptective.dot");
         assertThat(compilation).hadNoteCount(2);
 
-        String expectedConfig = "digraph \"package dependencies\"\n" +
-                "{\n" +
-                "  \"org.moditect.deptective.plugintest.visualize.bar\";\n" +
-                "  \"org.moditect.deptective.plugintest.visualize.foo\";\n" +
-                "  \"org.moditect.deptective.plugintest.visualize.qux\";\n" +
-                "  subgraph Allowed {\n" +
-                "    \"org.moditect.deptective.plugintest.visualize.bar\" -> \"org.moditect.deptective.plugintest.visualize.qux\";\n" +
-                "    \"org.moditect.deptective.plugintest.visualize.foo\" -> \"org.moditect.deptective.plugintest.visualize.bar\";\n" +
-                "    \"org.moditect.deptective.plugintest.visualize.foo\" -> \"org.moditect.deptective.plugintest.visualize.qux\";\n" +
-                "    \"org.moditect.deptective.plugintest.visualize.qux\" -> \"org.moditect.deptective.plugintest.visualize.bar\";\n" +
-                "  }\n" +
-                "  subgraph Disallowed {\n" +
-                "    edge [color=red]\n" +
-                "  }\n" +
-                "  subgraph Unknown {\n" +
-                "    edge [color=yellow]\n" +
-                "  }\n" +
-                "}";
+        String expectedConfig = Strings.lines("digraph \"package dependencies\"",
+                "{",
+                "  \"org.moditect.deptective.plugintest.visualize.bar\";",
+                "  \"org.moditect.deptective.plugintest.visualize.foo\";",
+                "  \"org.moditect.deptective.plugintest.visualize.qux\";",
+                "  subgraph Allowed {",
+                "    \"org.moditect.deptective.plugintest.visualize.bar\" -> \"org.moditect.deptective.plugintest.visualize.qux\";",
+                "    \"org.moditect.deptective.plugintest.visualize.foo\" -> \"org.moditect.deptective.plugintest.visualize.bar\";",
+                "    \"org.moditect.deptective.plugintest.visualize.foo\" -> \"org.moditect.deptective.plugintest.visualize.qux\";",
+                "    \"org.moditect.deptective.plugintest.visualize.qux\" -> \"org.moditect.deptective.plugintest.visualize.bar\";",
+                "  }",
+                "  subgraph Disallowed {",
+                "    edge [color=red]",
+                "  }",
+                "  subgraph Unknown {",
+                "    edge [color=yellow]",
+                "  }",
+                "}");
 
         Optional<JavaFileObject> deptectiveFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT, "deptective.dot");
         assertThat(deptectiveFile.isPresent()).isTrue();
@@ -103,24 +103,24 @@ public class VisualizeTest extends PluginTestBase {
         assertThat(compilation).hadNoteContaining("Created DOT file representing the Deptective configuration at mem:///CLASS_OUTPUT/deptective.dot");
         assertThat(compilation).hadNoteCount(1);
 
-        String expectedConfig = "digraph \"package dependencies\"\n" +
-                "{\n" +
-                "  \"org.moditect.deptective.plugintest.visualize.bar\";\n" +
-                "  \"org.moditect.deptective.plugintest.visualize.foo\";\n" +
-                "  \"org.moditect.deptective.plugintest.visualize.qux\";\n" +
-                "  subgraph Allowed {\n" +
-                "    \"org.moditect.deptective.plugintest.visualize.bar\" -> \"org.moditect.deptective.plugintest.visualize.qux\";\n" +
-                "    \"org.moditect.deptective.plugintest.visualize.foo\" -> \"org.moditect.deptective.plugintest.visualize.qux\";\n" +
-                "  }\n" +
-                "  subgraph Disallowed {\n" +
-                "    edge [color=red]\n" +
-                "    \"org.moditect.deptective.plugintest.visualize.foo\" -> \"org.moditect.deptective.plugintest.visualize.bar\";\n" +
-                "  }\n" +
-                "  subgraph Unknown {\n" +
-                "    edge [color=yellow]\n" +
-                "    \"org.moditect.deptective.plugintest.visualize.qux\" -> \"org.moditect.deptective.plugintest.visualize.bar\";\n" +
-                "  }\n" +
-                "}";
+        String expectedConfig = Strings.lines("digraph \"package dependencies\"",
+                "{",
+                "  \"org.moditect.deptective.plugintest.visualize.bar\";",
+                "  \"org.moditect.deptective.plugintest.visualize.foo\";",
+                "  \"org.moditect.deptective.plugintest.visualize.qux\";",
+                "  subgraph Allowed {",
+                "    \"org.moditect.deptective.plugintest.visualize.bar\" -> \"org.moditect.deptective.plugintest.visualize.qux\";",
+                "    \"org.moditect.deptective.plugintest.visualize.foo\" -> \"org.moditect.deptective.plugintest.visualize.qux\";",
+                "  }",
+                "  subgraph Disallowed {",
+                "    edge [color=red]",
+                "    \"org.moditect.deptective.plugintest.visualize.foo\" -> \"org.moditect.deptective.plugintest.visualize.bar\";",
+                "  }",
+                "  subgraph Unknown {",
+                "    edge [color=yellow]",
+                "    \"org.moditect.deptective.plugintest.visualize.qux\" -> \"org.moditect.deptective.plugintest.visualize.bar\";",
+                "  }",
+                "}");
 
         Optional<JavaFileObject> deptectiveFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT, "deptective.dot");
         assertThat(deptectiveFile.isPresent()).isTrue();
