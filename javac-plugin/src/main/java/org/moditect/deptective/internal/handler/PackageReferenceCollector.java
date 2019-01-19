@@ -27,6 +27,9 @@ import javax.tools.FileObject;
 import javax.tools.JavaFileManager;
 import javax.tools.StandardLocation;
 
+import org.moditect.deptective.internal.export.DotSerializer;
+import org.moditect.deptective.internal.export.JsonSerializer;
+import org.moditect.deptective.internal.export.ModelSerializer;
 import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
 import org.moditect.deptective.internal.model.Package.ReadKind;
@@ -113,11 +116,14 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
 
         log.useSource(null);
 
+        ModelSerializer serializer = new JsonSerializer();
+        packageDependencies.serialize(serializer);
+
         try {
             FileObject output = jfm.getFileForOutput(StandardLocation.CLASS_OUTPUT, "", "deptective.json", null);
             log.note(DeptectiveMessages.GENERATED_CONFIG, output.toUri());
             Writer writer = output.openWriter();
-            writer.append(packageDependencies.toJson());
+            writer.append(serializer.serialize());
             writer.close();
         }
         catch (IOException e) {
@@ -125,11 +131,14 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
         }
 
         if (createDotFile) {
+            serializer = new DotSerializer();
+            packageDependencies.serialize(serializer);
+
             try {
                 FileObject output = jfm.getFileForOutput(StandardLocation.CLASS_OUTPUT, "", "deptective.dot", null);
                 log.note(DeptectiveMessages.GENERATED_DOT_REPRESENTATION, output.toUri());
                 Writer writer = output.openWriter();
-                writer.append(packageDependencies.toDot());
+                writer.append(serializer.serialize());
                 writer.close();
             }
             catch (IOException e) {

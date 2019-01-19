@@ -24,6 +24,7 @@ import javax.tools.FileObject;
 import javax.tools.JavaFileManager;
 import javax.tools.StandardLocation;
 
+import org.moditect.deptective.internal.export.DotSerializer;
 import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
 import org.moditect.deptective.internal.model.Package;
@@ -138,11 +139,14 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
             return;
         }
 
+        DotSerializer serializer = new DotSerializer();
+        actualPackageDependencies.build().serialize(serializer);
+
         try {
             FileObject output = jfm.getFileForOutput(StandardLocation.CLASS_OUTPUT, "", "deptective.dot", null);
             log.note(DeptectiveMessages.GENERATED_DOT_REPRESENTATION, output.toUri());
             Writer writer = output.openWriter();
-            writer.append(actualPackageDependencies.build().toDot());
+            writer.append(serializer.serialize());
             writer.close();
         }
         catch (IOException e) {

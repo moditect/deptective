@@ -22,21 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.moditect.deptective.internal.export.ModelSerializer;
 import org.moditect.deptective.internal.model.Package.ReadKind;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class PackageDependencies {
 
@@ -130,114 +120,19 @@ public class PackageDependencies {
         return sb.toString();
     }
 
-    public String toJson() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-
-        ObjectNode root = mapper.createObjectNode();
-        ArrayNode packages = root.putArray("packages");
-
+    /**
+     * Serializes this model through the given {@link ModelSerializer}. In alphabetical order, first all components will
+     * be serialized, then all whitelist patterns.
+     */
+    public void serialize(ModelSerializer serializer) {
         packagesByName.values()
                 .stream()
                 .sorted((c1, c2) -> c1.getName().compareTo(c2.getName()))
-                .forEach(p -> packages.add(toJsonNode(p, mapper)));
+                .forEach(p -> serializer.addPackage(p));
 
-        ArrayNode whitelisted = root.putArray("whitelisted");
-
-        this.whitelisted.stream()
-                .map(WhitelistedPackagePattern::toString)
+        whitelisted.stream()
                 .sorted()
-                .forEach(whitelisted::add);
-
-        try {
-            return mapper.writeValueAsString(root);
-        }
-        catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private JsonNode toJsonNode(Package pakkage, ObjectMapper mapper) {
-        ObjectNode node = mapper.createObjectNode();
-
-        node.put("name", pakkage.getName());
-
-        if (!pakkage.getReads().isEmpty()) {
-            ArrayNode reads = node.putArray("reads");
-            pakkage.getReads()
-                    .keySet()
-                    .stream()
-                    .sorted()
-                    .forEach(r -> reads.add(r));
-        }
-
-        return node;
-    }
-
-    public String toDot() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("digraph \"package dependencies\"\n");
-        sb.append("{\n");
-
-        SortedSet<String> allPackages = new TreeSet<>();
-        SortedMap<String, SortedSet<String>> allowedReads = new TreeMap<>();
-        SortedMap<String, SortedSet<String>> disallowedReads = new TreeMap<>();
-        SortedMap<String, SortedSet<String>> unknownReads = new TreeMap<>();
-
-        for (Package pakkage : packagesByName.values()) {
-            allPackages.add(pakkage.getName());
-
-            SortedSet<String> allowed = new TreeSet<>();
-            allowedReads.put(pakkage.getName(), allowed);
-
-            SortedSet<String> disallowed = new TreeSet<>();
-            disallowedReads.put(pakkage.getName(), disallowed);
-
-            SortedSet<String> unknown = new TreeSet<>();
-            unknownReads.put(pakkage.getName(), unknown);
-
-            for (Entry<String, ReadKind> referencedPackage : pakkage.getReads().entrySet()) {
-                String referencedPackageName = referencedPackage.getKey();
-                allPackages.add(referencedPackageName);
-
-                if (referencedPackage.getValue() == ReadKind.ALLOWED) {
-                    allowed.add(referencedPackageName);
-                }
-                else if (referencedPackage.getValue() == ReadKind.DISALLOWED) {
-                    disallowed.add(referencedPackageName);
-                }
-                else {
-                    unknown.add(referencedPackageName);
-                }
-            }
-        }
-
-        for (String pakkage : allPackages) {
-            sb.append("  \"").append(pakkage).append("\";").append(System.lineSeparator());
-        }
-
-        addSubGraph(sb, allowedReads, "Allowed", null);
-        addSubGraph(sb, disallowedReads, "Disallowed", "red");
-        addSubGraph(sb, unknownReads, "Unknown", "yellow");
-
-        sb.append("}");
-
-        return sb.toString();
-    }
-
-    private void addSubGraph(StringBuilder sb, SortedMap<String, SortedSet<String>> readsOfKind, String kind,
-            String color) {
-        sb.append("  subgraph " + kind + " {").append(System.lineSeparator());
-        if (color != null) {
-            sb.append("    edge [color=" + color + "]").append(System.lineSeparator());
-        }
-        for (Entry<String, SortedSet<String>> reads : readsOfKind.entrySet()) {
-            for (String read : reads.getValue()) {
-                sb.append("    \"").append(reads.getKey()).append("\" -> \"").append(read).append("\";\n");
-            }
-        }
-
-        sb.append("  }").append(System.lineSeparator());
+                .forEach(serializer::addWhitelistedPackagePattern);
     }
 
     public boolean isWhitelisted(String packageName) {

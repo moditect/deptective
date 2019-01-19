@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  *
  * @author Gunnar Morling
  */
-public class WhitelistedPackagePattern {
+public class WhitelistedPackagePattern implements Comparable<WhitelistedPackagePattern> {
 
     private static final String ALL_EXTERNAL_PATTERN = "*ALL_EXTERNAL*";
     public static final WhitelistedPackagePattern ALL_EXTERNAL = new WhitelistedPackagePattern(ALL_EXTERNAL_PATTERN);
@@ -49,5 +49,10 @@ public class WhitelistedPackagePattern {
     @Override
     public String toString() {
         return pattern.pattern();
+    }
+
+    @Override
+    public int compareTo(WhitelistedPackagePattern o) {
+        return pattern.pattern().compareTo(o.pattern.pattern());
     }
 }
