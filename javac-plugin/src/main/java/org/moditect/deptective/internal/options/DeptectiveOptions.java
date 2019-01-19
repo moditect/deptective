@@ -28,9 +28,8 @@ import org.moditect.deptective.internal.PluginTask;
 import org.moditect.deptective.internal.model.WhitelistedPackagePattern;
 
 /**
- * The options supported by the Deptective plug-in. To be given as annotation
- * processor options ("-Adeptective.someoption=..."), as that's the only way to
- * pass any options unknown to javac itself.
+ * The options supported by the Deptective plug-in. To be given as annotation processor options
+ * ("-Adeptective.someoption=..."), as that's the only way to pass any options unknown to javac itself.
  *
  * @author Gunnar Morling
  */
@@ -107,9 +106,9 @@ public class DeptectiveOptions {
         if (whitelisted != null) {
             String[] patterns = whitelisted.split(",");
             return Arrays.stream(patterns)
-                .map(String::trim)
-                .map(WhitelistedPackagePattern::getPattern)
-                .collect(Collectors.toList());
+                    .map(String::trim)
+                    .map(WhitelistedPackagePattern::getPattern)
+                    .collect(Collectors.toList());
         }
         else {
             return Collections.emptyList();

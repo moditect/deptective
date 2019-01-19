@@ -28,6 +28,10 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <properties>
+        <build.config.location>../etc</build.config.location>
+    </properties>
+
     <artifactId>deptective-javac-plugin</artifactId>
 
     <name>Deptective Javac Plug-in</name>

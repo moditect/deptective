@@ -38,8 +38,8 @@ import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.Tree;
 
 /**
- * A handler that produces a candidate {@code deptective.json} file based on the
- * actual package relationships of the project under compilation.
+ * A handler that produces a candidate {@code deptective.json} file based on the actual package relationships of the
+ * project under compilation.
  *
  * @author Gunnar Morling
  */
@@ -56,8 +56,8 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
 
     private String currentPackageName;
 
-
-    public PackageReferenceCollector(JavaFileManager jfm, Log log, List<WhitelistedPackagePattern> whitelistPatterns, boolean createDotFile) {
+    public PackageReferenceCollector(JavaFileManager jfm, Log log, List<WhitelistedPackagePattern> whitelistPatterns,
+            boolean createDotFile) {
         this.log = log;
         this.jfm = jfm;
         this.whitelistPatterns = Collections.unmodifiableList(whitelistPatterns);

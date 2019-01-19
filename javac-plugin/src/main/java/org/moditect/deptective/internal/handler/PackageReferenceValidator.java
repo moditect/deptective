@@ -36,8 +36,8 @@ import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.Tree;
 
 /**
- * Validates a project's package relationships against a given description of
- * allowed references in {@code deptective.json}.
+ * Validates a project's package relationships against a given description of allowed references in
+ * {@code deptective.json}.
  *
  * @author Gunnar Morling
  */
@@ -121,11 +121,11 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
 
         if (!currentPackage.allowedToRead(referencedPackageName)) {
             log.report(
-                reportingPolicy,
-                (com.sun.tools.javac.tree.JCTree)referencingNode,
-                DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY,
-                currentPackage,
-                referencedPackageName
+                    reportingPolicy,
+                    (com.sun.tools.javac.tree.JCTree) referencingNode,
+                    DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY,
+                    currentPackage,
+                    referencedPackageName
             );
         }
     }
@@ -163,7 +163,7 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
         if (!reportedBefore) {
             log.report(
                     unconfiguredPackageReportingPolicy,
-                    (com.sun.tools.javac.tree.JCTree)tree,
+                    (com.sun.tools.javac.tree.JCTree) tree,
                     DeptectiveMessages.PACKAGE_NOT_CONFIGURED, packageName
             );
 

@@ -37,8 +37,7 @@ import com.sun.tools.javac.util.JavacMessages;
 public class DeptectivePlugin implements Plugin {
 
     /**
-     * {@link TaskEvent.Kind} doesn't support COMPILATION on JDK 8, hence it's
-     * resembled here.
+     * {@link TaskEvent.Kind} doesn't support COMPILATION on JDK 8, hence it's resembled here.
      */
     private enum TaskEventKind {
         PARSE,
@@ -70,10 +69,10 @@ public class DeptectivePlugin implements Plugin {
                 .getPackageReferenceHandler(
                         context.get(JavaFileManager.class),
                         options,
-                        () -> new ConfigLoader().getConfig(options.getConfigFilePath(), context.get(JavaFileManager.class)),
+                        () -> new ConfigLoader()
+                                .getConfig(options.getConfigFilePath(), context.get(JavaFileManager.class)),
                         log
                 );
-
 
         if (handler.configIsValid()) {
             task.addTaskListener(new TaskListener() {
@@ -92,7 +91,7 @@ public class DeptectivePlugin implements Plugin {
                     if (kind == TaskEventKind.PARSE) {
                         sourceFileCount++;
                     }
-                    else if(kind == TaskEventKind.ANALYZE || kind == TaskEventKind.LAST_ANALYZE) {
+                    else if (kind == TaskEventKind.ANALYZE || kind == TaskEventKind.LAST_ANALYZE) {
                         analyzed++;
 
                         CompilationUnitTree compilationUnit = e.getCompilationUnit();

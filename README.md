@@ -224,6 +224,21 @@ Before working on larger changes, it's recommended to get in touch first to make
 4. After importing the project, make sure that Java 11 is on the build path of the _javac-plugin_ module
 (right-click on that module, then "Properties" -> "Java Build Path" -> "Libraries").
 
+### Code Style
+
+Please import the Eclipse formatter configuration from [etc/eclipse-formatter.xml](etc/eclipse-formatter.xml) and enable it when working on the project.
+Run `mvn spotless:format` to apply the formatter automatically.
+
+Also enable the following "Save Actions":
+
+* Organize imports
+* Add final modifier to private fields
+* Add missing '@Override' annotations
+* Add missing '@Override' annotations to implementations of interface methods
+* Add missing '@Deprecated' annotations
+R* emove unnecessary casts
+* Remove trailing white spaces on all lines
+
 ## Related Work
 
 🕵 Different projects exist that analyze Java package dependencies, validate and/or produce metrics on them.

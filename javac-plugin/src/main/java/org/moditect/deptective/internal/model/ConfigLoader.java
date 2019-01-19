@@ -39,7 +39,7 @@ public class ConfigLoader {
                 return new ConfigParser(is).getPackageDependencies();
             }
         }
-        catch(Exception e) {
+        catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -47,7 +47,7 @@ public class ConfigLoader {
     private InputStream getConfigStream(Optional<Path> configFile, JavaFileManager jfm) {
         try {
             if (configFile.isPresent()) {
-                    return Files.newInputStream(configFile.get());
+                return Files.newInputStream(configFile.get());
             }
             else {
                 FileObject file = jfm.getFileForInput(StandardLocation.SOURCE_PATH, "", "deptective.json");

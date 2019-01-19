@@ -34,8 +34,8 @@ public class Log {
     private final DeptectiveMessages messages;
 
     /**
-     * The resource bundle cannot be registered in Java 8; this flag triggers
-     * fallback to emitting raw messages in this case
+     * The resource bundle cannot be registered in Java 8; this flag triggers fallback to emitting raw messages in this
+     * case
      */
     private boolean registeredResourceBundle;
 
@@ -112,7 +112,7 @@ public class Log {
             messages.add(l -> ResourceBundle.getBundle(DeptectiveMessages.class.getName(), l));
         }
         // add(ResourceBundleHelper) doesn't exist in Java 8
-        catch(Throwable t) {
+        catch (Throwable t) {
             registeredResourceBundle = false;
         }
     }

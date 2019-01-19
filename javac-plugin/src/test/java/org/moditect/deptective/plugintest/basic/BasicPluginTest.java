@@ -78,7 +78,8 @@ public class BasicPluginTest extends PluginTestBase {
         assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barclass"));
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barclass")
+        );
     }
 
     @Test
@@ -87,7 +88,8 @@ public class BasicPluginTest extends PluginTestBase {
         assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barqualified"));
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barqualified")
+        );
     }
 
 //    @Test
@@ -105,7 +107,8 @@ public class BasicPluginTest extends PluginTestBase {
         assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.bardemand"));
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.bardemand")
+        );
     }
 
     @Test
@@ -114,7 +117,8 @@ public class BasicPluginTest extends PluginTestBase {
         assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barstatic"));
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barstatic")
+        );
     }
 
     @Test
@@ -123,9 +127,9 @@ public class BasicPluginTest extends PluginTestBase {
         assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barstaticfield"));
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barstaticfield")
+        );
     }
-
 
     @Test
     public void shouldDetectInvalidClassLiteralReference() {
@@ -133,7 +137,8 @@ public class BasicPluginTest extends PluginTestBase {
         assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barclsliteral"));
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barclsliteral")
+        );
     }
 
     @Test
@@ -142,10 +147,10 @@ public class BasicPluginTest extends PluginTestBase {
         assertThat(compilation).failed();
 
         assertThat(compilation).hadErrorContaining(
-                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.bargenericbound"));
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.bargenericbound")
+        );
 
     }
-
 
     @Test
     public void shouldNotReportValidReferences() {
@@ -156,13 +161,13 @@ public class BasicPluginTest extends PluginTestBase {
         assertThat(compilation).failed();
 
         List<Diagnostic<? extends JavaFileObject>> collect = compilation.errors().stream()
-                .filter(e -> e.getMessage(null).indexOf("must not access org.moditect.deptective.plugintest.basic.bar")==-1)
+                .filter(e -> e.getMessage(null).indexOf("must not access org.moditect.deptective.plugintest.basic.bar") == -1)
                 .collect(Collectors.toList());
 
-        assertThat("Test-Class 'Foo' should not have any invalid dependencies beside those to 'org.moditect.deptective.plugintest.basic.bar*'",
+        assertThat(
+                "Test-Class 'Foo' should not have any invalid dependencies beside those to 'org.moditect.deptective.plugintest.basic.bar*'",
                 collect, Is.is(Lists.emptyList()));
     }
-
 
     @Test
     public void shouldDetectInvalidSuperClass() {
@@ -185,9 +190,9 @@ public class BasicPluginTest extends PluginTestBase {
                 packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barinter"));
 
         // inner interface
-        assertThat(compilation).hadErrorContaining(packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barinnerinner"));
+        assertThat(compilation).hadErrorContaining(
+                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barinnerinner"));
     }
-
 
     @Test
     public void shouldDetectInvalidConstructorParameters() {
@@ -270,17 +275,21 @@ public class BasicPluginTest extends PluginTestBase {
 
     @Test
     public void shouldDetectInvalidReturnValueReferences() {
-    	Compilation compilation = compile();
-    	assertThat(compilation).failed();
+        Compilation compilation = compile();
+        assertThat(compilation).failed();
 
-    	assertThat(compilation).hadErrorContaining(
-    			packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barretval"
-    	));
+        assertThat(compilation).hadErrorContaining(
+                packageFooMustNotAccess(
+                        "org.moditect.deptective.plugintest.basic.barretval"
+                        )
+                );
 
-    	// Invalid Reference in Type Parameter
-    	assertThat(compilation).hadErrorContaining(
-                packageFooMustNotAccess("org.moditect.deptective.plugintest.basic.barretvalgen"
-        ));
+        // Invalid Reference in Type Parameter
+        assertThat(compilation).hadErrorContaining(
+                packageFooMustNotAccess(
+                        "org.moditect.deptective.plugintest.basic.barretvalgen"
+                        )
+                );
     }
 
     @Test
@@ -307,7 +316,8 @@ public class BasicPluginTest extends PluginTestBase {
                 .withOptions("-Xplugin:Deptective", getConfigFileOption(), "-Adeptective.reporting_policy=WARN")
                 .compile(forTestClass(BarCtorCall.class), forTestClass(BarField.class), forTestClass(BarLocalVar.class),
                         forTestClass(BarLoopVar.class), forTestClass(BarParameter.class), forTestClass(BarRetVal.class),
-                        forTestClass(BarTypeArg.class), forTestClass(Foo.class));
+                        forTestClass(BarTypeArg.class), forTestClass(Foo.class)
+                );
 
         assertThat(compilation).succeeded();
         assertThat(compilation).hadWarningContaining(

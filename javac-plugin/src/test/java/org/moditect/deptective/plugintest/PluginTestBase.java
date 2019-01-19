@@ -40,11 +40,12 @@ public class PluginTestBase {
 
     protected JavaFileObject forTestClass(Class<?> clazz) {
         try {
-            Path projectDir = Paths.get(getClass().getProtectionDomain()
-                    .getCodeSource()
-                    .getLocation()
-                    .toURI()
-                    )
+            Path projectDir = Paths.get(
+                    getClass().getProtectionDomain()
+                            .getCodeSource()
+                            .getLocation()
+                            .toURI()
+            )
                     .getParent()
                     .getParent();
 
@@ -56,7 +57,7 @@ public class PluginTestBase {
 
             return JavaFileObjects.forResource(resource);
         }
-        catch(URISyntaxException | MalformedURLException e) {
+        catch (URISyntaxException | MalformedURLException e) {
             throw new RuntimeException("Couldn't retrieve source for class " + clazz, e);
         }
     }
