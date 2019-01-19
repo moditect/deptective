@@ -15,11 +15,10 @@
  */
 package org.moditect.deptective.internal.graph.impl;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import org.moditect.deptective.internal.graph.GraphUtils;
 import org.moditect.deptective.internal.graph.Node;
@@ -27,15 +26,15 @@ import org.moditect.deptective.internal.graph.Node;
 public class Tarjan<T extends Node> {
 
     private int _index = 0;
-    private ArrayList<Integer> _stack = new ArrayList<Integer>();
-    private List<List<T>> _stronglyConnectedComponents = new ArrayList<List<T>>();
+    private final ArrayList<Integer> _stack = new ArrayList<Integer>();
+    private final List<List<T>> _stronglyConnectedComponents = new ArrayList<List<T>>();
     int[] _vlowlink;
     int[] _vindex;
 
     private Node[] _artifacts;
 
     public List<List<T>> detectStronglyConnectedComponents(Collection<? extends T> artifacts) {
-        checkNotNull(artifacts);
+        Objects.requireNonNull(artifacts);
 
         _artifacts = artifacts.toArray(new Node[0]);
         int[][] adjacencyList = GraphUtils.computeAdjacencyList(_artifacts);
@@ -43,7 +42,7 @@ public class Tarjan<T extends Node> {
     }
 
     private List<List<T>> executeTarjan(int[][] graph) {
-        checkNotNull(graph);
+        Objects.requireNonNull(graph);
 
         _stronglyConnectedComponents.clear();
         _index = 0;
@@ -66,8 +65,8 @@ public class Tarjan<T extends Node> {
 
     @SuppressWarnings("unchecked")
     private void tarjan(int v, int[][] graph) {
-        checkNotNull(v);
-        checkNotNull(graph);
+        Objects.requireNonNull(v);
+        Objects.requireNonNull(graph);
 
         _vindex[v] = _index;
         _vlowlink[v] = _index;
