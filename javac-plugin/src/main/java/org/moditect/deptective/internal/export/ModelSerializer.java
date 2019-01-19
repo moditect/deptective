@@ -16,7 +16,7 @@
 package org.moditect.deptective.internal.export;
 
 import org.moditect.deptective.internal.model.Package;
-import org.moditect.deptective.internal.model.WhitelistedPackagePattern;
+import org.moditect.deptective.internal.model.PackagePattern;
 
 /**
  * Implementations serialize a given architecture model into external representations such as JSON or GraphViz.
@@ -27,7 +27,7 @@ public interface ModelSerializer {
 
     void addPackage(Package pakkage);
 
-    void addWhitelistedPackagePattern(WhitelistedPackagePattern pattern);
+    void addWhitelistedPackagePattern(PackagePattern pattern);
 
     String serialize();
 }

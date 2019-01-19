@@ -33,7 +33,7 @@ public class PackageDependencies {
     public static class Builder {
 
         private final Map<String, Package.Builder> packagesByName = new HashMap<>();
-        private final Set<WhitelistedPackagePattern> whitelisted = new HashSet<>();
+        private final Set<PackagePattern> whitelisted = new HashSet<>();
 
         public PackageDependencies build() {
             return new PackageDependencies(
@@ -58,7 +58,7 @@ public class PackageDependencies {
             builder.addRead(readPackage, readKind);
         }
 
-        public void addWhitelistedPackage(WhitelistedPackagePattern pattern) {
+        public void addWhitelistedPackage(PackagePattern pattern) {
             if (pattern == null || pattern.toString().isEmpty()) {
                 return;
             }
@@ -74,9 +74,9 @@ public class PackageDependencies {
     }
 
     private final Map<String, Package> packagesByName;
-    private final Set<WhitelistedPackagePattern> whitelisted;
+    private final Set<PackagePattern> whitelisted;
 
-    private PackageDependencies(Map<String, Package> packagesByName, Set<WhitelistedPackagePattern> whitelisted) {
+    private PackageDependencies(Map<String, Package> packagesByName, Set<PackagePattern> whitelisted) {
         this.packagesByName = Collections.unmodifiableMap(packagesByName);
         this.whitelisted = Collections.unmodifiableSet(whitelisted);
     }
@@ -111,7 +111,7 @@ public class PackageDependencies {
         sb.append("}");
         sb.append(System.lineSeparator());
         sb.append("whitelisted {").append(System.lineSeparator());
-        for (WhitelistedPackagePattern whitelistedPackagePattern : whitelisted) {
+        for (PackagePattern whitelistedPackagePattern : whitelisted) {
             sb.append("  ");
             sb.append(whitelistedPackagePattern);
             sb.append(System.lineSeparator());

@@ -23,7 +23,7 @@ import java.util.TreeSet;
 
 import org.moditect.deptective.internal.model.Package;
 import org.moditect.deptective.internal.model.Package.ReadKind;
-import org.moditect.deptective.internal.model.WhitelistedPackagePattern;
+import org.moditect.deptective.internal.model.PackagePattern;
 
 /**
  * Serializes models to GraphViz format ("DOT files").
@@ -79,7 +79,7 @@ public class DotSerializer implements ModelSerializer {
     }
 
     @Override
-    public void addWhitelistedPackagePattern(WhitelistedPackagePattern pattern) {
+    public void addWhitelistedPackagePattern(PackagePattern pattern) {
     }
 
     @Override

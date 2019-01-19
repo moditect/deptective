@@ -16,7 +16,7 @@
 package org.moditect.deptective.internal.export;
 
 import org.moditect.deptective.internal.model.Package;
-import org.moditect.deptective.internal.model.WhitelistedPackagePattern;
+import org.moditect.deptective.internal.model.PackagePattern;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -53,7 +53,7 @@ public class JsonSerializer implements ModelSerializer {
     }
 
     @Override
-    public void addWhitelistedPackagePattern(WhitelistedPackagePattern pattern) {
+    public void addWhitelistedPackagePattern(PackagePattern pattern) {
         whitelisted.add(pattern.toString());
     }
 

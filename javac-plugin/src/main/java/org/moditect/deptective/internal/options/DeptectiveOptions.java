@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.moditect.deptective.internal.PluginTask;
-import org.moditect.deptective.internal.model.WhitelistedPackagePattern;
+import org.moditect.deptective.internal.model.PackagePattern;
 
 /**
  * The options supported by the Deptective plug-in. To be given as annotation processor options
@@ -100,14 +100,14 @@ public class DeptectiveOptions {
         return visualize != null && Boolean.parseBoolean(visualize.trim());
     }
 
-    public List<WhitelistedPackagePattern> getWhitelistedPackagePatterns() {
+    public List<PackagePattern> getWhitelistedPackagePatterns() {
         String whitelisted = options.get("deptective.whitelisted");
 
         if (whitelisted != null) {
             String[] patterns = whitelisted.split(",");
             return Arrays.stream(patterns)
                     .map(String::trim)
-                    .map(WhitelistedPackagePattern::getPattern)
+                    .map(PackagePattern::getPattern)
                     .collect(Collectors.toList());
         }
         else {

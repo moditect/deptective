@@ -34,7 +34,7 @@ import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
 import org.moditect.deptective.internal.model.Package.ReadKind;
 import org.moditect.deptective.internal.model.PackageDependencies;
-import org.moditect.deptective.internal.model.WhitelistedPackagePattern;
+import org.moditect.deptective.internal.model.PackagePattern;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
@@ -53,13 +53,13 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
     private final PackageDependencies.Builder builder;
 
     private final JavaFileManager jfm;
-    private final List<WhitelistedPackagePattern> whitelistPatterns;
+    private final List<PackagePattern> whitelistPatterns;
     private final Set<String> packagesOfCurrentCompilation;
     private final Set<String> referencedPackages;
 
     private String currentPackageName;
 
-    public PackageReferenceCollector(JavaFileManager jfm, Log log, List<WhitelistedPackagePattern> whitelistPatterns,
+    public PackageReferenceCollector(JavaFileManager jfm, Log log, List<PackagePattern> whitelistPatterns,
             boolean createDotFile) {
         this.log = log;
         this.jfm = jfm;
@@ -93,21 +93,21 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
 
     @Override
     public void onCompletingCompilation() {
-        List<WhitelistedPackagePattern> effectiveWhitelistPatterns;
+        List<PackagePattern> effectiveWhitelistPatterns;
 
         if (isWhitelistAllExternal()) {
             Set<String> externalPackages = new HashSet<>(referencedPackages);
             externalPackages.removeAll(packagesOfCurrentCompilation);
             effectiveWhitelistPatterns = externalPackages.stream()
                     .filter(p -> !p.equals("java.lang"))
-                    .map(WhitelistedPackagePattern::getPattern)
+                    .map(PackagePattern::getPattern)
                     .collect(Collectors.toList());
         }
         else {
             effectiveWhitelistPatterns = whitelistPatterns;
         }
 
-        for (WhitelistedPackagePattern whitelistedPackagePattern : effectiveWhitelistPatterns) {
+        for (PackagePattern whitelistedPackagePattern : effectiveWhitelistPatterns) {
             // removes any explicit read to that package
             builder.addWhitelistedPackage(whitelistedPackagePattern);
         }
@@ -148,6 +148,6 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
     }
 
     private boolean isWhitelistAllExternal() {
-        return whitelistPatterns.contains(WhitelistedPackagePattern.ALL_EXTERNAL);
+        return whitelistPatterns.contains(PackagePattern.ALL_EXTERNAL);
     }
 }
