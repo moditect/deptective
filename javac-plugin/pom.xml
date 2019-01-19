@@ -17,16 +17,16 @@
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.moditect.deptective</groupId>
-		<artifactId>deptective-aggregator</artifactId>
-		<version>1.0-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
-	</parent>
+    <parent>
+        <groupId>org.moditect.deptective</groupId>
+        <artifactId>deptective-aggregator</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
 
     <properties>
         <build.config.location>../etc</build.config.location>
@@ -34,21 +34,21 @@
 
     <artifactId>deptective-javac-plugin</artifactId>
 
-	<name>Deptective Javac Plug-in</name>
+    <name>Deptective Javac Plug-in</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -81,19 +81,19 @@
         </dependency>
     </dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<!-- <fork>true</fork> -->
-					<!-- <compilerArgs> -->
-					<!-- <arg>-#-add-exports="jdk.compiler/com.sun.source.util=ALL-UNNAMED"</arg> -->
-					<!-- <arg>-#-add-exports="jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED"</arg> -->
-					<!-- <arg>-#-add-exports="jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED"</arg> -->
-					<!-- </compilerArgs> -->
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <!-- <fork>true</fork> -->
+                    <!-- <compilerArgs> -->
+                    <!-- <arg>-#-add-exports="jdk.compiler/com.sun.source.util=ALL-UNNAMED"</arg> -->
+                    <!-- <arg>-#-add-exports="jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED"</arg> -->
+                    <!-- <arg>-#-add-exports="jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED"</arg> -->
+                    <!-- </compilerArgs> -->
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
