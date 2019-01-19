@@ -28,26 +28,27 @@ public class ConfigParsingTest {
     public void shouldLoadConfig() throws Exception {
         PackageDependencies dependencies = new ConfigParser(
                 "{\n" +
-                "    \"packages\" : [\n" +
-                "        {\n" +
-                "            \"name\" : \"com.example.ui\",\n" +
-                "            \"reads\" : [\n" +
-                "                \"com.example.service\",\n" +
-                "                \"com.example.persistence\"\n" +
-                "            ]\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"name\" : \"com.example.service\",\n" +
-                "            \"reads\" : [\n" +
-                "                \"com.example.persistence\"\n" +
-                "            ]\n" +
-                "        }\n" +
-                "    ],\n" +
-                "    \"whitelisted\" : [\n" +
-                "        \"java.awt*\", \"java.util*\"\n" +
-                "    ]\n" +
-                "}\n")
-               .getPackageDependencies();
+                        "    \"packages\" : [\n" +
+                        "        {\n" +
+                        "            \"name\" : \"com.example.ui\",\n" +
+                        "            \"reads\" : [\n" +
+                        "                \"com.example.service\",\n" +
+                        "                \"com.example.persistence\"\n" +
+                        "            ]\n" +
+                        "        },\n" +
+                        "        {\n" +
+                        "            \"name\" : \"com.example.service\",\n" +
+                        "            \"reads\" : [\n" +
+                        "                \"com.example.persistence\"\n" +
+                        "            ]\n" +
+                        "        }\n" +
+                        "    ],\n" +
+                        "    \"whitelisted\" : [\n" +
+                        "        \"java.awt*\", \"java.util*\"\n" +
+                        "    ]\n" +
+                        "}\n"
+        )
+                .getPackageDependencies();
 
         assertThat(dependencies).isNotNull();
 

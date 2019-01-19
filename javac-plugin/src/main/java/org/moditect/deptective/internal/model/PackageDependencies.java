@@ -48,10 +48,11 @@ public class PackageDependencies {
         public PackageDependencies build() {
             return new PackageDependencies(
                     packagesByName.values()
-                        .stream()
-                        .map(Package.Builder::build)
-                        .collect(Collectors.toMap(Package::getName, Function.identity())),
-                    whitelisted);
+                            .stream()
+                            .map(Package.Builder::build)
+                            .collect(Collectors.toMap(Package::getName, Function.identity())),
+                    whitelisted
+            );
         }
 
         public void addPackage(String name, List<String> reads) {
@@ -76,8 +77,8 @@ public class PackageDependencies {
 
             for (Package.Builder pakkage : packagesByName.values()) {
                 pakkage.getReads()
-                    .entrySet()
-                    .removeIf(r -> pattern.matches(r.getKey()));
+                        .entrySet()
+                        .removeIf(r -> pattern.matches(r.getKey()));
             }
         }
     }
@@ -137,16 +138,16 @@ public class PackageDependencies {
         ArrayNode packages = root.putArray("packages");
 
         packagesByName.values()
-            .stream()
-            .sorted((c1, c2) -> c1.getName().compareTo(c2.getName()))
-            .forEach(p -> packages.add(toJsonNode(p, mapper)));
+                .stream()
+                .sorted((c1, c2) -> c1.getName().compareTo(c2.getName()))
+                .forEach(p -> packages.add(toJsonNode(p, mapper)));
 
         ArrayNode whitelisted = root.putArray("whitelisted");
 
         this.whitelisted.stream()
-            .map(WhitelistedPackagePattern::toString)
-            .sorted()
-            .forEach(whitelisted::add);
+                .map(WhitelistedPackagePattern::toString)
+                .sorted()
+                .forEach(whitelisted::add);
 
         try {
             return mapper.writeValueAsString(root);
@@ -164,10 +165,10 @@ public class PackageDependencies {
         if (!pakkage.getReads().isEmpty()) {
             ArrayNode reads = node.putArray("reads");
             pakkage.getReads()
-                .keySet()
-                .stream()
-                .sorted()
-                .forEach(r -> reads.add(r));
+                    .keySet()
+                    .stream()
+                    .sorted()
+                    .forEach(r -> reads.add(r));
         }
 
         return node;
@@ -224,7 +225,8 @@ public class PackageDependencies {
         return sb.toString();
     }
 
-    private void addSubGraph(StringBuilder sb, SortedMap<String, SortedSet<String>> readsOfKind, String kind, String color) {
+    private void addSubGraph(StringBuilder sb, SortedMap<String, SortedSet<String>> readsOfKind, String kind,
+            String color) {
         sb.append("  subgraph " + kind + " {").append(System.lineSeparator());
         if (color != null) {
             sb.append("    edge [color=" + color + "]").append(System.lineSeparator());
@@ -240,8 +242,8 @@ public class PackageDependencies {
 
     public boolean isWhitelisted(String packageName) {
         return whitelisted.stream()
-            .filter(w -> w.matches(packageName))
-            .findFirst()
-            .isPresent();
+                .filter(w -> w.matches(packageName))
+                .findFirst()
+                .isPresent();
     }
 }

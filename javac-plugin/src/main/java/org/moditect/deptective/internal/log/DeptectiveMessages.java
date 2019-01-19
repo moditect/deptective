@@ -32,13 +32,14 @@ public class DeptectiveMessages extends ListResourceBundle {
     @Override
     protected final Object[][] getContents() {
         return new Object[][] {
-            { ERROR_PREFIX + ILLEGAL_PACKAGE_DEPENDENCY, "package {0} must not access {1}" },
-            { WARNING_PREFIX + ILLEGAL_PACKAGE_DEPENDENCY, "package {0} must not access {1}" },
-            { ERROR_PREFIX + PACKAGE_NOT_CONFIGURED, "no Deptective configuration found for package {0}" },
-            { WARNING_PREFIX + PACKAGE_NOT_CONFIGURED, "no Deptective configuration found for package {0}" },
-            { ERROR_PREFIX + NO_DEPTECTIVE_CONFIG_FOUND, "Config file deptective.json was not found" },
-            { NOTE_PREFIX + GENERATED_CONFIG, "Generated Deptective configuration template at {0}" },
-            { NOTE_PREFIX + GENERATED_DOT_REPRESENTATION, "Created DOT file representing the Deptective configuration at {0}" }
+                { ERROR_PREFIX + ILLEGAL_PACKAGE_DEPENDENCY, "package {0} must not access {1}" },
+                { WARNING_PREFIX + ILLEGAL_PACKAGE_DEPENDENCY, "package {0} must not access {1}" },
+                { ERROR_PREFIX + PACKAGE_NOT_CONFIGURED, "no Deptective configuration found for package {0}" },
+                { WARNING_PREFIX + PACKAGE_NOT_CONFIGURED, "no Deptective configuration found for package {0}" },
+                { ERROR_PREFIX + NO_DEPTECTIVE_CONFIG_FOUND, "Config file deptective.json was not found" },
+                { NOTE_PREFIX + GENERATED_CONFIG, "Generated Deptective configuration template at {0}" },
+                { NOTE_PREFIX + GENERATED_DOT_REPRESENTATION,
+                        "Created DOT file representing the Deptective configuration at {0}" }
         };
     }
 

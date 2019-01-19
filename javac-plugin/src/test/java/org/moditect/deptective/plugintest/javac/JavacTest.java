@@ -29,19 +29,19 @@ public class JavacTest extends PluginTestBase {
     @Test
     public void shouldProduceCorrectJavacMessages() {
         Compilation compilation = Compiler.javac()
-            .withOptions(
-                    "-Xplugin:Deptective",
-                    getConfigFileOption()
-            )
-            .compile(
-                    JavaFileObjects.forSourceLines(
-                            "com.example.foo.Foo",
-                            "package com.example.foo;",
-                            "public class Foo {",
-                            "    private final String s;",
-                            "}"
-                    )
-            );
+                .withOptions(
+                        "-Xplugin:Deptective",
+                        getConfigFileOption()
+                )
+                .compile(
+                        JavaFileObjects.forSourceLines(
+                                "com.example.foo.Foo",
+                                "package com.example.foo;",
+                                "public class Foo {",
+                                "    private final String s;",
+                                "}"
+                        )
+                );
 
         assertThat(compilation).failed();
         assertThat(compilation).hadErrorContaining("variable s not initialized in the default constructor");

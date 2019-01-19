@@ -18,5 +18,6 @@ package org.moditect.deptective.plugintest.unconfiguredpackage.foo;
 import java.math.BigDecimal;
 
 public class Foo {
+
     public BigDecimal bd;
 }

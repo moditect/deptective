@@ -70,7 +70,9 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
             checkPackageAccess(extendsClause, getQualifiedPackageName(extendsClause));
         }
 
-        node.getImplementsClause().forEach(implementsClause -> checkPackageAccess(implementsClause, getQualifiedPackageName(implementsClause)));
+        node.getImplementsClause().forEach(
+                implementsClause -> checkPackageAccess(implementsClause, getQualifiedPackageName(implementsClause))
+        );
 
         return super.visitClass(node, p);
     }
@@ -126,8 +128,7 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
     }
 
     /**
-     * Returns the qualified Package Name of the given Tree object or null if the
-     * package could not be determined
+     * Returns the qualified Package Name of the given Tree object or null if the package could not be determined
      */
     protected String getQualifiedPackageName(Tree tree) {
         TypeMirror typeMirror = trees.getTypeMirror(getCurrentPath());

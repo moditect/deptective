@@ -62,7 +62,6 @@ public class Foo extends BarSuper implements BarInterface, /* allowed: */ IFoo {
 
     private Class<? extends BarGenericBound> genericBound;
 
-
     public Foo(BarCtorParam bar) {
     }
 
@@ -73,7 +72,6 @@ public class Foo extends BarSuper implements BarInterface, /* allowed: */ IFoo {
 
         for (BarLoopVar oneBar : new ArrayList<BarLoopVar>()) {
         }
-
 
         new BarCtorCall();
 
@@ -86,14 +84,22 @@ public class Foo extends BarSuper implements BarInterface, /* allowed: */ IFoo {
 
     }
 
-    private boolean isAllowed() { return true; }
-    private void isAlsoAllowed() { }
+    private boolean isAllowed() {
+        return true;
+    }
 
-    private List<RetValGen> isNotAllowed() { return null; }
+    private void isAlsoAllowed() {
+    }
 
-    static class InvalidFooGeneric<T extends BarGeneric> {}
+    private List<RetValGen> isNotAllowed() {
+        return null;
+    }
 
-    static class InvalidFooImplementation extends FooContainer<BarGenType> {}
+    static class InvalidFooGeneric<T extends BarGeneric> {
+    }
+
+    static class InvalidFooImplementation extends FooContainer<BarGenType> {
+    }
 
     static interface InnerFoo extends BarInnerInterface {
     }
