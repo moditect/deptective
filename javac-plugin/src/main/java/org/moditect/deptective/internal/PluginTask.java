@@ -27,16 +27,18 @@ import org.moditect.deptective.internal.model.PackageDependencies;
 import org.moditect.deptective.internal.options.DeptectiveOptions;
 
 /**
- * Describes the {@link PackageReferenceHandler} to be invoked when traversing
- * the ASTs of the project under compilation.
+ * Describes the {@link PackageReferenceHandler} to be invoked when traversing the ASTs of the project under
+ * compilation.
  *
  * @author Gunnar Morling
  */
 public enum PluginTask {
 
     VALIDATE {
+
         @Override
-        public PackageReferenceHandler getPackageReferenceHandler(JavaFileManager jfm, DeptectiveOptions options, Supplier<PackageDependencies> configSupplier, Log log) {
+        public PackageReferenceHandler getPackageReferenceHandler(JavaFileManager jfm, DeptectiveOptions options,
+                Supplier<PackageDependencies> configSupplier, Log log) {
             return new PackageReferenceValidator(
                     jfm,
                     configSupplier.get(),
@@ -48,8 +50,10 @@ public enum PluginTask {
         }
     },
     ANALYZE {
+
         @Override
-        public PackageReferenceHandler getPackageReferenceHandler(JavaFileManager jfm, DeptectiveOptions options, Supplier<PackageDependencies> configSupplier, Log log) {
+        public PackageReferenceHandler getPackageReferenceHandler(JavaFileManager jfm, DeptectiveOptions options,
+                Supplier<PackageDependencies> configSupplier, Log log) {
             return new PackageReferenceCollector(
                     jfm,
                     log,
@@ -59,5 +63,6 @@ public enum PluginTask {
         }
     };
 
-    public abstract PackageReferenceHandler getPackageReferenceHandler(JavaFileManager jfm, DeptectiveOptions options, Supplier<PackageDependencies> configSupplier, Log log);
+    public abstract PackageReferenceHandler getPackageReferenceHandler(JavaFileManager jfm, DeptectiveOptions options,
+            Supplier<PackageDependencies> configSupplier, Log log);
 }

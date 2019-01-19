@@ -18,8 +18,8 @@ package org.moditect.deptective.internal.model;
 import java.util.regex.Pattern;
 
 /**
- * An expression matching one or more whitelisted Java packages, i.e. packages
- * that other packages are always allowed to depend on.
+ * An expression matching one or more whitelisted Java packages, i.e. packages that other packages are always allowed to
+ * depend on.
  *
  * @author Gunnar Morling
  */

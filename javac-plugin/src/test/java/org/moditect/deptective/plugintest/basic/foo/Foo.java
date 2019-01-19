@@ -21,11 +21,14 @@ import java.util.List;
 import org.moditect.deptective.plugintest.basic.baranparam.BarAnnotationParameter;
 import org.moditect.deptective.plugintest.basic.barclass.BarClass;
 import org.moditect.deptective.plugintest.basic.barclazzan.BarClazzAnnotation;
+import org.moditect.deptective.plugintest.basic.barclsliteral.BarClassLiteral;
 import org.moditect.deptective.plugintest.basic.barctorcall.BarCtorCall;
 import org.moditect.deptective.plugintest.basic.barctorparam.BarCtorParam;
+import org.moditect.deptective.plugintest.basic.bardemand.BarDemand;
 import org.moditect.deptective.plugintest.basic.barfield.BarField;
 import org.moditect.deptective.plugintest.basic.barfieldan.BarFieldAnnotation;
 import org.moditect.deptective.plugintest.basic.bargen.BarGeneric;
+import org.moditect.deptective.plugintest.basic.bargenericbound.BarGenericBound;
 import org.moditect.deptective.plugintest.basic.bargentype.BarGenType;
 import org.moditect.deptective.plugintest.basic.barinnerinner.BarInnerInterface;
 import org.moditect.deptective.plugintest.basic.barinnersuper.BarInnerSuperClass;
@@ -37,15 +40,27 @@ import org.moditect.deptective.plugintest.basic.barretval.BarRetVal;
 import org.moditect.deptective.plugintest.basic.barretvalgen.RetValGen;
 import org.moditect.deptective.plugintest.basic.barsuper.BarSuper;
 import org.moditect.deptective.plugintest.basic.bartypearg.BarTypeArg;
+import org.moditect.deptective.plugintest.basic.barvalueann.BarValue;
 
 @FooAnnotation(classParameter = BarAnnotationParameter.class)
 @BarClazzAnnotation
+@FooValueAnnotation(BarValue.class)
 public class Foo extends BarSuper implements BarInterface, /* allowed: */ IFoo {
 
     @BarFieldAnnotation
     private String s;
     private final BarField bar = new BarField();
     private Class<?> clazz = BarClass.class;
+
+    private org.moditect.deptective.plugintest.basic.barqualified.BarQualified barQualified;
+
+    private String x = org.moditect.deptective.plugintest.basic.barstatic.BarStatic.staticBar();
+
+    private final String barbarbar = org.moditect.deptective.plugintest.basic.barstaticfield.BarStaticField.BAR_STATIC;
+
+    private BarDemand barDemand;
+
+    private Class<? extends BarGenericBound> genericBound;
 
     public Foo(BarCtorParam bar) {
     }
@@ -58,20 +73,33 @@ public class Foo extends BarSuper implements BarInterface, /* allowed: */ IFoo {
         for (BarLoopVar oneBar : new ArrayList<BarLoopVar>()) {
         }
 
-
         new BarCtorCall();
+
+        doIt(BarClassLiteral.class);
 
         return null;
     }
 
-    private boolean isAllowed() { return true; }
-    private void isAlsoAllowed() { }
+    private void doIt(Class<?> clz) {
 
-    private List<RetValGen> isNotAllowed() { return null; }
+    }
 
-    static class InvalidFooGeneric<T extends BarGeneric> {}
+    private boolean isAllowed() {
+        return true;
+    }
 
-    static class InvalidFooImplementation extends FooContainer<BarGenType> {}
+    private void isAlsoAllowed() {
+    }
+
+    private List<RetValGen> isNotAllowed() {
+        return null;
+    }
+
+    static class InvalidFooGeneric<T extends BarGeneric> {
+    }
+
+    static class InvalidFooImplementation extends FooContainer<BarGenType> {
+    }
 
     static interface InnerFoo extends BarInnerInterface {
     }

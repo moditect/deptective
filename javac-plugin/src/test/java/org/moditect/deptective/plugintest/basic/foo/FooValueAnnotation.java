@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.moditect.deptective.plugintest.basic.barfieldan;
+package org.moditect.deptective.plugintest.basic.foo;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.CONSTRUCTOR;
@@ -34,7 +34,8 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target({ TYPE, FIELD, METHOD, PARAMETER, CONSTRUCTOR, LOCAL_VARIABLE, ANNOTATION_TYPE, PACKAGE, TYPE_PARAMETER,
         TYPE_USE, MODULE })
-public @interface BarFieldAnnotation {
+public @interface FooValueAnnotation {
 
-    Class<?> classParameter() default String.class;
+    Class<?> value();
+
 }

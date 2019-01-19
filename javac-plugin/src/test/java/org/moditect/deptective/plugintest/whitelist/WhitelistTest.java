@@ -30,14 +30,14 @@ public class WhitelistTest extends PluginTestBase {
     @Test
     public void shouldApplyWhitelistForJavaLangType() {
         Compilation compilation = Compiler.javac()
-            .withOptions(
-                    "-Xplugin:Deptective",
-                    getConfigFileOption()
-            )
-            .compile(
-                    forTestClass(Bar.class),
-                    forTestClass(Foo.class)
-            );
+                .withOptions(
+                        "-Xplugin:Deptective",
+                        getConfigFileOption()
+                )
+                .compile(
+                        forTestClass(Bar.class),
+                        forTestClass(Foo.class)
+                );
 
         assertThat(compilation).failed();
         assertThat(compilation).hadErrorContaining(

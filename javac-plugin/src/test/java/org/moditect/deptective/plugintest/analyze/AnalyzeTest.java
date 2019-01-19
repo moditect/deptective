@@ -40,20 +40,22 @@ public class AnalyzeTest extends PluginTestBase {
     @Test
     public void shouldGenerateConfig() throws Exception {
         Compilation compilation = Compiler.javac()
-            .withOptions(
-                    "-Xplugin:Deptective",
-                    "-Adeptective.mode=ANALYZE",
-                    "-Adeptective.whitelisted=java.math"
-            )
-            .compile(
-                    forTestClass(Bar.class),
-                    forTestClass(Foo.class),
-                    forTestClass(Qux.class)
-            );
+                .withOptions(
+                        "-Xplugin:Deptective",
+                        "-Adeptective.mode=ANALYZE",
+                        "-Adeptective.whitelisted=java.math"
+                )
+                .compile(
+                        forTestClass(Bar.class),
+                        forTestClass(Foo.class),
+                        forTestClass(Qux.class)
+                );
 
         assertThat(compilation).succeeded();
 
-        assertThat(compilation).hadNoteContaining("Generated Deptective configuration template at mem:///CLASS_OUTPUT/deptective.json");
+        assertThat(compilation).hadNoteContaining(
+                "Generated Deptective configuration template at mem:///CLASS_OUTPUT/deptective.json"
+        );
         assertThat(compilation).hadNoteCount(1);
 
         String expectedConfig = "{\n" +
@@ -62,12 +64,14 @@ public class AnalyzeTest extends PluginTestBase {
                 "      \"reads\" : [ \"org.moditect.deptective.plugintest.analyze.qux\" ]\n" +
                 "    }, {\n" +
                 "      \"name\" : \"org.moditect.deptective.plugintest.analyze.foo\",\n" +
-                "      \"reads\" : [ \"org.moditect.deptective.plugintest.analyze.qux\", \"org.moditect.deptective.plugintest.analyze.bar\" ]\n" +
+                "      \"reads\" : [ \"org.moditect.deptective.plugintest.analyze.qux\", \"org.moditect.deptective.plugintest.analyze.bar\" ]\n"
+                +
                 "    } ],\n" +
                 "    \"whitelisted\" : [ \"java.math\" ]\n" +
                 "  }]";
 
-        Optional<JavaFileObject> deptectiveFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT, "deptective.json");
+        Optional<JavaFileObject> deptectiveFile = compilation
+                .generatedFile(StandardLocation.CLASS_OUTPUT, "deptective.json");
         assertThat(deptectiveFile.isPresent()).isTrue();
         String generatedConfig = Strings.readToString(deptectiveFile.get().openInputStream());
 

@@ -39,19 +39,21 @@ public class AnalyzeWhitelistAllExternalTest extends PluginTestBase {
     @Test
     public void shouldGenerateConfig() throws Exception {
         Compilation compilation = Compiler.javac()
-            .withOptions(
-                    "-Xplugin:Deptective",
-                    "-Adeptective.mode=ANALYZE",
-                    "-Adeptective.whitelisted=*ALL_EXTERNAL*"
-            )
-            .compile(
-                    forTestClass(Bar.class),
-                    forTestClass(Foo.class)
-            );
+                .withOptions(
+                        "-Xplugin:Deptective",
+                        "-Adeptective.mode=ANALYZE",
+                        "-Adeptective.whitelisted=*ALL_EXTERNAL*"
+                )
+                .compile(
+                        forTestClass(Bar.class),
+                        forTestClass(Foo.class)
+                );
 
         assertThat(compilation).succeeded();
 
-        assertThat(compilation).hadNoteContaining("Generated Deptective configuration template at mem:///CLASS_OUTPUT/deptective.json");
+        assertThat(compilation).hadNoteContaining(
+                "Generated Deptective configuration template at mem:///CLASS_OUTPUT/deptective.json"
+        );
         assertThat(compilation).hadNoteCount(1);
 
         String expectedConfig = "{\n" +
@@ -64,7 +66,8 @@ public class AnalyzeWhitelistAllExternalTest extends PluginTestBase {
                 "    \"whitelisted\" : [ \"java.io\", \"java.math\", \"java.net\" ]\n" +
                 "  }]";
 
-        Optional<JavaFileObject> deptectiveFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT, "deptective.json");
+        Optional<JavaFileObject> deptectiveFile = compilation
+                .generatedFile(StandardLocation.CLASS_OUTPUT, "deptective.json");
         assertThat(deptectiveFile.isPresent()).isTrue();
         String generatedConfig = Strings.readToString(deptectiveFile.get().openInputStream());
 

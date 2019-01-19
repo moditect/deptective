@@ -40,10 +40,10 @@ public class ConfigParser {
         try {
             this.packageDependencies = parseConfig(config);
         }
-        catch(RuntimeException e) {
+        catch (RuntimeException e) {
             throw e;
         }
-        catch(Exception e) {
+        catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -56,10 +56,10 @@ public class ConfigParser {
         try {
             this.packageDependencies = parseConfig(config);
         }
-        catch(RuntimeException e) {
+        catch (RuntimeException e) {
             throw e;
         }
-        catch(Exception e) {
+        catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -85,7 +85,7 @@ public class ConfigParser {
 
         if (packages != null) {
             Iterator<JsonNode> it = packages.iterator();
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 parsePackage(it.next(), builder);
             }
         }
@@ -94,7 +94,7 @@ public class ConfigParser {
 
         if (whitelisted != null) {
             Iterator<JsonNode> it = whitelisted.iterator();
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 WhitelistedPackagePattern pattern = WhitelistedPackagePattern.getPattern(it.next().asText());
                 builder.addWhitelistedPackage(pattern);
             }
@@ -105,7 +105,7 @@ public class ConfigParser {
 
     private void parsePackage(JsonNode pakkage, Builder builder) {
         String name = pakkage.get("name").asText();
-        List<String> reads = parseReads((ArrayNode)(pakkage.get("reads")));
+        List<String> reads = parseReads((ArrayNode) (pakkage.get("reads")));
 
         builder.addPackage(name, reads);
     }
@@ -118,7 +118,7 @@ public class ConfigParser {
         Iterator<JsonNode> it = arrayNode.iterator();
         List<String> packages = new ArrayList<>();
 
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             packages.add(it.next().asText());
         }
 

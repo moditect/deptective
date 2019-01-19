@@ -26,8 +26,8 @@ import com.sun.source.tree.Tree;
 public interface PackageReferenceHandler {
 
     /**
-     * Whether the plug-ins configuration is valid for the given handler. If that's
-     * not the case, ASTs won't be traversed.
+     * Whether the plug-ins configuration is valid for the given handler. If that's not the case, ASTs won't be
+     * traversed.
      */
     default public boolean configIsValid() {
         return true;
@@ -42,8 +42,7 @@ public interface PackageReferenceHandler {
     /**
      * Invoked when referencing a package.
      *
-     * @param referencingNode       the node referencing the other package, e.g. a
-     *                              variable or field.
+     * @param referencingNode the node referencing the other package, e.g. a variable or field.
      * @param referencedPackageName the name of the referenced package
      */
     default void onPackageReference(Tree referencingNode, String referencedPackageName) {

@@ -29,13 +29,13 @@ public class UnconfiguredPackageTest extends PluginTestBase {
     @Test
     public void shouldWarnWhenEncounteringUnconfiguredPackage() {
         Compilation compilation = Compiler.javac()
-            .withOptions(
-                    "-Xplugin:Deptective",
-                    getConfigFileOption()
-            )
-            .compile(
-                    forTestClass(Foo.class)
-            );
+                .withOptions(
+                        "-Xplugin:Deptective",
+                        getConfigFileOption()
+                )
+                .compile(
+                        forTestClass(Foo.class)
+                );
 
         assertThat(compilation).succeeded();
         assertThat(compilation).hadWarningContaining(
@@ -46,14 +46,14 @@ public class UnconfiguredPackageTest extends PluginTestBase {
     @Test
     public void shouldFailWhenEncounteringUnconfiguredPackage() {
         Compilation compilation = Compiler.javac()
-            .withOptions(
-                    "-Xplugin:Deptective",
-                    getConfigFileOption(),
-                    "-Adeptective.unconfigured_package_reporting_policy=ERROR"
-            )
-            .compile(
-                    forTestClass(Foo.class)
-            );
+                .withOptions(
+                        "-Xplugin:Deptective",
+                        getConfigFileOption(),
+                        "-Adeptective.unconfigured_package_reporting_policy=ERROR"
+                )
+                .compile(
+                        forTestClass(Foo.class)
+                );
 
         assertThat(compilation).failed();
         assertThat(compilation).hadErrorContaining(

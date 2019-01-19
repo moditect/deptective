@@ -28,6 +28,10 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <properties>
+        <build.config.location>../etc</build.config.location>
+    </properties>
+
     <artifactId>deptective-integration-test</artifactId>
     <name>Deptective Integration Test</name>
 

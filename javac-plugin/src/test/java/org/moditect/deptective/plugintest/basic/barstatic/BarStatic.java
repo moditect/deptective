@@ -13,11 +13,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.moditect.deptective.plugintest.unconfiguredpackage.foo;
+package org.moditect.deptective.plugintest.basic.barstatic;
 
-import java.math.BigDecimal;
+public class BarStatic {
 
-public class Foo {
+    public static String staticBar() {
+        return "hello";
+    }
 
-    public BigDecimal bd;
 }
