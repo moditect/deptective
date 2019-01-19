@@ -17,6 +17,7 @@ package org.moditect.deptective.plugintest.analyzewhitelistallexternal;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.moditect.deptective.internal.util.Strings.lines;
 
 import java.util.Optional;
 
@@ -56,15 +57,17 @@ public class AnalyzeWhitelistAllExternalTest extends PluginTestBase {
         );
         assertThat(compilation).hadNoteCount(1);
 
-        String expectedConfig = "{\n" +
-                "    \"packages\" : [ {\n" +
-                "      \"name\" : \"org.moditect.deptective.plugintest.analyzewhitelistallexternal.bar\"\n" +
-                "    }, {\n" +
-                "      \"name\" : \"org.moditect.deptective.plugintest.analyzewhitelistallexternal.foo\",\n" +
-                "      \"reads\" : [ \"org.moditect.deptective.plugintest.analyzewhitelistallexternal.bar\" ]\n" +
-                "    } ],\n" +
-                "    \"whitelisted\" : [ \"java.io\", \"java.math\", \"java.net\" ]\n" +
-                "  }]";
+        String expectedConfig = lines(
+                "{",
+                "    \"packages\" : [ {",
+                "      \"name\" : \"org.moditect.deptective.plugintest.analyzewhitelistallexternal.bar\"",
+                "    }, {",
+                "      \"name\" : \"org.moditect.deptective.plugintest.analyzewhitelistallexternal.foo\",",
+                "      \"reads\" : [ \"org.moditect.deptective.plugintest.analyzewhitelistallexternal.bar\" ]",
+                "    } ],",
+                "    \"whitelisted\" : [ \"java.io\", \"java.math\", \"java.net\" ]",
+                "  }]"
+        );
 
         Optional<JavaFileObject> deptectiveFile = compilation
                 .generatedFile(StandardLocation.CLASS_OUTPUT, "deptective.json");

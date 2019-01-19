@@ -17,6 +17,7 @@ package org.moditect.deptective.plugintest.analyze;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.moditect.deptective.internal.util.Strings.lines;
 
 import java.util.Optional;
 
@@ -58,17 +59,20 @@ public class AnalyzeTest extends PluginTestBase {
         );
         assertThat(compilation).hadNoteCount(1);
 
-        String expectedConfig = "{\n" +
-                "    \"packages\" : [ {\n" +
-                "      \"name\" : \"org.moditect.deptective.plugintest.analyze.bar\",\n" +
-                "      \"reads\" : [ \"org.moditect.deptective.plugintest.analyze.qux\" ]\n" +
-                "    }, {\n" +
-                "      \"name\" : \"org.moditect.deptective.plugintest.analyze.foo\",\n" +
-                "      \"reads\" : [ \"org.moditect.deptective.plugintest.analyze.qux\", \"org.moditect.deptective.plugintest.analyze.bar\" ]\n"
-                +
-                "    } ],\n" +
-                "    \"whitelisted\" : [ \"java.math\" ]\n" +
-                "  }]";
+        String expectedConfig = lines(
+                "{",
+                "    \"packages\" : [ {",
+                "      \"name\" : \"org.moditect.deptective.plugintest.analyze.bar\",",
+                "      \"reads\" : [ \"org.moditect.deptective.plugintest.analyze.qux\" ]",
+                "    }, {",
+                "      \"name\" : \"org.moditect.deptective.plugintest.analyze.foo\",",
+                "      \"reads\" : [",
+                "          \"org.moditect.deptective.plugintest.analyze.qux\",",
+                "          \"org.moditect.deptective.plugintest.analyze.bar\" ]\n",
+                "    } ],",
+                "    \"whitelisted\" : [ \"java.math\" ]",
+                "  }]"
+        );
 
         Optional<JavaFileObject> deptectiveFile = compilation
                 .generatedFile(StandardLocation.CLASS_OUTPUT, "deptective.json");

@@ -116,11 +116,11 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
 
         actualPackageDependencies.addRead(currentPackage.getName(), referencedPackageName, readKind);
 
-        if (!currentPackage.isConfigured()) {
+        if (readKind == ReadKind.UKNOWN) {
             return;
         }
 
-        if (!currentPackage.allowedToRead(referencedPackageName)) {
+        if (readKind == ReadKind.DISALLOWED) {
             log.report(
                     reportingPolicy,
                     (com.sun.tools.javac.tree.JCTree) referencingNode,

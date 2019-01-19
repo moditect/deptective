@@ -16,6 +16,7 @@
 package org.moditect.deptective.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.moditect.deptective.internal.util.Strings.lines;
 
 import org.junit.Test;
 import org.moditect.deptective.internal.model.ConfigParser;
@@ -27,28 +28,29 @@ public class ConfigParsingTest {
     @Test
     public void shouldLoadConfig() throws Exception {
         PackageDependencies dependencies = new ConfigParser(
-                "{\n" +
-                        "    \"packages\" : [\n" +
-                        "        {\n" +
-                        "            \"name\" : \"com.example.ui\",\n" +
-                        "            \"reads\" : [\n" +
-                        "                \"com.example.service\",\n" +
-                        "                \"com.example.persistence\"\n" +
-                        "            ]\n" +
-                        "        },\n" +
-                        "        {\n" +
-                        "            \"name\" : \"com.example.service\",\n" +
-                        "            \"reads\" : [\n" +
-                        "                \"com.example.persistence\"\n" +
-                        "            ]\n" +
-                        "        }\n" +
-                        "    ],\n" +
-                        "    \"whitelisted\" : [\n" +
-                        "        \"java.awt*\", \"java.util*\"\n" +
-                        "    ]\n" +
-                        "}\n"
-        )
-                .getPackageDependencies();
+                lines(
+                        "{",
+                        "    \"packages\" : [",
+                        "        {",
+                        "            \"name\" : \"com.example.ui\",",
+                        "            \"reads\" : [",
+                        "                \"com.example.service\",",
+                        "                \"com.example.persistence\"",
+                        "            ]",
+                        "        },",
+                        "        {",
+                        "            \"name\" : \"com.example.service\",",
+                        "            \"reads\" : [",
+                        "                \"com.example.persistence\"",
+                        "            ]",
+                        "        }",
+                        "    ],",
+                        "    \"whitelisted\" : [",
+                        "        \"java.awt*\", \"java.util*\"",
+                        "    ]",
+                        "}"
+                )
+        ).getPackageDependencies();
 
         assertThat(dependencies).isNotNull();
 
