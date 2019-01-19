@@ -38,25 +38,28 @@ public class VisualizeTest extends PluginTestBase {
     @Test
     public void shouldGenerateDotFileForAnalyse() throws Exception {
         Compilation compilation = Compiler.javac()
-            .withOptions(
-                    "-Xplugin:Deptective",
-                    "-Adeptective.mode=ANALYZE",
-                    "-Adeptective.visualize=true",
-                    "-Adeptective.whitelisted=java.math",
-                    getConfigFileOption()
-            )
-            .compile(
-                    forTestClass(Bar.class),
-                    forTestClass(Foo.class),
-                    forTestClass(Qux.class)
-            );
+                .withOptions(
+                        "-Xplugin:Deptective",
+                        "-Adeptective.mode=ANALYZE",
+                        "-Adeptective.visualize=true",
+                        "-Adeptective.whitelisted=java.math",
+                        getConfigFileOption()
+                )
+                .compile(
+                        forTestClass(Bar.class),
+                        forTestClass(Foo.class),
+                        forTestClass(Qux.class)
+                );
 
         assertThat(compilation).succeeded();
 
-        assertThat(compilation).hadNoteContaining("Created DOT file representing the Deptective configuration at mem:///CLASS_OUTPUT/deptective.dot");
+        assertThat(compilation).hadNoteContaining(
+                "Created DOT file representing the Deptective configuration at mem:///CLASS_OUTPUT/deptective.dot"
+        );
         assertThat(compilation).hadNoteCount(2);
 
-        String expectedConfig = Strings.lines("digraph \"package dependencies\"",
+        String expectedConfig = Strings.lines(
+                "digraph \"package dependencies\"",
                 "{",
                 "  \"org.moditect.deptective.plugintest.visualize.bar\";",
                 "  \"org.moditect.deptective.plugintest.visualize.foo\";",
@@ -73,9 +76,11 @@ public class VisualizeTest extends PluginTestBase {
                 "  subgraph Unknown {",
                 "    edge [color=yellow]",
                 "  }",
-                "}");
+                "}"
+        );
 
-        Optional<JavaFileObject> deptectiveFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT, "deptective.dot");
+        Optional<JavaFileObject> deptectiveFile = compilation
+                .generatedFile(StandardLocation.CLASS_OUTPUT, "deptective.dot");
         assertThat(deptectiveFile.isPresent()).isTrue();
         String generatedConfig = Strings.readToString(deptectiveFile.get().openInputStream());
 
@@ -85,25 +90,28 @@ public class VisualizeTest extends PluginTestBase {
     @Test
     public void shouldGenerateDotFileForValidate() throws Exception {
         Compilation compilation = Compiler.javac()
-            .withOptions(
-                    "-Xplugin:Deptective",
-                    "-Adeptective.visualize=true",
-                    "-Adeptective.whitelisted=java.math",
-                    "-Adeptective.reporting_policy=WARN",
-                    getConfigFileOption()
-            )
-            .compile(
-                    forTestClass(Bar.class),
-                    forTestClass(Foo.class),
-                    forTestClass(Qux.class)
-            );
+                .withOptions(
+                        "-Xplugin:Deptective",
+                        "-Adeptective.visualize=true",
+                        "-Adeptective.whitelisted=java.math",
+                        "-Adeptective.reporting_policy=WARN",
+                        getConfigFileOption()
+                )
+                .compile(
+                        forTestClass(Bar.class),
+                        forTestClass(Foo.class),
+                        forTestClass(Qux.class)
+                );
 
         assertThat(compilation).succeeded();
 
-        assertThat(compilation).hadNoteContaining("Created DOT file representing the Deptective configuration at mem:///CLASS_OUTPUT/deptective.dot");
+        assertThat(compilation).hadNoteContaining(
+                "Created DOT file representing the Deptective configuration at mem:///CLASS_OUTPUT/deptective.dot"
+        );
         assertThat(compilation).hadNoteCount(1);
 
-        String expectedConfig = Strings.lines("digraph \"package dependencies\"",
+        String expectedConfig = Strings.lines(
+                "digraph \"package dependencies\"",
                 "{",
                 "  \"org.moditect.deptective.plugintest.visualize.bar\";",
                 "  \"org.moditect.deptective.plugintest.visualize.foo\";",
@@ -120,9 +128,11 @@ public class VisualizeTest extends PluginTestBase {
                 "    edge [color=yellow]",
                 "    \"org.moditect.deptective.plugintest.visualize.qux\" -> \"org.moditect.deptective.plugintest.visualize.bar\";",
                 "  }",
-                "}");
+                "}"
+        );
 
-        Optional<JavaFileObject> deptectiveFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT, "deptective.dot");
+        Optional<JavaFileObject> deptectiveFile = compilation
+                .generatedFile(StandardLocation.CLASS_OUTPUT, "deptective.dot");
         assertThat(deptectiveFile.isPresent()).isTrue();
         String generatedConfig = Strings.readToString(deptectiveFile.get().openInputStream());
 
