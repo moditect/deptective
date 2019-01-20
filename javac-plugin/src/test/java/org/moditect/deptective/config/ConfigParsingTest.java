@@ -30,19 +30,25 @@ public class ConfigParsingTest {
         PackageDependencies dependencies = new ConfigParser(
                 lines(
                         "{",
-                        "    \"packages\" : [",
+                        "    \"components\" : [",
                         "        {",
-                        "            \"name\" : \"com.example.ui\",",
+                        "            \"name\" : \"ui\",",
+                        "            \"contains\" : [ \"com.example.ui\" ],",
                         "            \"reads\" : [",
-                        "                \"com.example.service\",",
-                        "                \"com.example.persistence\"",
+                        "                \"service\",",
+                        "                \"persistence\"",
                         "            ]",
                         "        },",
                         "        {",
-                        "            \"name\" : \"com.example.service\",",
+                        "            \"name\" : \"service\",",
+                        "            \"contains\" : [ \"com.example.service\" ],",
                         "            \"reads\" : [",
-                        "                \"com.example.persistence\"",
+                        "                \"persistence\"",
                         "            ]",
+                        "        },",
+                        "        {",
+                        "            \"name\" : \"persistence\",",
+                        "            \"contains\" : [ \"com.example.persistence\" ]",
                         "        }",
                         "    ],",
                         "    \"whitelisted\" : [",
@@ -56,14 +62,17 @@ public class ConfigParsingTest {
 
         Component ui = dependencies.getComponentByPackage("com.example.ui");
         assertThat(ui).isNotNull();
-        assertThat(ui.allowedToRead(component("com.example.service"))).isTrue();
-        assertThat(ui.allowedToRead(component("com.example.persistence"))).isTrue();
+        assertThat(ui.getName()).isEqualTo("ui");
+        assertThat(ui.containsPackage("com.example.ui")).isTrue();
+        assertThat(ui.allowedToRead(component("service"))).isTrue();
+        assertThat(ui.allowedToRead(component("persistence"))).isTrue();
 
         Component service = dependencies.getComponentByPackage("com.example.service");
         assertThat(service).isNotNull();
-        assertThat(service).isNotNull();
-        assertThat(service.allowedToRead(component("com.example.ui"))).isFalse();
-        assertThat(service.allowedToRead(component("com.example.persistence"))).isTrue();
+        assertThat(service.getName()).isEqualTo("service");
+        assertThat(service.containsPackage("com.example.service")).isTrue();
+        assertThat(service.allowedToRead(component("ui"))).isFalse();
+        assertThat(service.allowedToRead(component("persistence"))).isTrue();
 
         assertThat(dependencies.isWhitelisted("java.awt")).isTrue();
         assertThat(dependencies.isWhitelisted("java.awt.color")).isTrue();

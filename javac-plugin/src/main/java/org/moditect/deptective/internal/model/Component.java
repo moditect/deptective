@@ -15,10 +15,12 @@
  */
 package org.moditect.deptective.internal.model;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Describes a component, a set of packages identified by one more naming patterns.
@@ -33,12 +35,12 @@ public class Component {
     public static class Builder {
 
         private final String name;
-        private final List<PackagePattern> contained;
+        private final Set<PackagePattern> contained;
         private final Map<String, ReadKind> reads;
 
         public Builder(String name) {
             this.name = name;
-            this.contained = new ArrayList<>();
+            this.contained = new HashSet<>();
             this.reads = new HashMap<>();
         }
 
@@ -57,8 +59,13 @@ public class Component {
             return this;
         }
 
-        public Builder addContains(List<PackagePattern> contains) {
+        public Builder addContains(Collection<PackagePattern> contains) {
             contained.addAll(contains);
+            return this;
+        }
+
+        public Builder addContains(PackagePattern contains) {
+            contained.add(contains);
             return this;
         }
 
@@ -72,13 +79,13 @@ public class Component {
     }
 
     private final String name;
-    private final List<PackagePattern> contained;
+    private final Set<PackagePattern> contained;
     private final Map<String, ReadKind> reads;
 
-    public Component(String name, List<PackagePattern> contained, Map<String, ReadKind> reads) {
+    public Component(String name, Set<PackagePattern> contained, Map<String, ReadKind> reads) {
         this.name = name;
-        this.contained = contained;
-        this.reads = reads;
+        this.contained = Collections.unmodifiableSet(contained);
+        this.reads = Collections.unmodifiableMap(reads);
     }
 
     public static Builder builder(String name) {
@@ -103,7 +110,7 @@ public class Component {
         return name;
     }
 
-    public List<PackagePattern> getContained() {
+    public Set<PackagePattern> getContained() {
         return contained;
     }
 

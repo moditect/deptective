@@ -53,6 +53,11 @@ public class PackageDependencies {
             );
         }
 
+        public void addContains(String componentName, PackagePattern contained) {
+            Component.Builder builder = componentsByName.computeIfAbsent(componentName, n -> Component.builder(n));
+            builder.addContains(contained);
+        }
+
         public void addRead(String name, String readComponent, ReadKind readKind) {
             Component.Builder builder = componentsByName.computeIfAbsent(name, n -> Component.builder(n));
             builder.addRead(readComponent, readKind);

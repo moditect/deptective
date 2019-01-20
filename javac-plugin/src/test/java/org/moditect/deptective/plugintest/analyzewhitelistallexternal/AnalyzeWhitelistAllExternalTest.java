@@ -59,10 +59,12 @@ public class AnalyzeWhitelistAllExternalTest extends PluginTestBase {
 
         String expectedConfig = lines(
                 "{",
-                "    \"packages\" : [ {",
-                "      \"name\" : \"org.moditect.deptective.plugintest.analyzewhitelistallexternal.bar\"",
+                "    \"components\" : [ {",
+                "      \"name\" : \"org.moditect.deptective.plugintest.analyzewhitelistallexternal.bar\",",
+                "      \"contains\" : [ \"org.moditect.deptective.plugintest.analyzewhitelistallexternal.bar\" ]",
                 "    }, {",
                 "      \"name\" : \"org.moditect.deptective.plugintest.analyzewhitelistallexternal.foo\",",
+                "      \"contains\" : [ \"org.moditect.deptective.plugintest.analyzewhitelistallexternal.foo\" ],",
                 "      \"reads\" : [ \"org.moditect.deptective.plugintest.analyzewhitelistallexternal.bar\" ]",
                 "    } ],",
                 "    \"whitelisted\" : [ \"java.io\", \"java.math\", \"java.net\" ]",

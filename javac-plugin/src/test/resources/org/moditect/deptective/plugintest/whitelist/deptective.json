@@ -1,10 +1,12 @@
 {
-    "packages" : [
+    "components" : [
         {
-            "name" : "org.moditect.deptective.plugintest.whitelist.foo"
+            "name" : "org.moditect.deptective.plugintest.whitelist.foo",
+            "contains" : [ "org.moditect.deptective.plugintest.whitelist.foo" ]
         },
         {
-            "name" : "org.moditect.deptective.plugintest.whitelist.bar"
+            "name" : "org.moditect.deptective.plugintest.whitelist.bar",
+            "contains" : [ "org.moditect.deptective.plugintest.whitelist.bar" ]
         }
     ],
     "whitelisted" : [

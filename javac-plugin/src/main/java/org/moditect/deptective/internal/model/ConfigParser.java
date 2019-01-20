@@ -18,7 +18,6 @@ package org.moditect.deptective.internal.model;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -71,23 +70,23 @@ public class ConfigParser {
 
     private PackageDependencies parseConfig(InputStream config) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        return parsePackages(objectMapper.readTree(config));
+        return parseComponents(objectMapper.readTree(config));
     }
 
     private PackageDependencies parseConfig(String config) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        return parsePackages(objectMapper.readTree(config));
+        return parseComponents(objectMapper.readTree(config));
     }
 
-    private PackageDependencies parsePackages(JsonNode config) throws IOException {
+    private PackageDependencies parseComponents(JsonNode config) throws IOException {
         PackageDependencies.Builder builder = PackageDependencies.builder();
 
-        ArrayNode packages = (ArrayNode) config.get("packages");
+        ArrayNode components = (ArrayNode) config.get("components");
 
-        if (packages != null) {
-            Iterator<JsonNode> it = packages.iterator();
+        if (components != null) {
+            Iterator<JsonNode> it = components.iterator();
             while (it.hasNext()) {
-                parsePackage(it.next(), builder);
+                parseComponent(it.next(), builder);
             }
         }
 
@@ -104,11 +103,12 @@ public class ConfigParser {
         return builder.build();
     }
 
-    private void parsePackage(JsonNode pakkage, Builder builder) {
-        String name = pakkage.get("name").asText();
-        List<String> reads = parseReads((ArrayNode) (pakkage.get("reads")));
+    private void parseComponent(JsonNode component, Builder builder) {
+        String name = component.get("name").asText();
+        List<PackagePattern> contains = parseContains((ArrayNode) (component.get("contains")));
+        List<String> reads = parseReads((ArrayNode) (component.get("reads")));
 
-        builder.addComponent(name, Arrays.asList(PackagePattern.getPattern(name)), reads);
+        builder.addComponent(name, contains, reads);
     }
 
     private List<String> parseReads(ArrayNode arrayNode) {
@@ -124,5 +124,20 @@ public class ConfigParser {
         }
 
         return packages;
+    }
+
+    private List<PackagePattern> parseContains(ArrayNode arrayNode) {
+        if (arrayNode == null) {
+            return Collections.emptyList();
+        }
+
+        Iterator<JsonNode> it = arrayNode.iterator();
+        List<PackagePattern> components = new ArrayList<>();
+
+        while (it.hasNext()) {
+            components.add(PackagePattern.getPattern(it.next().asText()));
+        }
+
+        return components;
     }
 }

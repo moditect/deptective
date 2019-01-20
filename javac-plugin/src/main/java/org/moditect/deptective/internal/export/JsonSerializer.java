@@ -35,7 +35,7 @@ public class JsonSerializer implements ModelSerializer {
     private final ObjectMapper mapper;
 
     private final ObjectNode root;
-    private final ArrayNode packages;
+    private final ArrayNode components;
     private final ArrayNode whitelisted;
 
     public JsonSerializer() {
@@ -43,13 +43,13 @@ public class JsonSerializer implements ModelSerializer {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
         root = mapper.createObjectNode();
-        packages = root.putArray("packages");
+        components = root.putArray("components");
         whitelisted = root.putArray("whitelisted");
     }
 
     @Override
     public void addComponent(Component component) {
-        packages.add(toJsonNode(component, mapper));
+        components.add(toJsonNode(component, mapper));
     }
 
     @Override
@@ -71,6 +71,14 @@ public class JsonSerializer implements ModelSerializer {
         ObjectNode node = mapper.createObjectNode();
 
         node.put("name", component.getName());
+
+        if (!component.getContained().isEmpty()) {
+            ArrayNode reads = node.putArray("contains");
+            component.getContained()
+                    .stream()
+                    .sorted()
+                    .forEach(r -> reads.add(r.toString()));
+        }
 
         if (!component.getReads().isEmpty()) {
             ArrayNode reads = node.putArray("reads");

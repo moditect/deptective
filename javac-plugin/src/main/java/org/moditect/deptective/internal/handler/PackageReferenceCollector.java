@@ -83,7 +83,7 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
 
         currentPackageName = packageNameTree.toString();
         packagesOfCurrentCompilation.add(currentPackageName);
-
+        builder.addContains(currentPackageName, PackagePattern.getPattern(currentPackageName));
         return true;
     }
 

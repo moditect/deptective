@@ -1,20 +1,24 @@
 {
-    "packages" : [
+    "components" : [
         {
-            "name" : "com.example.ui",
+            "name" : "ui",
+            "contains" : [ "com.example.ui" ],
             "reads" : [
-                "com.example.persistence",
-                "com.example.service"
+                "persistence",
+                "service"
             ]
         },
         {
-            "name" : "com.example.persistence"
+            "name" : "persistence",
+            "contains" : [ "com.example.persistence" ]
         },
         {
-            "name" : "com.example.service"
+            "name" : "service",
+            "contains" : [ "com.example.service" ]
         },
         {
-            "name" : "com.example.rest"
+            "name" : "rest",
+            "contains" : [ "com.example.rest" ]
         }
     ],
     "whitelisted" : [

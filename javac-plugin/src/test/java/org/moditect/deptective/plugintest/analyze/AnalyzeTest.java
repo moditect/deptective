@@ -61,17 +61,21 @@ public class AnalyzeTest extends PluginTestBase {
 
         String expectedConfig = lines(
                 "{",
-                "    \"packages\" : [ {",
+                "    \"components\" : [ {",
                 "      \"name\" : \"org.moditect.deptective.plugintest.analyze.bar\",",
+                "      \"contains\" : [ \"org.moditect.deptective.plugintest.analyze.bar\" ],",
                 "      \"reads\" : [ \"org.moditect.deptective.plugintest.analyze.qux\" ]",
                 "    }, {",
                 "      \"name\" : \"org.moditect.deptective.plugintest.analyze.foo\",",
+                "      \"contains\" : [ \"org.moditect.deptective.plugintest.analyze.foo\" ],",
                 "      \"reads\" : [",
                 "          \"org.moditect.deptective.plugintest.analyze.qux\",",
-                "          \"org.moditect.deptective.plugintest.analyze.bar\" ]\n",
-                "    } ],",
-                "    \"whitelisted\" : [ \"java.math\" ]",
-                "  }]"
+                "          \"org.moditect.deptective.plugintest.analyze.bar\" ]",
+                "    }, {",
+                "      \"name\" : \"org.moditect.deptective.plugintest.analyze.qux\",",
+                "      \"contains\" : [ \"org.moditect.deptective.plugintest.analyze.qux\" ]",
+                "    } ]",
+                "}"
         );
 
         Optional<JavaFileObject> deptectiveFile = compilation

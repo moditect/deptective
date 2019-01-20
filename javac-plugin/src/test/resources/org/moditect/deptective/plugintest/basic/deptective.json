@@ -1,28 +1,36 @@
 {
-    "packages" : [
+    "components" : [
         {
-            "name" : "org.moditect.deptective.plugintest.basic.barctorcall"
+            "name" : "org.moditect.deptective.plugintest.basic.barctorcall",
+            "contains" : [ "org.moditect.deptective.plugintest.basic.barctorcall" ]
         },
         {
-            "name" : "org.moditect.deptective.plugintest.basic.barfield"
+            "name" : "org.moditect.deptective.plugintest.basic.barfield",
+            "contains" : [ "org.moditect.deptective.plugintest.basic.barfield" ]
         },
         {
-            "name" : "org.moditect.deptective.plugintest.basic.barlocalvar"
+            "name" : "org.moditect.deptective.plugintest.basic.barlocalvar",
+            "contains" : [ "org.moditect.deptective.plugintest.basic.barlocalvar" ]
         },
         {
-            "name" : "org.moditect.deptective.plugintest.basic.barloopvar"
+            "name" : "org.moditect.deptective.plugintest.basic.barloopvar",
+            "contains" : [ "org.moditect.deptective.plugintest.basic.barloopvar" ]
         },
         {
-            "name" : "org.moditect.deptective.plugintest.basic.barparameter"
+            "name" : "org.moditect.deptective.plugintest.basic.barparameter",
+            "contains" : [ "org.moditect.deptective.plugintest.basic.barparameter" ]
         },
         {
-            "name" : "org.moditect.deptective.plugintest.basic.barretval"
+            "name" : "org.moditect.deptective.plugintest.basic.barretval",
+            "contains" : [ "org.moditect.deptective.plugintest.basic.barretval" ]
         },
         {
-            "name" : "org.moditect.deptective.plugintest.basic.bartypearg"
+            "name" : "org.moditect.deptective.plugintest.basic.bartypearg",
+            "contains" : [ "org.moditect.deptective.plugintest.basic.bartypearg" ]
         },
         {
             "name" : "org.moditect.deptective.plugintest.basic.foo",
+            "contains" : [ "org.moditect.deptective.plugintest.basic.foo" ],
             "reads" : [
                 "java.util"
             ]
