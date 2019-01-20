@@ -58,34 +58,50 @@ Deptective can be used with any Java build system such as Maven, Gradle etc.
 
 ```
 {
-    "packages" : [
+    "components" : [
         {
-            "name" : "com.example.foo",
+            "name" : "ui",
+            "contains" : [ "com.example.ui" ],
             "reads" : [
-                "com.example.bar",
-                "com.example.baz"
+                "persistence",
+                "service"
             ]
         },
         {
-            "name" : "com.example.bar",
+            "name" : "persistence",
+            "contains" : [ "com.example.persistence" ]
+        },
+        {
+            "name" : "service",
+            "contains" : [ "com.example.service" ],
             "reads" : [
-                "com.example.baz"
+                "persistence"
+            ]
+        },
+        {
+            "name" : "rest",
+            "contains" : [ "com.example.rest" ],
+            "reads" : [
+                "persistence",
+                "service"
             ]
         }
     ],
     "whitelisted" : [
-        "java.util*",
-        "java.swing*"
+        "java.io*",
+        "java.util*"
     ]
 }
 ```
 
-`packages` is a list of `Package` objects.
-The `Package` object has a `name` property (fully-qualified name of the described package)
-and a `reads` property (list of strings representing the fully-qualified names of other packages read by the given package).
+`components` is a list of `Component` objects.
+The `Component` object has the following properties:
+* `name`: a logical name of the component
+* `contains`: a list of packages contained in the component (the `*` character can be used as a wildcard)
+* `reads`: list of other components that may be accessed by this component
 
 `whitelisted` is a list of strings representing whitelisted packages,
-i.e. packages that always can be read by any other package.
+i.e. packages that always can be read by any other component.
 The `*` character can be used as a wildcard, so e.g. `java.util*` will whitelist the packages `java.util`, `java.util.concurrent` etc.
 
 _Note:_ access to the package `java.lang` is always allowed.
