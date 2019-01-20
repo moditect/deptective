@@ -20,42 +20,42 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.moditect.deptective.internal.export.ModelSerializer;
-import org.moditect.deptective.internal.model.Package.ReadKind;
 
 public class PackageDependencies {
 
     public static class Builder {
 
-        private final Map<String, Package.Builder> packagesByName = new HashMap<>();
+        private final Map<String, Component.Builder> componentsByName = new HashMap<>();
         private final Set<PackagePattern> whitelisted = new HashSet<>();
 
         public PackageDependencies build() {
             return new PackageDependencies(
-                    packagesByName.values()
+                    componentsByName.values()
                             .stream()
-                            .map(Package.Builder::build)
-                            .collect(Collectors.toMap(Package::getName, Function.identity())),
+                            .map(Component.Builder::build)
+                            .collect(Collectors.toSet()),
                     whitelisted
             );
         }
 
-        public void addPackage(String name, List<String> reads) {
-            if (packagesByName.containsKey(name)) {
-                throw new IllegalArgumentException("Package " + name + " may not be configured more than once.");
+        public void addComponent(String name, List<PackagePattern> contains, List<String> reads) {
+            if (componentsByName.containsKey(name)) {
+                throw new IllegalArgumentException("Component " + name + " may not be configured more than once.");
             }
 
-            packagesByName.put(name, Package.builder(name, true).addReads(reads));
+            componentsByName.put(
+                    name,
+                    Component.builder(name).addReads(reads).addContains(contains)
+            );
         }
 
-        public void addRead(String name, String readPackage, ReadKind readKind) {
-            Package.Builder builder = packagesByName.computeIfAbsent(name, n -> Package.builder(n, true));
-            builder.addRead(readPackage, readKind);
+        public void addRead(String name, String readComponent, ReadKind readKind) {
+            Component.Builder builder = componentsByName.computeIfAbsent(name, n -> Component.builder(n));
+            builder.addRead(readComponent, readKind);
         }
 
         public void addWhitelistedPackage(PackagePattern pattern) {
@@ -65,19 +65,21 @@ public class PackageDependencies {
 
             this.whitelisted.add(pattern);
 
-            for (Package.Builder pakkage : packagesByName.values()) {
-                pakkage.getReads()
+            for (Component.Builder component : componentsByName.values()) {
+                component.getReads()
                         .entrySet()
                         .removeIf(r -> pattern.matches(r.getKey()));
             }
         }
     }
 
-    private final Map<String, Package> packagesByName;
+    private final Set<Component> components;
+    private final Map<String, Component> componentsByPackage;
     private final Set<PackagePattern> whitelisted;
 
-    private PackageDependencies(Map<String, Package> packagesByName, Set<PackagePattern> whitelisted) {
-        this.packagesByName = Collections.unmodifiableMap(packagesByName);
+    private PackageDependencies(Set<Component> components, Set<PackagePattern> whitelisted) {
+        this.components = Collections.unmodifiableSet(components);
+        this.componentsByPackage = new HashMap<>();
         this.whitelisted = Collections.unmodifiableSet(whitelisted);
     }
 
@@ -85,26 +87,45 @@ public class PackageDependencies {
         return new Builder();
     }
 
-    public Package getPackage(String qualifiedName) {
+    /**
+     * Returns the component containing the given package or {@code null} if no such component exists.
+     *
+     * @throws PackageAssignedToMultipleComponentsException In case more than one component was found whose filter
+     *         expressions match the given package.
+     */
+    public Component getComponentByPackage(String qualifiedName) throws PackageAssignedToMultipleComponentsException {
         if (qualifiedName == null || qualifiedName.isEmpty()) {
             return null;
         }
 
-        Package pakkage = packagesByName.get(qualifiedName);
+        return componentsByPackage.computeIfAbsent(
+                qualifiedName,
+                p -> {
+                    Set<Component> candidates = components.stream()
+                            .filter(c -> c.containsPackage(p))
+                            .collect(Collectors.toSet());
 
-        return pakkage != null ? pakkage : Package.builder(qualifiedName, false).build();
+                    if (candidates.isEmpty()) {
+                        return null;
+                    }
+                    else if (candidates.size() == 1) {
+                        return candidates.iterator().next();
+                    }
+                    else {
+                        throw new PackageAssignedToMultipleComponentsException(candidates);
+                    }
+                }
+        );
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("packages {");
+        StringBuilder sb = new StringBuilder("components {");
         sb.append(System.lineSeparator());
 
-        for (Entry<String, Package> pakkage : packagesByName.entrySet()) {
+        for (Component component : components) {
             sb.append("  ");
-            sb.append(pakkage.getKey());
-            sb.append("=");
-            sb.append(pakkage.getValue().getReads());
+            sb.append(component);
             sb.append(System.lineSeparator());
         }
 
@@ -125,10 +146,9 @@ public class PackageDependencies {
      * be serialized, then all whitelist patterns.
      */
     public void serialize(ModelSerializer serializer) {
-        packagesByName.values()
-                .stream()
+        components.stream()
                 .sorted((c1, c2) -> c1.getName().compareTo(c2.getName()))
-                .forEach(p -> serializer.addPackage(p));
+                .forEach(c -> serializer.addComponent((c)));
 
         whitelisted.stream()
                 .sorted()

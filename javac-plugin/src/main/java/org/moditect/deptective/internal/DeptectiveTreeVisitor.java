@@ -58,9 +58,9 @@ public class DeptectiveTreeVisitor extends TreePathScanner<Void, Void> {
     @Override
     public Void visitCompilationUnit(CompilationUnitTree tree, Void p) {
         log.useSource(tree.getSourceFile());
-        packageReferenceHandler.onEnteringCompilationUnit(tree);
+        boolean proceed = packageReferenceHandler.onEnteringCompilationUnit(tree);
 
-        return super.visitCompilationUnit(tree, p);
+        return proceed ? super.visitCompilationUnit(tree, p) : null;
     }
 
     @Override

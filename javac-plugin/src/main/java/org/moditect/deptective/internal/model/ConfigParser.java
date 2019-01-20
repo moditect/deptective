@@ -18,6 +18,7 @@ package org.moditect.deptective.internal.model;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -107,7 +108,7 @@ public class ConfigParser {
         String name = pakkage.get("name").asText();
         List<String> reads = parseReads((ArrayNode) (pakkage.get("reads")));
 
-        builder.addPackage(name, reads);
+        builder.addComponent(name, Arrays.asList(PackagePattern.getPattern(name)), reads);
     }
 
     private List<String> parseReads(ArrayNode arrayNode) {

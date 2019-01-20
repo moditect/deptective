@@ -13,21 +13,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.moditect.deptective.internal.export;
-
-import org.moditect.deptective.internal.model.Component;
-import org.moditect.deptective.internal.model.PackagePattern;
+package org.moditect.deptective.internal.model;
 
 /**
- * Implementations serialize a given architecture model into external representations such as JSON or GraphViz.
+ * Describes the relationship beween two components.
  *
  * @author Gunnar Morling
  */
-public interface ModelSerializer {
-
-    void addComponent(Component component);
-
-    void addWhitelistedPackagePattern(PackagePattern pattern);
-
-    String serialize();
+public enum ReadKind {
+    ALLOWED,
+    DISALLOWED,
+    UKNOWN;
 }

@@ -32,9 +32,9 @@ import org.moditect.deptective.internal.export.JsonSerializer;
 import org.moditect.deptective.internal.export.ModelSerializer;
 import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
-import org.moditect.deptective.internal.model.Package.ReadKind;
 import org.moditect.deptective.internal.model.PackageDependencies;
 import org.moditect.deptective.internal.model.PackagePattern;
+import org.moditect.deptective.internal.model.ReadKind;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
@@ -73,16 +73,18 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
     }
 
     @Override
-    public void onEnteringCompilationUnit(CompilationUnitTree tree) {
+    public boolean onEnteringCompilationUnit(CompilationUnitTree tree) {
         ExpressionTree packageNameTree = tree.getPackageName();
 
         // TODO deal with default package
         if (packageNameTree == null) {
-            return;
+            return false;
         }
 
         currentPackageName = packageNameTree.toString();
         packagesOfCurrentCompilation.add(currentPackageName);
+
+        return true;
     }
 
     @Override

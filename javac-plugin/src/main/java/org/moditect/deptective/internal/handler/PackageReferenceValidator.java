@@ -27,9 +27,10 @@ import javax.tools.StandardLocation;
 import org.moditect.deptective.internal.export.DotSerializer;
 import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
-import org.moditect.deptective.internal.model.Package;
-import org.moditect.deptective.internal.model.Package.ReadKind;
+import org.moditect.deptective.internal.model.Component;
+import org.moditect.deptective.internal.model.PackageAssignedToMultipleComponentsException;
 import org.moditect.deptective.internal.model.PackageDependencies;
+import org.moditect.deptective.internal.model.ReadKind;
 import org.moditect.deptective.internal.options.ReportingPolicy;
 
 import com.sun.source.tree.CompilationUnitTree;
@@ -54,7 +55,8 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
 
     private final PackageDependencies.Builder actualPackageDependencies;
 
-    private Package currentPackage;
+    private String currentPackageName;
+    private Component currentComponent;
 
     public PackageReferenceValidator(JavaFileManager jfm, PackageDependencies packageDependencies,
             ReportingPolicy reportingPolicy, ReportingPolicy unconfiguredPackageReportingPolicy, boolean createDotFile,
@@ -80,20 +82,36 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
     }
 
     @Override
-    public void onEnteringCompilationUnit(CompilationUnitTree tree) {
+    public boolean onEnteringCompilationUnit(CompilationUnitTree tree) {
         ExpressionTree packageNameTree = tree.getPackageName();
 
         // TODO deal with default package
         if (packageNameTree == null) {
-            return;
+            return false;
         }
 
         String packageName = packageNameTree.toString();
-        currentPackage = allowedPackageDependencies.getPackage(packageName);
+        currentPackageName = packageName;
 
-        if (!currentPackage.isConfigured()) {
-            reportUnconfiguredPackageIfNeeded(tree, packageName);
+        try {
+            currentComponent = allowedPackageDependencies.getComponentByPackage(packageName);
+
+            if (currentComponent == null) {
+                reportUnconfiguredPackageIfNeeded(tree, packageName);
+            }
         }
+        catch (PackageAssignedToMultipleComponentsException e) {
+            log.report(
+                    ReportingPolicy.ERROR,
+                    DeptectiveMessages.PACKAGE_CONTAINED_IN_MULTIPLE_COMPONENTS,
+                    e.getMatchingComponents(),
+                    packageName
+            );
+
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -102,30 +120,38 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
             return;
         }
 
-        ReadKind readKind;
+        Component referencedComponent = allowedPackageDependencies.getComponentByPackage(referencedPackageName);
 
-        if (!currentPackage.isConfigured()) {
-            readKind = ReadKind.UKNOWN;
+        if (referencedComponent == null) {
+            referencedComponent = Component.builder(referencedPackageName).build();
         }
-        else if (currentPackage.allowedToRead(referencedPackageName)) {
-            readKind = ReadKind.ALLOWED;
+
+        if (currentComponent == null) {
+            actualPackageDependencies.addRead(
+                    Component.builder(currentPackageName).build().getName(),
+                    referencedComponent.getName(),
+                    ReadKind.UKNOWN
+            );
+        }
+        else if (currentComponent.allowedToRead(referencedComponent)) {
+            actualPackageDependencies.addRead(
+                    currentComponent.getName(),
+                    referencedComponent.getName(),
+                    ReadKind.ALLOWED
+            );
         }
         else {
-            readKind = ReadKind.DISALLOWED;
-        }
+            actualPackageDependencies.addRead(
+                    currentComponent.getName(),
+                    referencedComponent.getName(),
+                    ReadKind.DISALLOWED
+            );
 
-        actualPackageDependencies.addRead(currentPackage.getName(), referencedPackageName, readKind);
-
-        if (readKind == ReadKind.UKNOWN) {
-            return;
-        }
-
-        if (readKind == ReadKind.DISALLOWED) {
             log.report(
                     reportingPolicy,
                     (com.sun.tools.javac.tree.JCTree) referencingNode,
                     DeptectiveMessages.ILLEGAL_PACKAGE_DEPENDENCY,
-                    currentPackage,
+                    currentComponent.getName(),
                     referencedPackageName
             );
         }
@@ -140,7 +166,8 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
         }
 
         DotSerializer serializer = new DotSerializer();
-        actualPackageDependencies.build().serialize(serializer);
+        PackageDependencies build = actualPackageDependencies.build();
+        build.serialize(serializer);
 
         try {
             FileObject output = jfm.getFileForOutput(StandardLocation.CLASS_OUTPUT, "", "deptective.dot", null);
@@ -157,7 +184,7 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
     private boolean isIgnoredDependency(String referencedPackageName) {
         return "java.lang".equals(referencedPackageName) ||
                 allowedPackageDependencies.isWhitelisted(referencedPackageName) ||
-                currentPackage.getName().equals(referencedPackageName) ||
+                currentPackageName.equals(referencedPackageName) ||
                 referencedPackageName.isEmpty();
     }
 

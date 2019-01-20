@@ -13,21 +13,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.moditect.deptective.internal.export;
+package org.moditect.deptective.internal.model;
 
-import org.moditect.deptective.internal.model.Component;
-import org.moditect.deptective.internal.model.PackagePattern;
+import java.util.Set;
 
 /**
- * Implementations serialize a given architecture model into external representations such as JSON or GraphViz.
+ * Indicates that one and the same package has been matched by the filter expressions of multiple components.
  *
  * @author Gunnar Morling
  */
-public interface ModelSerializer {
+public class PackageAssignedToMultipleComponentsException extends RuntimeException {
 
-    void addComponent(Component component);
+    private static final long serialVersionUID = 1L;
 
-    void addWhitelistedPackagePattern(PackagePattern pattern);
+    private final Set<Component> matchingComponents;
 
-    String serialize();
+    public PackageAssignedToMultipleComponentsException(Set<Component> matchingComponents) {
+        this.matchingComponents = matchingComponents;
+    }
+
+    public Set<Component> getMatchingComponents() {
+        return matchingComponents;
+    }
 }

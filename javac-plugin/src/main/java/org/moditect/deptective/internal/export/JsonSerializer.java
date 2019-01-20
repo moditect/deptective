@@ -15,7 +15,7 @@
  */
 package org.moditect.deptective.internal.export;
 
-import org.moditect.deptective.internal.model.Package;
+import org.moditect.deptective.internal.model.Component;
 import org.moditect.deptective.internal.model.PackagePattern;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -48,8 +48,8 @@ public class JsonSerializer implements ModelSerializer {
     }
 
     @Override
-    public void addPackage(Package pakkage) {
-        packages.add(toJsonNode(pakkage, mapper));
+    public void addComponent(Component component) {
+        packages.add(toJsonNode(component, mapper));
     }
 
     @Override
@@ -67,14 +67,14 @@ public class JsonSerializer implements ModelSerializer {
         }
     }
 
-    private JsonNode toJsonNode(Package pakkage, ObjectMapper mapper) {
+    private JsonNode toJsonNode(Component component, ObjectMapper mapper) {
         ObjectNode node = mapper.createObjectNode();
 
-        node.put("name", pakkage.getName());
+        node.put("name", component.getName());
 
-        if (!pakkage.getReads().isEmpty()) {
+        if (!component.getReads().isEmpty()) {
             ArrayNode reads = node.putArray("reads");
-            pakkage.getReads()
+            component.getReads()
                     .keySet()
                     .stream()
                     .sorted()

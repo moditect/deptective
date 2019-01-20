@@ -28,6 +28,7 @@ public class DeptectiveMessages extends ListResourceBundle {
     public static final String PACKAGE_NOT_CONFIGURED = "deptective.packagenotconfigured";
     public static final String GENERATED_CONFIG = "deptective.generatedconfig";
     public static final String GENERATED_DOT_REPRESENTATION = "deptective.dotrepresentation";
+    public static final String PACKAGE_CONTAINED_IN_MULTIPLE_COMPONENTS = "deptective.packageinmultiplecomponents";
 
     @Override
     protected final Object[][] getContents() {
@@ -39,7 +40,9 @@ public class DeptectiveMessages extends ListResourceBundle {
                 { ERROR_PREFIX + NO_DEPTECTIVE_CONFIG_FOUND, "Config file deptective.json was not found" },
                 { NOTE_PREFIX + GENERATED_CONFIG, "Generated Deptective configuration template at {0}" },
                 { NOTE_PREFIX + GENERATED_DOT_REPRESENTATION,
-                        "Created DOT file representing the Deptective configuration at {0}" }
+                        "Created DOT file representing the Deptective configuration at {0}" },
+                { ERROR_PREFIX + PACKAGE_CONTAINED_IN_MULTIPLE_COMPONENTS,
+                        "Multiple components match package {1}: {0}" },
         };
     }
 

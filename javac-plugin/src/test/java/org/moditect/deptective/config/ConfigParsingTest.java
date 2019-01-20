@@ -19,8 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.moditect.deptective.internal.util.Strings.lines;
 
 import org.junit.Test;
+import org.moditect.deptective.internal.model.Component;
 import org.moditect.deptective.internal.model.ConfigParser;
-import org.moditect.deptective.internal.model.Package;
 import org.moditect.deptective.internal.model.PackageDependencies;
 
 public class ConfigParsingTest {
@@ -54,19 +54,24 @@ public class ConfigParsingTest {
 
         assertThat(dependencies).isNotNull();
 
-        Package ui = dependencies.getPackage("com.example.ui");
+        Component ui = dependencies.getComponentByPackage("com.example.ui");
         assertThat(ui).isNotNull();
-        assertThat(ui.allowedToRead("com.example.service")).isTrue();
-        assertThat(ui.allowedToRead("com.example.persistence")).isTrue();
+        assertThat(ui.allowedToRead(component("com.example.service"))).isTrue();
+        assertThat(ui.allowedToRead(component("com.example.persistence"))).isTrue();
 
-        Package service = dependencies.getPackage("com.example.service");
+        Component service = dependencies.getComponentByPackage("com.example.service");
         assertThat(service).isNotNull();
-        assertThat(service.allowedToRead("com.example.ui")).isFalse();
-        assertThat(service.allowedToRead("com.example.persistence")).isTrue();
+        assertThat(service).isNotNull();
+        assertThat(service.allowedToRead(component("com.example.ui"))).isFalse();
+        assertThat(service.allowedToRead(component("com.example.persistence"))).isTrue();
 
         assertThat(dependencies.isWhitelisted("java.awt")).isTrue();
         assertThat(dependencies.isWhitelisted("java.awt.color")).isTrue();
         assertThat(dependencies.isWhitelisted("java.util.concurrent")).isTrue();
         assertThat(dependencies.isWhitelisted("java.io")).isFalse();
+    }
+
+    private Component component(String name) {
+        return Component.builder(name).build();
     }
 }

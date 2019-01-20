@@ -35,8 +35,12 @@ public interface PackageReferenceHandler {
 
     /**
      * Invoked when entering a new compilation unit.
+     *
+     * @return Whether the invoking visitor should continue to step down into the AST or not. Implementation should
+     *         return false when detecting an invalid configuration.
      */
-    default void onEnteringCompilationUnit(CompilationUnitTree tree) {
+    default boolean onEnteringCompilationUnit(CompilationUnitTree tree) {
+        return true;
     }
 
     /**

@@ -21,9 +21,9 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.moditect.deptective.internal.model.Package;
-import org.moditect.deptective.internal.model.Package.ReadKind;
+import org.moditect.deptective.internal.model.Component;
 import org.moditect.deptective.internal.model.PackagePattern;
+import org.moditect.deptective.internal.model.ReadKind;
 
 /**
  * Serializes models to GraphViz format ("DOT files").
@@ -50,19 +50,19 @@ public class DotSerializer implements ModelSerializer {
     }
 
     @Override
-    public void addPackage(Package pakkage) {
-        allPackages.add(pakkage.getName());
+    public void addComponent(Component component) {
+        allPackages.add(component.getName());
 
         SortedSet<String> allowed = new TreeSet<>();
-        allowedReads.put(pakkage.getName(), allowed);
+        allowedReads.put(component.getName(), allowed);
 
         SortedSet<String> disallowed = new TreeSet<>();
-        disallowedReads.put(pakkage.getName(), disallowed);
+        disallowedReads.put(component.getName(), disallowed);
 
         SortedSet<String> unknown = new TreeSet<>();
-        unknownReads.put(pakkage.getName(), unknown);
+        unknownReads.put(component.getName(), unknown);
 
-        for (Entry<String, ReadKind> referencedPackage : pakkage.getReads().entrySet()) {
+        for (Entry<String, ReadKind> referencedPackage : component.getReads().entrySet()) {
             String referencedPackageName = referencedPackage.getKey();
             allPackages.add(referencedPackageName);
 
