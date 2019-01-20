@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.tools.FileObject;
 import javax.tools.JavaFileManager;
@@ -104,7 +105,14 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
             log.report(
                     ReportingPolicy.ERROR,
                     DeptectiveMessages.PACKAGE_CONTAINED_IN_MULTIPLE_COMPONENTS,
-                    e.getMatchingComponents(),
+                    String.join(
+                            ", ",
+                            e.getMatchingComponents()
+                                    .stream()
+                                    .map(Component::getName)
+                                    .sorted()
+                                    .collect(Collectors.toList())
+                    ),
                     packageName
             );
 

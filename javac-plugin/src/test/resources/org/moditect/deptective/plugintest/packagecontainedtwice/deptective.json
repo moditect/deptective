@@ -1,0 +1,12 @@
+{
+    "components" : [
+        {
+            "name" : "foo1",
+            "contains" : [ "org.moditect.deptective.plugintest.packagecontainedtwice.foo" ]
+        },
+        {
+            "name" : "foo2",
+            "contains" : [ "org.moditect.deptective.plugintest.packagecontainedtwice.foo" ]
+        }
+    ]
+}
