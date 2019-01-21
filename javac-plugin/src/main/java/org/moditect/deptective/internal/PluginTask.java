@@ -15,7 +15,9 @@
  */
 package org.moditect.deptective.internal;
 
+import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.tools.JavaFileManager;
 
@@ -23,6 +25,8 @@ import org.moditect.deptective.internal.handler.PackageReferenceCollector;
 import org.moditect.deptective.internal.handler.PackageReferenceHandler;
 import org.moditect.deptective.internal.handler.PackageReferenceValidator;
 import org.moditect.deptective.internal.log.Log;
+import org.moditect.deptective.internal.model.Component;
+import org.moditect.deptective.internal.model.Components;
 import org.moditect.deptective.internal.model.PackageDependencies;
 import org.moditect.deptective.internal.options.DeptectiveOptions;
 
@@ -54,10 +58,21 @@ public enum PluginTask {
         @Override
         public PackageReferenceHandler getPackageReferenceHandler(JavaFileManager jfm, DeptectiveOptions options,
                 Supplier<PackageDependencies> configSupplier, Log log) {
+
+            Set<Component> components = options.getComponentPackagePatterns()
+                    .entrySet()
+                    .stream()
+                    .map(e -> new Component.Builder(e.getKey())
+                            .addContains(e.getValue())
+                            .build()
+                    )
+                    .collect(Collectors.toSet());
+
             return new PackageReferenceCollector(
                     jfm,
                     log,
                     options.getWhitelistedPackagePatterns(),
+                    new Components(components),
                     options.createDotFile()
             );
         }

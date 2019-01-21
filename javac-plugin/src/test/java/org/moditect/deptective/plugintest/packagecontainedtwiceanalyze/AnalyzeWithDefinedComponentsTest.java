@@ -13,34 +13,35 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.moditect.deptective.plugintest.packagecontainedtwice;
+package org.moditect.deptective.plugintest.packagecontainedtwiceanalyze;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 
 import org.junit.Test;
 import org.moditect.deptective.plugintest.PluginTestBase;
-import org.moditect.deptective.plugintest.packagecontainedtwice.foo.Foo;
+import org.moditect.deptective.plugintest.packagecontainedtwiceanalyze.foo.Foo;
 
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.Compiler;
 
-public class PackageContainedInTwoComponentsTest extends PluginTestBase {
+public class AnalyzeWithDefinedComponentsTest extends PluginTestBase {
 
     @Test
-    public void shouldFailWhenSamePackageIsContainedInMultipleComponents() {
+    public void shouldFailUponAnalyzeWithPackageMatchedByMultipleComponents() throws Exception {
         Compilation compilation = Compiler.javac()
                 .withOptions(
                         "-Xplugin:Deptective",
-                        getConfigFileOption()
+                        "-Adeptective.mode=ANALYZE",
+                        "-Adeptective.components=" +
+                                "foo1:org.moditect.deptective.plugintest.packagecontainedtwiceanalyze.foo;" +
+                                "foo2:org.moditect.deptective.plugintest.packagecontainedtwiceanalyze.foo"
                 )
-                .compile(
-                        forTestClass(Foo.class)
-                );
+                .compile(forTestClass(Foo.class));
 
         assertThat(compilation).failed();
         assertThat(compilation).hadNoteCount(0);
         assertThat(compilation).hadErrorContaining(
-                "Multiple components match package org.moditect.deptective.plugintest.packagecontainedtwice.foo: foo1, foo2"
+                "Multiple components match package org.moditect.deptective.plugintest.packagecontainedtwiceanalyze.foo: foo1, foo2"
         );
     }
 }

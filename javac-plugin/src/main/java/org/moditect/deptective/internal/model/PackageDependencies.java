@@ -15,10 +15,10 @@
  */
 package org.moditect.deptective.internal.model;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,16 +33,15 @@ public class PackageDependencies {
         private final Set<PackagePattern> whitelisted = new HashSet<>();
 
         public PackageDependencies build() {
-            return new PackageDependencies(
-                    componentsByName.values()
-                            .stream()
-                            .map(Component.Builder::build)
-                            .collect(Collectors.toSet()),
-                    whitelisted
-            );
+            Set<Component> components = componentsByName.values()
+                    .stream()
+                    .map(Component.Builder::build)
+                    .collect(Collectors.toSet());
+
+            return new PackageDependencies(new Components(components), whitelisted);
         }
 
-        public void addComponent(String name, List<PackagePattern> contains, List<String> reads) {
+        public void addComponent(String name, Collection<PackagePattern> contains, Collection<String> reads) {
             if (componentsByName.containsKey(name)) {
                 throw new IllegalArgumentException("Component " + name + " may not be configured more than once.");
             }
@@ -78,13 +77,11 @@ public class PackageDependencies {
         }
     }
 
-    private final Set<Component> components;
-    private final Map<String, Component> componentsByPackage;
+    private final Components components;
     private final Set<PackagePattern> whitelisted;
 
-    private PackageDependencies(Set<Component> components, Set<PackagePattern> whitelisted) {
-        this.components = Collections.unmodifiableSet(components);
-        this.componentsByPackage = new HashMap<>();
+    private PackageDependencies(Components components, Set<PackagePattern> whitelisted) {
+        this.components = components;
         this.whitelisted = Collections.unmodifiableSet(whitelisted);
     }
 
@@ -99,28 +96,7 @@ public class PackageDependencies {
      *         expressions match the given package.
      */
     public Component getComponentByPackage(String qualifiedName) throws PackageAssignedToMultipleComponentsException {
-        if (qualifiedName == null || qualifiedName.isEmpty()) {
-            return null;
-        }
-
-        return componentsByPackage.computeIfAbsent(
-                qualifiedName,
-                p -> {
-                    Set<Component> candidates = components.stream()
-                            .filter(c -> c.containsPackage(p))
-                            .collect(Collectors.toSet());
-
-                    if (candidates.isEmpty()) {
-                        return null;
-                    }
-                    else if (candidates.size() == 1) {
-                        return candidates.iterator().next();
-                    }
-                    else {
-                        throw new PackageAssignedToMultipleComponentsException(candidates);
-                    }
-                }
-        );
+        return components.getComponentByPackage(qualifiedName);
     }
 
     @Override

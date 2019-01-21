@@ -50,7 +50,7 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
     private final PackageDependencies allowedPackageDependencies;
     private final JavaFileManager jfm;
     private final ReportingPolicy reportingPolicy;
-    private final boolean createDotFile;
+    private boolean createDotFile;
     private final ReportingPolicy unconfiguredPackageReportingPolicy;
     private final Map<String, Boolean> reportedUnconfiguredPackages;
 
@@ -116,6 +116,7 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
                     packageName
             );
 
+            createDotFile = false;
             return false;
         }
 

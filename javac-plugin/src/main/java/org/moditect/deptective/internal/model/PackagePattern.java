@@ -27,10 +27,13 @@ public class PackagePattern implements Comparable<PackagePattern> {
 
     private static final String ALL_EXTERNAL_PATTERN = "*ALL_EXTERNAL*";
     public static final PackagePattern ALL_EXTERNAL = new PackagePattern(ALL_EXTERNAL_PATTERN);
-    private final Pattern pattern;
+
+    private final String pattern;
+    private final Pattern regex;
 
     private PackagePattern(String pattern) {
-        this.pattern = Pattern.compile(pattern.replace("*", ".*"));
+        this.pattern = pattern;
+        this.regex = Pattern.compile(pattern.replace("*", ".*"));
     }
 
     public static PackagePattern getPattern(String pattern) {
@@ -43,24 +46,24 @@ public class PackagePattern implements Comparable<PackagePattern> {
     }
 
     public boolean matches(String packageName) {
-        return pattern.matcher(packageName).matches();
+        return regex.matcher(packageName).matches();
     }
 
     @Override
     public String toString() {
-        return pattern.pattern();
+        return pattern;
     }
 
     @Override
     public int compareTo(PackagePattern o) {
-        return pattern.pattern().compareTo(o.pattern.pattern());
+        return pattern.compareTo(o.pattern);
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((pattern == null) ? 0 : pattern.pattern().hashCode());
+        result = prime * result + pattern.hashCode();
         return result;
     }
 
@@ -73,12 +76,7 @@ public class PackagePattern implements Comparable<PackagePattern> {
         if (getClass() != obj.getClass())
             return false;
         PackagePattern other = (PackagePattern) obj;
-        if (pattern == null) {
-            if (other.pattern != null)
-                return false;
-        }
-        else if (!pattern.pattern().equals(other.pattern.pattern()))
-            return false;
-        return true;
+
+        return pattern.equals(other.pattern);
     }
 }
