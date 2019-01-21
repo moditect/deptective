@@ -19,6 +19,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -112,6 +113,31 @@ public class DeptectiveOptions {
         }
         else {
             return Collections.emptyList();
+        }
+    }
+
+    public Map<String, List<PackagePattern>> getComponentPackagePatterns() {
+        String components = options.get("deptective.components");
+
+        if (components != null) {
+            Map<String, List<PackagePattern>> componentPatterns = new HashMap<String, List<PackagePattern>>();
+            String[] patterns = components.split(";");
+
+            for (String patternsForComponent : patterns) {
+                String[] componentAndPatterns = patternsForComponent.split(":");
+                String component = componentAndPatterns[0];
+                List<PackagePattern> patternsOfComponent = Arrays.stream(componentAndPatterns[1].split(","))
+                        .map(String::trim)
+                        .map(PackagePattern::getPattern)
+                        .collect(Collectors.toList());
+
+                componentPatterns.put(component, patternsOfComponent);
+            }
+
+            return componentPatterns;
+        }
+        else {
+            return Collections.emptyMap();
         }
     }
 }

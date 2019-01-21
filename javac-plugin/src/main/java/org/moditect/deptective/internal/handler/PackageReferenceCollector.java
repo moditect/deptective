@@ -32,9 +32,13 @@ import org.moditect.deptective.internal.export.JsonSerializer;
 import org.moditect.deptective.internal.export.ModelSerializer;
 import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
+import org.moditect.deptective.internal.model.Component;
+import org.moditect.deptective.internal.model.Components;
+import org.moditect.deptective.internal.model.PackageAssignedToMultipleComponentsException;
 import org.moditect.deptective.internal.model.PackageDependencies;
 import org.moditect.deptective.internal.model.PackagePattern;
 import org.moditect.deptective.internal.model.ReadKind;
+import org.moditect.deptective.internal.options.ReportingPolicy;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
@@ -54,22 +58,34 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
 
     private final JavaFileManager jfm;
     private final List<PackagePattern> whitelistPatterns;
+
+    /**
+     * Any components that were declared externally.
+     */
+    private final Components declaredComponents;
     private final Set<String> packagesOfCurrentCompilation;
     private final Set<String> referencedPackages;
 
     private String currentPackageName;
+    private Component currentComponent;
+    private boolean createOutputFile = true;
 
     public PackageReferenceCollector(JavaFileManager jfm, Log log, List<PackagePattern> whitelistPatterns,
-            boolean createDotFile) {
+            Components declaredComponents, boolean createDotFile) {
         this.log = log;
         this.jfm = jfm;
         this.whitelistPatterns = Collections.unmodifiableList(whitelistPatterns);
+        this.declaredComponents = declaredComponents;
         this.createDotFile = createDotFile;
 
         this.packagesOfCurrentCompilation = new HashSet<String>();
         this.referencedPackages = new HashSet<String>();
 
         builder = PackageDependencies.builder();
+
+        for (Component component : declaredComponents) {
+            builder.addComponent(component.getName(), component.getContained(), Collections.emptyList());
+        }
     }
 
     @Override
@@ -83,18 +99,55 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
 
         currentPackageName = packageNameTree.toString();
         packagesOfCurrentCompilation.add(currentPackageName);
-        builder.addContains(currentPackageName, PackagePattern.getPattern(currentPackageName));
+
+        try {
+            currentComponent = declaredComponents.getComponentByPackage(currentPackageName);
+        }
+        catch (PackageAssignedToMultipleComponentsException e) {
+            log.report(
+                    ReportingPolicy.ERROR,
+                    DeptectiveMessages.PACKAGE_CONTAINED_IN_MULTIPLE_COMPONENTS,
+                    String.join(
+                            ", ",
+                            e.getMatchingComponents()
+                                    .stream()
+                                    .map(Component::getName)
+                                    .sorted()
+                                    .collect(Collectors.toList())
+                    ),
+                    currentPackageName
+            );
+
+            createOutputFile = false;
+            return false;
+        }
+
+        if (currentComponent == null) {
+            builder.addContains(currentPackageName, PackagePattern.getPattern(currentPackageName));
+        }
+
         return true;
     }
 
     @Override
     public void onPackageReference(Tree referencingNode, String referencedPackageName) {
         referencedPackages.add(referencedPackageName);
-        builder.addRead(currentPackageName, referencedPackageName, ReadKind.ALLOWED);
+
+        Component referencedComponent = declaredComponents.getComponentByPackage(referencedPackageName);
+
+        builder.addRead(
+                currentComponent != null ? currentComponent.getName() : currentPackageName,
+                referencedComponent != null ? referencedComponent.getName() : referencedPackageName,
+                ReadKind.ALLOWED
+        );
     }
 
     @Override
     public void onCompletingCompilation() {
+        if (!createOutputFile) {
+            return;
+        }
+
         List<PackagePattern> effectiveWhitelistPatterns;
 
         if (isWhitelistAllExternal()) {
