@@ -19,18 +19,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.moditect.deptective.internal.graph.Dependency;
-import org.moditect.deptective.internal.graph.Node;
-
 /**
- * 
  * @author Gerd W&uuml;therich (gw@code-kontor.io)
  */
 public class TestModelCreator {
 
     /**
-     * 
-     * @return
+     * Returns a test graph in with this structure:
+     * <p>
+     * P1 -> P2 -> P3 <-> P4
      */
     public static List<Node> createDummyModel() {
 

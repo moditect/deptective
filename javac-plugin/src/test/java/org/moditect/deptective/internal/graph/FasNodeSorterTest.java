@@ -26,17 +26,10 @@ public class FasNodeSorterTest {
 
     @Test
     public void sortNodes() {
-
-        //
         List<Node> nodes = TestModelCreator.createDummyModel();
 
-        //
         INodeSorter nodeSorter = GraphUtils.createFasNodeSorter();
-
-        //
         SortResult sortResult = nodeSorter.sort(nodes);
-
-        //
         assertThat(sortResult.getUpwardsDependencies()).hasSize(1);
     }
 }

@@ -29,7 +29,6 @@ import org.moditect.deptective.internal.graph.impl.FastFasSorter;
 import org.moditect.deptective.internal.graph.impl.Tarjan;
 
 /**
- *
  * @author Gerd W&uuml;therich (gw@code-kontor.io)
  */
 public class GraphUtils {
@@ -40,10 +39,11 @@ public class GraphUtils {
      *
      * @param nodes the collection of nodes (the directed graph)
      * @return a list of strongly connected components (SCCs). Note that the result also contains components that
-     *         contain just a single node. If you want to detect 'real' cycle (size > 1) please use {@link GraphUtils#detectCycles(Collection)}.
+     *         contain just a single node. If you want to detect 'real' cycle (size > 1) please use
+     *         {@link GraphUtils#detectCycles(Collection)}.
      */
     public static List<List<Node>> detectStronglyConnectedComponents(Collection<Node> nodes) {
-        return new Tarjan<Node>().detectStronglyConnectedComponents(Objects.requireNonNull(nodes));
+        return new Tarjan<>().detectStronglyConnectedComponents(Objects.requireNonNull(nodes));
     }
 
     /**
@@ -53,7 +53,7 @@ public class GraphUtils {
      * @return a list of strongly connected components (SCCs) with a size > 1.
      */
     public static List<List<Node>> detectCycles(Collection<Node> nodes) {
-        return new Tarjan<Node>().detectStronglyConnectedComponents(nodes).stream().filter(cycle -> cycle.size() > 1)
+        return new Tarjan<>().detectStronglyConnectedComponents(nodes).stream().filter(cycle -> cycle.size() > 1)
                 .collect(Collectors.toList());
     }
 

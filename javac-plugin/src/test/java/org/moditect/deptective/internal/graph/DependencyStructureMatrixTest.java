@@ -22,18 +22,14 @@ import java.util.List;
 import org.junit.Test;
 
 /**
- * 
  * @author Gerd W&uuml;therich (gw@code-kontor.io)
  */
 public class DependencyStructureMatrixTest {
 
     @Test
     public void detectCycle() {
-
-        //
         List<Node> nodes = TestModelCreator.createDummyModel();
 
-        //
         IDependencyStructureMatrix dsm = GraphUtils.createDependencyStructureMatrix(nodes);
 
         // assert ordered nodes
@@ -41,7 +37,7 @@ public class DependencyStructureMatrixTest {
                 nodes.get(0), nodes.get(1), nodes.get(2),
                 nodes.get(3)
         );
-        
+
         // assert upward dependencies
         assertThat(dsm.getUpwardDependencies()).hasSize(1)
                 .containsExactly(nodes.get(3).getOutgoingDependencyTo(nodes.get(2)));
