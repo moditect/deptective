@@ -15,12 +15,11 @@
  */
 package org.moditect.deptective.internal.graph.impl;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.moditect.deptective.internal.graph.Dependency;
@@ -91,8 +90,7 @@ public class DependencyStructureMatrix implements IDependencyStructureMatrix {
     }
 
     private void initialize(Collection<Node> unorderedArtifacts) {
-
-        checkNotNull(unorderedArtifacts);
+        Objects.requireNonNull(unorderedArtifacts);
 
         upwardDependencies = new ArrayList<>();
 
@@ -123,7 +121,7 @@ public class DependencyStructureMatrix implements IDependencyStructureMatrix {
         }
         Collections.reverse(orderedArtifacts);
         nodes = orderedArtifacts;
-        
+
         //
         cycles = c.stream().filter(nodeList -> nodeList.size() > 1).collect(Collectors.toList());
     }

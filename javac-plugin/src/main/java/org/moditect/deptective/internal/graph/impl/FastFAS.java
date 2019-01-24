@@ -15,18 +15,17 @@
  */
 package org.moditect.deptective.internal.graph.impl;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
  * <p>
  * http://dl.acm.org/citation.cfm?id=595057
  * </p>
- * 
+ *
  * @author Gerd W&uuml;therich (gerd@gerd-wuetherich.de)
  */
 public class FastFAS {
@@ -50,18 +49,18 @@ public class FastFAS {
      * <p>
      * Creates a new instance of type {@link FastFAS}.
      * </p>
-     * 
+     *
      * @param adjacencyMatrix the adjacency matrix
      */
     public FastFAS(int[][] adjacencyMatrix) {
-        this.adjacencyMatrix = checkNotNull(adjacencyMatrix);
+        this.adjacencyMatrix = Objects.requireNonNull(adjacencyMatrix);
     }
 
     /**
      * <p>
      * Returns the ordered sequence.
      * </p>
-     * 
+     *
      * @return the ordered sequence.
      */
     public int[] getOrderedSequence() {
@@ -101,9 +100,7 @@ public class FastFAS {
     }
 
     public static int[] reverse(int[] sequence) {
-
-        //
-        checkNotNull(sequence);
+        Objects.requireNonNull(sequence);
 
         //
         int[] result = new int[sequence.length];
@@ -119,7 +116,7 @@ public class FastFAS {
      * <p>
      * Tries to find and remove a sink.
      * </p>
-     * 
+     *
      * @return <code>true</code> if a sink was found and removed.
      */
     private boolean findSink() {
@@ -157,7 +154,7 @@ public class FastFAS {
      * <p>
      * Tries to find and remove a source.
      * </p>
-     * 
+     *
      * @return <code>true</code> if a source was found and removed.
      */
     private boolean findSource() {
@@ -194,7 +191,7 @@ public class FastFAS {
     /**
      * <p>
      * </p>
-     * 
+     *
      * @return
      */
     private boolean findVertexToRemove() {
@@ -229,7 +226,7 @@ public class FastFAS {
     /**
      * <p>
      * </p>
-     * 
+     *
      * @param vertex
      * @return
      */
@@ -253,7 +250,7 @@ public class FastFAS {
      * <p>
      * Helper method. Concatenates the given lists and returns them as one array.
      * </p>
-     * 
+     *
      * @param s1 the list s1
      * @param s2 the list s2
      * @return the result array.
