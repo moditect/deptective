@@ -39,8 +39,7 @@ public class Node {
     }
 
     public Dependency getOutgoingDependencyTo(Node node) {
-
-        if (!hasOutgoingDependencies() || !outgoingDependencies.containsKey(Objects.requireNonNull(node))) {
+        if (!hasOutgoingDependencies()) {
             return null;
         }
 
@@ -48,7 +47,8 @@ public class Node {
     }
 
     public Set<Dependency> getOutgoingDependenciesTo(Collection<Node> nodes) {
-        return Objects.requireNonNull(nodes).stream().map(node -> getOutgoingDependencyTo(node)).filter(dep -> dep != null)
+        return Objects.requireNonNull(nodes).stream().map(node -> getOutgoingDependencyTo(node))
+                .filter(dep -> dep != null)
                 .collect(Collectors.toSet());
     }
 
