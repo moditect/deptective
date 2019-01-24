@@ -15,16 +15,12 @@
  */
 package org.moditect.deptective.internal.graph;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.moditect.deptective.internal.graph.Dependency;
-import org.moditect.deptective.internal.graph.Node;
 
 /**
  * @author Gerd W&uuml;therich (gw@code-kontor.io)
@@ -32,10 +28,10 @@ import org.moditect.deptective.internal.graph.Node;
 public class Node {
 
     private Map<Node, Dependency> outgoingDependencies;
-    private String id;
+    private final String id;
 
     public Node(String id) {
-        this.id = checkNotNull(id);
+        this.id = Objects.requireNonNull(id);
     }
 
     public String getId() {
@@ -44,7 +40,7 @@ public class Node {
 
     public Dependency getOutgoingDependencyTo(Node node) {
 
-        if (!hasOutgoingDependencies() || !outgoingDependencies.containsKey(checkNotNull(node))) {
+        if (!hasOutgoingDependencies() || !outgoingDependencies.containsKey(Objects.requireNonNull(node))) {
             return null;
         }
 
@@ -52,7 +48,7 @@ public class Node {
     }
 
     public Set<Dependency> getOutgoingDependenciesTo(Collection<Node> nodes) {
-        return checkNotNull(nodes).stream().map(node -> getOutgoingDependencyTo(node)).filter(dep -> dep != null)
+        return Objects.requireNonNull(nodes).stream().map(node -> getOutgoingDependencyTo(node)).filter(dep -> dep != null)
                 .collect(Collectors.toSet());
     }
 
@@ -61,7 +57,7 @@ public class Node {
     }
 
     public void addOutgoingDependency(Dependency dependency) {
-        checkNotNull(dependency);
+        Objects.requireNonNull(dependency);
         outgoingDependencies().put(dependency.getTo(), dependency);
     }
 
@@ -95,7 +91,7 @@ public class Node {
             return false;
         return true;
     }
-    
+
     private Map<Node, Dependency> outgoingDependencies() {
         if (outgoingDependencies == null) {
             outgoingDependencies = new HashMap<>();
