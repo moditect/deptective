@@ -28,9 +28,9 @@ public class DependencyStructureMatrixTest {
 
     @Test
     public void detectCycle() {
-        List<Node> nodes = TestModelCreator.createDummyModel();
+        List<SimpleNode> nodes = TestModelCreator.createDummyModel();
 
-        IDependencyStructureMatrix dsm = GraphUtils.createDependencyStructureMatrix(nodes);
+        IDependencyStructureMatrix<SimpleNode> dsm = GraphUtils.createDependencyStructureMatrix(nodes);
 
         // assert ordered nodes
         assertThat(dsm.getOrderedNodes()).hasSize(4).containsExactly(

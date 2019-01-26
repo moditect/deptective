@@ -18,16 +18,16 @@ package org.moditect.deptective.internal.graph.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.moditect.deptective.internal.graph.GraphUtils;
 import org.moditect.deptective.internal.graph.Dependency;
-import org.moditect.deptective.internal.graph.Node;
+import org.moditect.deptective.internal.graph.GraphUtils;
 import org.moditect.deptective.internal.graph.INodeSorter;
+import org.moditect.deptective.internal.graph.Node;
 
 public class FastFasSorter implements INodeSorter {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public SortResult sort(List<Node> artifacts) {
+    public <T extends Node<T>> SortResult<T> sort(List<T> artifacts) {
 
         // we have to compute the adjacency matrix first
         int[][] adjacencyMatrix = GraphUtils.computeAdjacencyMatrix(artifacts);

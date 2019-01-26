@@ -15,87 +15,35 @@
  */
 package org.moditect.deptective.internal.graph;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
+ * A node in a graph.
+ *
  * @author Gerd W&uuml;therich (gw@code-kontor.io)
+ * @author Gunnar Morling
+ * @param <T> A specific sub-type, following the self-referential generic type pattern
  */
-public class Node {
+public interface Node<T extends Node<T>> {
 
-    private Map<Node, Dependency> outgoingDependencies;
-    private final String id;
-
-    public Node(String id) {
-        this.id = Objects.requireNonNull(id);
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public Dependency getOutgoingDependencyTo(Node node) {
-        if (!hasOutgoingDependencies()) {
-            return null;
-        }
-
-        return outgoingDependencies.get(node);
-    }
-
-    public Set<Dependency> getOutgoingDependenciesTo(Collection<Node> nodes) {
-        return Objects.requireNonNull(nodes).stream()
-                .map(node -> getOutgoingDependencyTo(node))
-                .filter(dep -> dep != null)
+    default Set<Dependency<T>> getOutgoingDependenciesTo(Iterable<T> nodes) {
+        return StreamSupport.stream(nodes.spliterator(), false)
+                .map(c -> getOutgoingDependencyTo(c))
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
 
-    public boolean hasOutgoingDependencies() {
-        return outgoingDependencies != null && !outgoingDependencies.isEmpty();
-    }
+    Dependency<T> getOutgoingDependencyTo(T node);
 
-    public void addOutgoingDependency(Node to, int aggregatedWeight) {
-        outgoingDependencies().put(to, new Dependency(to, aggregatedWeight));
-    }
+    boolean hasOutgoingDependencies();
 
-    @Override
-    public String toString() {
-        return "Node [id=" + id + "]";
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Node other = (Node) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        }
-        else if (!id.equals(other.id))
-            return false;
-        return true;
-    }
-
-    private Map<Node, Dependency> outgoingDependencies() {
-        if (outgoingDependencies == null) {
-            outgoingDependencies = new HashMap<>();
-        }
-        return outgoingDependencies;
+    /**
+     * Returns a concise string representation of this node, e.g. used when rendering this node in a diagram.
+     */
+    default String asShortString() {
+        return toString();
     }
 }

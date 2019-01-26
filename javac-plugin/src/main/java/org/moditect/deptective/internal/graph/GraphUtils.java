@@ -15,7 +15,6 @@
  */
 package org.moditect.deptective.internal.graph;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,8 +41,8 @@ public class GraphUtils {
      *         contain just a single node. If you want to detect 'real' cycle (size > 1) please use
      *         {@link GraphUtils#detectCycles(Collection)}.
      */
-    public static List<List<Node>> detectStronglyConnectedComponents(Collection<Node> nodes) {
-        return new Tarjan<>().detectStronglyConnectedComponents(Objects.requireNonNull(nodes));
+    public static <T extends Node<T>> List<List<T>> detectStronglyConnectedComponents(Collection<T> nodes) {
+        return new Tarjan<T>().detectStronglyConnectedComponents(Objects.requireNonNull(nodes));
     }
 
     /**
@@ -52,8 +51,11 @@ public class GraphUtils {
      * @param nodes
      * @return a list of strongly connected components (SCCs) with a size > 1.
      */
-    public static List<List<Node>> detectCycles(Collection<Node> nodes) {
-        return new Tarjan<>().detectStronglyConnectedComponents(nodes).stream().filter(cycle -> cycle.size() > 1)
+    public static <T extends Node<T>> List<Cycle<T>> detectCycles(Iterable<T> nodes) {
+        return new Tarjan<T>().detectStronglyConnectedComponents(nodes)
+                .stream()
+                .filter(cycle -> cycle.size() > 1)
+                .map(Cycle::new)
                 .collect(Collectors.toList());
     }
 
@@ -63,9 +65,9 @@ public class GraphUtils {
      * @param nodes the collection of nodes
      * @return
      */
-    public static IDependencyStructureMatrix createDependencyStructureMatrix(
-            Collection<Node> nodes) {
-        return new DependencyStructureMatrix(nodes);
+    public static <T extends Node<T>> IDependencyStructureMatrix<T> createDependencyStructureMatrix(
+            Collection<T> nodes) {
+        return new DependencyStructureMatrix<T>(nodes);
     }
 
     /**
@@ -75,23 +77,12 @@ public class GraphUtils {
      * @param nodes the collection of nodes
      * @return the adjacency matrix for the given list of nodes
      */
-    public static int[][] computeAdjacencyMatrix(List<Node> nodes) {
+    public static <T extends Node<T>> int[][] computeAdjacencyMatrix(List<T> nodes) {
         Objects.requireNonNull(nodes);
-        return computeAdjacencyMatrix(nodes.toArray(new Node[nodes.size()]));
-    }
-
-    /**
-     * An adjacency matrix is a square matrix used to represent a finite graph. The elements of the matrix
-     * indicate whether pairs of vertices are connected (adjacent) or not in the graph.
-     *
-     * @param nodes the array of nodes
-     * @return the adjacency matrix for the given list of nodes
-     */
-    public static int[][] computeAdjacencyMatrix(Node... nodes) {
-        int[][] result = new int[nodes.length][nodes.length];
+        int[][] result = new int[nodes.size()][nodes.size()];
         for (int i = 0; i < result.length; i++) {
             for (int j = 0; j < result.length; j++) {
-                Dependency dependency = nodes[i].getOutgoingDependencyTo(nodes[j]);
+                Dependency<T> dependency = nodes.get(i).getOutgoingDependencyTo(nodes.get(j));
                 result[i][j] = dependency != null ? dependency.getAggregatedWeight() : 0;
             }
         }
@@ -105,40 +96,28 @@ public class GraphUtils {
      * @param nodes the array of nodes
      * @return the adjacency list for the given list of nodes
      */
-    public static int[][] computeAdjacencyList(Collection<Node> nodes) {
-        Objects.requireNonNull(nodes);
-        return computeAdjacencyList(nodes.toArray(new Node[nodes.size()]));
-    }
-
-    /**
-     * An adjacency list is a collection of (unordered) lists used to represent a finite graph. Each list
-     * describes the set of neighbors of a node.
-     *
-     * @param nodes the array of nodes
-     * @return the adjacency list for the given list of nodes
-     */
-    public static int[][] computeAdjacencyList(Node... nodes) {
+    public static <T extends Node<T>> int[][] computeAdjacencyList(Iterable<T> nodes) {
 
         int[][] matrix;
 
         // prepare
         int i = 0;
-        Map<Node, Integer> map = new HashMap<Node, Integer>();
-        for (Node iArtifact : nodes) {
+        Map<T, Integer> map = new HashMap<T, Integer>();
+        for (T iArtifact : nodes) {
             map.put(iArtifact, i);
             i++;
         }
-        matrix = new int[nodes.length][];
+        matrix = new int[map.size()][];
 
-        for (Node node : nodes) {
-            Collection<Dependency> dependencies = node.getOutgoingDependenciesTo(Arrays.asList(nodes));
+        for (T node : nodes) {
+            Collection<Dependency<T>> dependencies = node.getOutgoingDependenciesTo(nodes);
             if (dependencies == null) {
                 dependencies = Collections.emptyList();
             }
             int index = map.get(node);
             matrix[index] = new int[dependencies.size()];
             int count = 0;
-            for (Dependency dependency : dependencies) {
+            for (Dependency<?> dependency : dependencies) {
                 matrix[index][count] = map.get(dependency.getTo());
                 count++;
             }

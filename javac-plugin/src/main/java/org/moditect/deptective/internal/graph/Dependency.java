@@ -18,17 +18,17 @@ package org.moditect.deptective.internal.graph;
 /**
  * @author Gerd W&uuml;therich (gw@code-kontor.io)
  */
-public class Dependency {
+public class Dependency<T extends Node<T>> {
 
-    private final Node to;
+    private final T to;
     private final int aggregatedWeight;
 
-    public Dependency(Node to, int aggregatedWeight) {
+    public Dependency(T to, int aggregatedWeight) {
         this.to = to;
         this.aggregatedWeight = aggregatedWeight;
     }
 
-    public Node getTo() {
+    public T getTo() {
         return to;
     }
 

@@ -28,10 +28,10 @@ public class CyclesTest {
 
     @Test
     public void detectCycle() {
-        List<Node> nodes = TestModelCreator.createDummyModel();
+        List<SimpleNode> nodes = TestModelCreator.createDummyModel();
 
-        List<List<Node>> cycles = GraphUtils.detectCycles(nodes);
+        List<Cycle<SimpleNode>> cycles = GraphUtils.detectCycles(nodes);
         assertThat(cycles).hasSize(1);
-        assertThat(cycles.get(0)).contains(nodes.get(2)).contains(nodes.get(3));
+        assertThat(cycles.get(0).getNodes()).contains(nodes.get(2)).contains(nodes.get(3));
     }
 }

@@ -15,22 +15,34 @@
  */
 package org.moditect.deptective.internal.graph;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * @author Gerd W&uuml;therich (gw@code-kontor.io)
+ * A cycle between multiple nodes.
+ *
+ * @author Gunnar Morling
+ * @param <T> the specific node type
  */
-public interface IDependencyStructureMatrix<T extends Node<T>> {
+public class Cycle<T extends Node<T>> {
 
-    List<T> getOrderedNodes();
+    private static final String STRING_DELIMITER = ", ";
+    private final List<T> nodes;
 
-    List<Dependency<T>> getUpwardDependencies();
+    public Cycle(List<T> nodes) {
+        this.nodes = Collections.unmodifiableList(nodes);
+    }
 
-    List<List<T>> getCycles();
+    public List<T> getNodes() {
+        return nodes;
+    }
 
-    boolean isCellInCycle(int i, int j);
-
-    boolean isRowInCycle(int i);
-
-    int getWeight(int i, int j);
+    @Override
+    public String toString() {
+        return nodes.stream()
+                .map(Node::asShortString)
+                .sorted()
+                .collect(Collectors.joining(STRING_DELIMITER));
+    }
 }
