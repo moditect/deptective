@@ -47,7 +47,8 @@ public class Node {
     }
 
     public Set<Dependency> getOutgoingDependenciesTo(Collection<Node> nodes) {
-        return Objects.requireNonNull(nodes).stream().map(node -> getOutgoingDependencyTo(node))
+        return Objects.requireNonNull(nodes).stream()
+                .map(node -> getOutgoingDependencyTo(node))
                 .filter(dep -> dep != null)
                 .collect(Collectors.toSet());
     }
@@ -56,9 +57,8 @@ public class Node {
         return outgoingDependencies != null && !outgoingDependencies.isEmpty();
     }
 
-    public void addOutgoingDependency(Dependency dependency) {
-        Objects.requireNonNull(dependency);
-        outgoingDependencies().put(dependency.getTo(), dependency);
+    public void addOutgoingDependency(Node to, int aggregatedWeight) {
+        outgoingDependencies().put(to, new Dependency(to, aggregatedWeight));
     }
 
     @Override

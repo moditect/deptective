@@ -36,10 +36,10 @@ public class TestModelCreator {
         Node p3 = new Node("p3");
         Node p4 = new Node("p4");
 
-        new Dependency(p1, p2, 13);
-        new Dependency(p2, p3, 57);
-        new Dependency(p3, p4, 45);
-        new Dependency(p4, p3, 3);
+        p1.addOutgoingDependency(p2, 13);
+        p2.addOutgoingDependency(p3, 57);
+        p3.addOutgoingDependency(p4, 45);
+        p4.addOutgoingDependency(p3, 3);
 
         return new ArrayList<>(Arrays.asList(p1, p2, p3, p4));
     }
