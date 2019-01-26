@@ -16,14 +16,13 @@
 package org.moditect.deptective.internal.graph.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
 import org.moditect.deptective.internal.graph.GraphUtils;
 import org.moditect.deptective.internal.graph.Node;
 
-public class Tarjan<T extends Node> {
+public class Tarjan<T extends Node<T>> {
 
     private int _index = 0;
     private final ArrayList<Integer> _stack = new ArrayList<Integer>();
@@ -31,14 +30,20 @@ public class Tarjan<T extends Node> {
     int[] _vlowlink;
     int[] _vindex;
 
-    private Node[] _artifacts;
+    private List<T> _artifacts;
 
-    public List<List<T>> detectStronglyConnectedComponents(Collection<? extends T> artifacts) {
+    public List<List<T>> detectStronglyConnectedComponents(Iterable<T> artifacts) {
         Objects.requireNonNull(artifacts);
 
-        _artifacts = artifacts.toArray(new Node[0]);
-        int[][] adjacencyList = GraphUtils.computeAdjacencyList(_artifacts);
+        _artifacts = asList(artifacts);
+        int[][] adjacencyList = GraphUtils.computeAdjacencyList(artifacts);
         return executeTarjan(adjacencyList);
+    }
+
+    private static <R> List<R> asList(Iterable<R> iterable) {
+        List<R> list = new ArrayList<>();
+        iterable.forEach(list::add);
+        return list;
     }
 
     private List<List<T>> executeTarjan(int[][] graph) {
@@ -63,7 +68,6 @@ public class Tarjan<T extends Node> {
         return _stronglyConnectedComponents;
     }
 
-    @SuppressWarnings("unchecked")
     private void tarjan(int v, int[][] graph) {
         Objects.requireNonNull(v);
         Objects.requireNonNull(graph);
@@ -87,7 +91,7 @@ public class Tarjan<T extends Node> {
             ArrayList<T> component = new ArrayList<T>();
             do {
                 n = _stack.remove(0);
-                component.add((T) _artifacts[n]);
+                component.add(_artifacts.get(n));
             }
             while (n != v);
             _stronglyConnectedComponents.add(component);

@@ -22,12 +22,12 @@ import java.util.List;
  */
 public interface INodeSorter {
 
-    SortResult sort(List<Node> node);
+    <T extends Node<T>> SortResult<T> sort(List<T> node);
 
-    public interface SortResult {
+    public interface SortResult<T extends Node<T>> {
 
-        List<Node> getOrderedNodes();
+        List<T> getOrderedNodes();
 
-        List<Dependency> getUpwardsDependencies();
+        List<Dependency<T>> getUpwardsDependencies();
     }
 }

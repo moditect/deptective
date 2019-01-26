@@ -29,20 +29,20 @@ import org.moditect.deptective.internal.graph.INodeSorter;
 import org.moditect.deptective.internal.graph.INodeSorter.SortResult;
 import org.moditect.deptective.internal.graph.Node;
 
-public class DependencyStructureMatrix implements IDependencyStructureMatrix {
+public class DependencyStructureMatrix<T extends Node<T>> implements IDependencyStructureMatrix<T> {
 
-    private List<List<Node>> cycles;
+    private List<List<T>> cycles;
 
-    private List<Node> nodes;
+    private List<T> nodes;
 
-    private List<Dependency> upwardDependencies;
+    private List<Dependency<T>> upwardDependencies;
 
-    public DependencyStructureMatrix(Collection<Node> nodes) {
+    public DependencyStructureMatrix(Collection<T> nodes) {
         initialize(nodes);
     }
 
     @Override
-    public List<Dependency> getUpwardDependencies() {
+    public List<Dependency<T>> getUpwardDependencies() {
         return upwardDependencies;
     }
 
@@ -53,13 +53,13 @@ public class DependencyStructureMatrix implements IDependencyStructureMatrix {
             return -1;
         }
 
-        Dependency dependency = nodes.get(i).getOutgoingDependencyTo(nodes.get(j));
+        Dependency<?> dependency = nodes.get(i).getOutgoingDependencyTo(nodes.get(j));
 
         return dependency != null ? dependency.getAggregatedWeight() : 0;
     }
 
     @Override
-    public List<Node> getOrderedNodes() {
+    public List<T> getOrderedNodes() {
         return nodes;
     }
 
@@ -75,7 +75,7 @@ public class DependencyStructureMatrix implements IDependencyStructureMatrix {
             return false;
         }
 
-        for (List<Node> cycle : cycles) {
+        for (List<T> cycle : cycles) {
             if (cycle.size() > 1 && cycle.contains(nodes.get(i)) && cycle.contains(nodes.get(j))) {
                 return true;
             }
@@ -85,35 +85,35 @@ public class DependencyStructureMatrix implements IDependencyStructureMatrix {
     }
 
     @Override
-    public List<List<Node>> getCycles() {
+    public List<List<T>> getCycles() {
         return cycles;
     }
 
-    private void initialize(Collection<Node> unorderedArtifacts) {
+    private void initialize(Collection<T> unorderedArtifacts) {
         Objects.requireNonNull(unorderedArtifacts);
 
         upwardDependencies = new ArrayList<>();
 
-        List<List<Node>> c = GraphUtils.detectStronglyConnectedComponents(unorderedArtifacts);
+        List<List<T>> c = GraphUtils.detectStronglyConnectedComponents(unorderedArtifacts);
         INodeSorter artifactSorter = new FastFasSorter();
-        for (List<Node> cycle : c) {
-            SortResult sortResult = artifactSorter.sort(cycle);
+        for (List<T> cycle : c) {
+            SortResult<T> sortResult = artifactSorter.sort(cycle);
             cycle.clear();
             cycle.addAll(sortResult.getOrderedNodes());
             upwardDependencies.addAll(sortResult.getUpwardsDependencies());
         }
 
-        List<Node> orderedArtifacts = new ArrayList<>();
+        List<T> orderedArtifacts = new ArrayList<>();
 
         // optimize: un-cycled artifacts without dependencies first
-        for (List<Node> artifactList : c) {
+        for (List<T> artifactList : c) {
             if (artifactList.size() == 1 && !artifactList.get(0).hasOutgoingDependencies()) {
                 orderedArtifacts.add(artifactList.get(0));
             }
         }
 
-        for (List<Node> cycle : c) {
-            for (Node node : cycle) {
+        for (List<T> cycle : c) {
+            for (T node : cycle) {
                 if (!orderedArtifacts.contains(node)) {
                     orderedArtifacts.add(node);
                 }

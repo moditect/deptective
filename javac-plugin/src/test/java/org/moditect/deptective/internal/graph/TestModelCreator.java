@@ -29,12 +29,12 @@ public class TestModelCreator {
      * <p>
      * P1 -> P2 -> P3 <-> P4
      */
-    public static List<Node> createDummyModel() {
+    public static List<SimpleNode> createDummyModel() {
 
-        Node p1 = new Node("p1");
-        Node p2 = new Node("p2");
-        Node p3 = new Node("p3");
-        Node p4 = new Node("p4");
+        SimpleNode p1 = new SimpleNode("p1");
+        SimpleNode p2 = new SimpleNode("p2");
+        SimpleNode p3 = new SimpleNode("p3");
+        SimpleNode p4 = new SimpleNode("p4");
 
         p1.addOutgoingDependency(p2, 13);
         p2.addOutgoingDependency(p3, 57);
