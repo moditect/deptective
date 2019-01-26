@@ -20,20 +20,12 @@ package org.moditect.deptective.internal.graph;
  */
 public class Dependency {
 
-    private final Node from;
     private final Node to;
     private final int aggregatedWeight;
 
-    public Dependency(Node from, Node to, int aggregatedWeight) {
-        this.from = from;
+    public Dependency(Node to, int aggregatedWeight) {
         this.to = to;
         this.aggregatedWeight = aggregatedWeight;
-
-        from.addOutgoingDependency(this);
-    }
-
-    public Node getFrom() {
-        return from;
     }
 
     public Node getTo() {
@@ -46,6 +38,6 @@ public class Dependency {
 
     @Override
     public String toString() {
-        return "Dependency [from=" + from + ", to=" + to + ", aggregatdWeight=" + aggregatedWeight + "]";
+        return "Dependency [to=" + to + ", aggregatdWeight=" + aggregatedWeight + "]";
     }
 }
