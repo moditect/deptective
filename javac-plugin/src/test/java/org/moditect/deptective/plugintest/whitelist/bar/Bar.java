@@ -15,6 +15,9 @@
  */
 package org.moditect.deptective.plugintest.whitelist.bar;
 
+import org.moditect.deptective.plugintest.whitelist.foo.Foo;
+
 public class Bar {
 
+    Foo f;
 }

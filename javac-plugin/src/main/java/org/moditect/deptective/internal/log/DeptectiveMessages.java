@@ -29,6 +29,7 @@ public class DeptectiveMessages extends ListResourceBundle {
     public static final String GENERATED_CONFIG = "deptective.generatedconfig";
     public static final String GENERATED_DOT_REPRESENTATION = "deptective.dotrepresentation";
     public static final String PACKAGE_CONTAINED_IN_MULTIPLE_COMPONENTS = "deptective.packageinmultiplecomponents";
+    public static final String CYCLE_IN_ARCHITECTURE = "deptective.cycleinarchitecture";
 
     @Override
     protected final Object[][] getContents() {
@@ -43,6 +44,12 @@ public class DeptectiveMessages extends ListResourceBundle {
                         "Created DOT file representing the Deptective configuration at {0}" },
                 { ERROR_PREFIX + PACKAGE_CONTAINED_IN_MULTIPLE_COMPONENTS,
                         "Multiple components match package {1}: {0}" },
+                { ERROR_PREFIX + CYCLE_IN_ARCHITECTURE,
+                        "Architecture model contains cycle(s) between these components: " + System.lineSeparator()
+                                + "{0}" },
+                { WARNING_PREFIX + CYCLE_IN_ARCHITECTURE,
+                        "Architecture model contains cycle(s) between these components: " + System.lineSeparator()
+                                + "{0}" },
         };
     }
 

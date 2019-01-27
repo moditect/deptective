@@ -36,6 +36,7 @@ public class DotSerializer implements ModelSerializer {
     private final SortedSet<String> allPackages;
     private final SortedMap<String, SortedSet<String>> allowedReads;
     private final SortedMap<String, SortedSet<String>> disallowedReads;
+    private final SortedMap<String, SortedSet<String>> cycleReads;
     private final SortedMap<String, SortedSet<String>> unknownReads;
 
     public DotSerializer() {
@@ -46,6 +47,7 @@ public class DotSerializer implements ModelSerializer {
         allPackages = new TreeSet<>();
         allowedReads = new TreeMap<>();
         disallowedReads = new TreeMap<>();
+        cycleReads = new TreeMap<>();
         unknownReads = new TreeMap<>();
     }
 
@@ -59,6 +61,9 @@ public class DotSerializer implements ModelSerializer {
         SortedSet<String> disallowed = new TreeSet<>();
         disallowedReads.put(component.getName(), disallowed);
 
+        SortedSet<String> cycle = new TreeSet<>();
+        cycleReads.put(component.getName(), cycle);
+
         SortedSet<String> unknown = new TreeSet<>();
         unknownReads.put(component.getName(), unknown);
 
@@ -71,6 +76,9 @@ public class DotSerializer implements ModelSerializer {
             }
             else if (referencedPackage.getValue() == ReadKind.DISALLOWED) {
                 disallowed.add(referencedPackageName);
+            }
+            else if (referencedPackage.getValue() == ReadKind.CYCLE) {
+                cycle.add(referencedPackageName);
             }
             else {
                 unknown.add(referencedPackageName);
@@ -90,6 +98,7 @@ public class DotSerializer implements ModelSerializer {
 
         addSubGraph(sb, allowedReads, "Allowed", null);
         addSubGraph(sb, disallowedReads, "Disallowed", "red");
+        addSubGraph(sb, cycleReads, "Cycle", "purple");
         addSubGraph(sb, unknownReads, "Unknown", "yellow");
 
         sb.append("}");

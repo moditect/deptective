@@ -1,0 +1,34 @@
+{
+    "components" : [
+        {
+            "name" : "foo",
+            "contains" : [ "org.moditect.deptective.plugintest.cycle.foo" ],
+            "reads" : [ "bar" ]
+        },
+        {
+            "name" : "bar",
+            "contains" : [ "org.moditect.deptective.plugintest.cycle.bar" ],
+            "reads" : [ "baz", "qux" ]
+        },
+        {
+            "name" : "baz",
+            "contains" : [ "org.moditect.deptective.plugintest.cycle.baz" ],
+            "reads" : [ "foo" ]
+        },
+        {
+            "name" : "qux",
+            "contains" : [ "org.moditect.deptective.plugintest.cycle.qux" ],
+            "reads" : [ "bar" ]
+        },
+        {
+            "name" : "abc",
+            "contains" : [ "org.moditect.deptective.plugintest.cycle.abc" ],
+            "reads" : [ "def" ]
+        },
+        {
+            "name" : "def",
+            "contains" : [ "org.moditect.deptective.plugintest.cycle.def" ],
+            "reads" : [ "abc" ]
+        }
+    ]
+}
