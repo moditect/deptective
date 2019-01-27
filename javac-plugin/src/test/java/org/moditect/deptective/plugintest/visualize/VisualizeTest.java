@@ -58,6 +58,11 @@ public class VisualizeTest extends PluginTestBase {
         );
         assertThat(compilation).hadNoteCount(2);
 
+        assertThat(compilation).hadWarningContaining("Analysed code base contains cycle(s) between these components:");
+        assertThat(compilation).hadWarningContaining(
+                "  - org.moditect.deptective.plugintest.visualize.bar, org.moditect.deptective.plugintest.visualize.qux"
+        );
+
         String expectedConfig = Strings.lines(
                 "digraph \"package dependencies\"",
                 "{",
@@ -65,9 +70,12 @@ public class VisualizeTest extends PluginTestBase {
                 "  \"org.moditect.deptective.plugintest.visualize.foo\";",
                 "  \"org.moditect.deptective.plugintest.visualize.qux\";",
                 "  subgraph Allowed {",
-                "    \"org.moditect.deptective.plugintest.visualize.bar\" -> \"org.moditect.deptective.plugintest.visualize.qux\";",
                 "    \"org.moditect.deptective.plugintest.visualize.foo\" -> \"org.moditect.deptective.plugintest.visualize.bar\";",
                 "    \"org.moditect.deptective.plugintest.visualize.foo\" -> \"org.moditect.deptective.plugintest.visualize.qux\";",
+                "  }",
+                "  subgraph Cycle {",
+                "    edge [color=purple]",
+                "    \"org.moditect.deptective.plugintest.visualize.bar\" -> \"org.moditect.deptective.plugintest.visualize.qux\";",
                 "    \"org.moditect.deptective.plugintest.visualize.qux\" -> \"org.moditect.deptective.plugintest.visualize.bar\";",
                 "  }",
                 "}"

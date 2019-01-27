@@ -29,6 +29,7 @@ import org.moditect.deptective.internal.model.Component;
 import org.moditect.deptective.internal.model.Components;
 import org.moditect.deptective.internal.model.PackageDependencies;
 import org.moditect.deptective.internal.options.DeptectiveOptions;
+import org.moditect.deptective.internal.options.ReportingPolicy;
 
 /**
  * Describes the {@link PackageReferenceHandler} to be invoked when traversing the ASTs of the project under
@@ -48,7 +49,7 @@ public enum PluginTask {
                     configSupplier.get(),
                     options.getReportingPolicy(),
                     options.getUnconfiguredPackageReportingPolicy(),
-                    options.getCycleReportingPolicy(),
+                    options.getCycleReportingPolicy(ReportingPolicy.ERROR),
                     options.createDotFile(),
                     log
             );
@@ -73,6 +74,7 @@ public enum PluginTask {
                     jfm,
                     log,
                     options.getWhitelistedPackagePatterns(),
+                    options.getCycleReportingPolicy(ReportingPolicy.WARN),
                     new Components(components),
                     options.createDotFile()
             );

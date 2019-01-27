@@ -84,14 +84,14 @@ public class DeptectiveOptions {
     /**
      * Returns the policy for reporting cycles between components.
      */
-    public ReportingPolicy getCycleReportingPolicy() {
+    public ReportingPolicy getCycleReportingPolicy(ReportingPolicy defaultPolicy) {
         String policy = options.get("deptective.cycle_reporting_policy");
 
         if (policy != null) {
             return ReportingPolicy.valueOf(policy.trim().toUpperCase());
         }
         else {
-            return ReportingPolicy.ERROR;
+            return defaultPolicy;
         }
     }
 
