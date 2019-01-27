@@ -189,7 +189,16 @@ where examining relationships on the package level would be too detailed otherwi
 Component definitions are given in the form "<name>:<package pattern 1>, <package pattern 2>, ...".
 Any package matching a component will not be added by itself to the generate configuration but to the `contains` section of the matching component.
 Example value: "foo:com.example.foo1,com.example.foo2;bar:com.example.bar*;qux:com.example.qux".
-* `-Adeptective.visualize=(true|false)`: Whether to create a GraphVize (DOT) file representing generated configuration template (in `ANALYZE` mode) or the dependency configuration and (if present) any illegal package dependencies (in `VALIDATE` mode). Defaults to `false`
+* `-Adeptective.visualize=(true|false)`: Whether to create a GraphVize (DOT) file representing generated configuration template (in `ANALYZE` mode) or the dependency configuration and (if present) any illegal package dependencies (in `VALIDATE` mode). Defaults to `false`.
+Illegal component relationships will be marked in red, and relationships that are part of a cycle amongst multiple components are marked in purple.
+* `-Adeptective.cycle_reporting_policy=(ERROR|WARN)`: Whether detected circular dependencies between components ("cycles") should fail the build (`ERROR`) or only should cause a warning (`WARN`).
+When using the `VALIDATE` mode, this check applies to the components defined in the _deptective.json_ file.
+As cycles are generally not desirable, the default reporting policy is `ERROR` in this mode,
+and you should adjust the architecture model to break up any cycles
+(any cycles in the *actual* code base would still be reported as an unintended component relationship of course).
+When using the `ANALYSE` mode, this check applies to the actual dependencies of the components of the analysed code base.
+The default reporting policy is `WARN` in this case.
+Before validating the code base against the architecture model, it should be adjusted to break up any cycles.
 
 ### Obtaining Deptective via Jitpack
 
