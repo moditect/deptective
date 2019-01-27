@@ -48,6 +48,7 @@ public enum PluginTask {
                     configSupplier.get(),
                     options.getReportingPolicy(),
                     options.getUnconfiguredPackageReportingPolicy(),
+                    options.getCycleReportingPolicy(),
                     options.createDotFile(),
                     log
             );

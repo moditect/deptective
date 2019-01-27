@@ -13,20 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.moditect.deptective.internal.model;
+package org.moditect.deptective.plugintest.cycle.foo;
 
-/**
- * Describes the relationship between two components.
- *
- * @author Gunnar Morling
- */
-public enum ReadKind {
-    ALLOWED,
-    DISALLOWED,
+import org.moditect.deptective.plugintest.cycle.bar.Bar;
 
-    /**
-     * The relationship is part of a cycle involving the two connected components.
-     */
-    CYCLE,
-    UKNOWN;
+public class Foo {
+
+    private final Bar bar = new Bar();
 }

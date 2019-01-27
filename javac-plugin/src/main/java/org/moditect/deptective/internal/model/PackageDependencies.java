@@ -75,6 +75,10 @@ public class PackageDependencies {
                         .removeIf(r -> pattern.matches(r.getKey()));
             }
         }
+
+        public Iterable<Component.Builder> getComponents() {
+            return componentsByName.values();
+        }
     }
 
     private final Components components;
@@ -141,5 +145,9 @@ public class PackageDependencies {
                 .filter(w -> w.matches(packageName))
                 .findFirst()
                 .isPresent();
+    }
+
+    public Iterable<Component> getComponents() {
+        return components;
     }
 }

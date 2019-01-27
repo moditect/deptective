@@ -18,6 +18,7 @@ package org.moditect.deptective.internal.handler;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,8 @@ import javax.tools.JavaFileManager;
 import javax.tools.StandardLocation;
 
 import org.moditect.deptective.internal.export.DotSerializer;
+import org.moditect.deptective.internal.graph.Cycle;
+import org.moditect.deptective.internal.graph.GraphUtils;
 import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
 import org.moditect.deptective.internal.model.Component;
@@ -50,23 +53,25 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
     private final PackageDependencies allowedPackageDependencies;
     private final JavaFileManager jfm;
     private final ReportingPolicy reportingPolicy;
-    private boolean createDotFile;
     private final ReportingPolicy unconfiguredPackageReportingPolicy;
+    private final ReportingPolicy cycleReportingPolicy;
     private final Map<String, Boolean> reportedUnconfiguredPackages;
-
     private final PackageDependencies.Builder actualPackageDependencies;
 
+    private boolean createDotFile;
     private String currentPackageName;
     private Component currentComponent;
 
     public PackageReferenceValidator(JavaFileManager jfm, PackageDependencies packageDependencies,
-            ReportingPolicy reportingPolicy, ReportingPolicy unconfiguredPackageReportingPolicy, boolean createDotFile,
+            ReportingPolicy reportingPolicy, ReportingPolicy unconfiguredPackageReportingPolicy,
+            ReportingPolicy cycleReportingPolicy, boolean createDotFile,
             Log log) {
         this.log = log;
         this.allowedPackageDependencies = packageDependencies;
         this.jfm = jfm;
         this.reportingPolicy = reportingPolicy;
         this.unconfiguredPackageReportingPolicy = unconfiguredPackageReportingPolicy;
+        this.cycleReportingPolicy = cycleReportingPolicy;
         this.reportedUnconfiguredPackages = new HashMap<>();
         this.actualPackageDependencies = PackageDependencies.builder();
         this.createDotFile = createDotFile;
@@ -170,13 +175,36 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
     public void onCompletingCompilation() {
         log.useSource(null);
 
+        List<Cycle<Component>> cycles = GraphUtils.detectCycles(allowedPackageDependencies.getComponents());
+
+        if (!cycles.isEmpty()) {
+            String cyclesAsString = "- " + cycles.stream()
+                    .map(Cycle::toString)
+                    .collect(Collectors.joining("," + System.lineSeparator() + "- "));
+
+            log.report(cycleReportingPolicy, DeptectiveMessages.CYCLE_IN_ARCHITECTURE, cyclesAsString);
+        }
+
         if (!createDotFile) {
             return;
         }
 
+        if (!cycles.isEmpty()) {
+            for (Component.Builder component : actualPackageDependencies.getComponents()) {
+                for (Cycle<Component> cycle : cycles) {
+                    if (contains(cycle, component.getName())) {
+                        for (Component nodeInCycle : cycle.getNodes()) {
+                            if (component.getReads().containsKey(nodeInCycle.getName())) {
+                                component.addRead(nodeInCycle.getName(), ReadKind.CYCLE);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         DotSerializer serializer = new DotSerializer();
-        PackageDependencies build = actualPackageDependencies.build();
-        build.serialize(serializer);
+        actualPackageDependencies.build().serialize(serializer);
 
         try {
             FileObject output = jfm.getFileForOutput(StandardLocation.CLASS_OUTPUT, "", "deptective.dot", null);
@@ -188,6 +216,16 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
         catch (IOException e) {
             throw new RuntimeException("Failed to write deptective.dot file", e);
         }
+    }
+
+    private boolean contains(Cycle<Component> cycle, String name) {
+        for (Component component : cycle.getNodes()) {
+            if (component.getName().equals(name)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private boolean isIgnoredDependency(String referencedPackageName) {

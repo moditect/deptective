@@ -22,6 +22,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.moditect.deptective.internal.graph.Dependency;
+import org.moditect.deptective.internal.graph.Node;
+
 /**
  * Describes a component, a set of packages identified by one more naming patterns.
  * <p>
@@ -30,7 +33,7 @@ import java.util.Set;
  *
  * @author Gunnar Morling
  */
-public class Component {
+public class Component implements Node<Component> {
 
     public static class Builder {
 
@@ -75,6 +78,10 @@ public class Component {
 
         public Map<String, ReadKind> getReads() {
             return reads;
+        }
+
+        public String getName() {
+            return name;
         }
     }
 
@@ -122,4 +129,51 @@ public class Component {
     public String toString() {
         return name + " { contained=" + contained + ", reads=" + reads + "] }";
     }
+
+    @Override
+    public String asShortString() {
+        return name;
+    }
+
+    @Override
+    public Dependency<Component> getOutgoingDependencyTo(Component node) {
+        return reads.entrySet()
+                .stream()
+                .filter(e -> e.getKey().equals(node.getName()))
+                .map(e -> new Dependency<Component>(Component.builder(e.getKey()).build(), 1))
+                .findFirst()
+                .orElse(null);
+    }
+
+    @Override
+    public boolean hasOutgoingDependencies() {
+        return !reads.isEmpty();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Component other = (Component) obj;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        }
+        else if (!name.equals(other.name))
+            return false;
+        return true;
+    }
+
 }
