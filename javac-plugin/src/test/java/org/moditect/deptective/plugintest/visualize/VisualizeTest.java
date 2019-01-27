@@ -70,12 +70,6 @@ public class VisualizeTest extends PluginTestBase {
                 "    \"org.moditect.deptective.plugintest.visualize.foo\" -> \"org.moditect.deptective.plugintest.visualize.qux\";",
                 "    \"org.moditect.deptective.plugintest.visualize.qux\" -> \"org.moditect.deptective.plugintest.visualize.bar\";",
                 "  }",
-                "  subgraph Disallowed {",
-                "    edge [color=red]",
-                "  }",
-                "  subgraph Unknown {",
-                "    edge [color=yellow]",
-                "  }",
                 "}"
         );
 

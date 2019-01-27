@@ -99,16 +99,25 @@ public class DotSerializer implements ModelSerializer {
 
     private void addSubGraph(StringBuilder sb, SortedMap<String, SortedSet<String>> readsOfKind, String kind,
             String color) {
-        sb.append("  subgraph " + kind + " {").append(System.lineSeparator());
+
+        StringBuilder subGraphBuilder = new StringBuilder();
+        boolean atLeastOneEdge = false;
+
+        subGraphBuilder.append("  subgraph " + kind + " {").append(System.lineSeparator());
         if (color != null) {
-            sb.append("    edge [color=" + color + "]").append(System.lineSeparator());
+            subGraphBuilder.append("    edge [color=" + color + "]").append(System.lineSeparator());
         }
         for (Entry<String, SortedSet<String>> reads : readsOfKind.entrySet()) {
             for (String read : reads.getValue()) {
-                sb.append("    \"").append(reads.getKey()).append("\" -> \"").append(read).append("\";\n");
+                subGraphBuilder.append("    \"").append(reads.getKey()).append("\" -> \"").append(read).append("\";\n");
+                atLeastOneEdge = true;
             }
         }
 
-        sb.append("  }").append(System.lineSeparator());
+        subGraphBuilder.append("  }").append(System.lineSeparator());
+
+        if (atLeastOneEdge) {
+            sb.append(subGraphBuilder);
+        }
     }
 }
