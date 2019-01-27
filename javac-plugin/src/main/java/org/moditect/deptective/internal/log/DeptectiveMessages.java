@@ -30,6 +30,7 @@ public class DeptectiveMessages extends ListResourceBundle {
     public static final String GENERATED_DOT_REPRESENTATION = "deptective.dotrepresentation";
     public static final String PACKAGE_CONTAINED_IN_MULTIPLE_COMPONENTS = "deptective.packageinmultiplecomponents";
     public static final String CYCLE_IN_ARCHITECTURE = "deptective.cycleinarchitecture";
+    public static final String CYCLE_IN_CODE_BASE = "deptective.cycleincodebase";
 
     @Override
     protected final Object[][] getContents() {
@@ -49,6 +50,12 @@ public class DeptectiveMessages extends ListResourceBundle {
                                 + "{0}" },
                 { WARNING_PREFIX + CYCLE_IN_ARCHITECTURE,
                         "Architecture model contains cycle(s) between these components: " + System.lineSeparator()
+                                + "{0}" },
+                { ERROR_PREFIX + CYCLE_IN_CODE_BASE,
+                        "Analysed code base contains cycle(s) between these components: " + System.lineSeparator()
+                                + "{0}" },
+                { WARNING_PREFIX + CYCLE_IN_CODE_BASE,
+                        "Analysed code base contains cycle(s) between these components: " + System.lineSeparator()
                                 + "{0}" },
         };
     }

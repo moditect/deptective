@@ -30,6 +30,8 @@ import javax.tools.StandardLocation;
 import org.moditect.deptective.internal.export.DotSerializer;
 import org.moditect.deptective.internal.export.JsonSerializer;
 import org.moditect.deptective.internal.export.ModelSerializer;
+import org.moditect.deptective.internal.graph.Cycle;
+import org.moditect.deptective.internal.graph.GraphUtils;
 import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
 import org.moditect.deptective.internal.model.Component;
@@ -58,6 +60,7 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
 
     private final JavaFileManager jfm;
     private final List<PackagePattern> whitelistPatterns;
+    private final ReportingPolicy cycleReportingPolicy;
 
     /**
      * Any components that were declared externally.
@@ -71,10 +74,11 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
     private boolean createOutputFile = true;
 
     public PackageReferenceCollector(JavaFileManager jfm, Log log, List<PackagePattern> whitelistPatterns,
-            Components declaredComponents, boolean createDotFile) {
+            ReportingPolicy cycleReportingPolicy, Components declaredComponents, boolean createDotFile) {
         this.log = log;
         this.jfm = jfm;
         this.whitelistPatterns = Collections.unmodifiableList(whitelistPatterns);
+        this.cycleReportingPolicy = cycleReportingPolicy;
         this.declaredComponents = declaredComponents;
         this.createDotFile = createDotFile;
 
@@ -185,7 +189,31 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
             throw new RuntimeException("Failed to write deptective.json file", e);
         }
 
+        List<Cycle<Component>> cycles = GraphUtils.detectCycles(packageDependencies.getComponents());
+
+        if (!cycles.isEmpty()) {
+            String cyclesAsString = "- " + cycles.stream()
+                    .map(Cycle::toString)
+                    .collect(Collectors.joining("," + System.lineSeparator() + "- "));
+
+            log.report(cycleReportingPolicy, DeptectiveMessages.CYCLE_IN_CODE_BASE, cyclesAsString);
+        }
+
         if (createDotFile) {
+            if (!cycles.isEmpty()) {
+                for (Component.Builder component : builder.getComponents()) {
+                    for (Cycle<Component> cycle : cycles) {
+                        if (contains(cycle, component.getName())) {
+                            for (Component nodeInCycle : cycle.getNodes()) {
+                                if (component.getReads().containsKey(nodeInCycle.getName())) {
+                                    component.addRead(nodeInCycle.getName(), ReadKind.CYCLE);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             serializer = new DotSerializer();
             packageDependencies.serialize(serializer);
 
@@ -200,6 +228,16 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
                 throw new RuntimeException("Failed to write deptective.dot file", e);
             }
         }
+    }
+
+    private boolean contains(Cycle<Component> cycle, String name) {
+        for (Component component : cycle.getNodes()) {
+            if (component.getName().equals(name)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private boolean isWhitelistAllExternal() {
