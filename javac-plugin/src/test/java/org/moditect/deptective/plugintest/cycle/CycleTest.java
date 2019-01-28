@@ -99,7 +99,7 @@ public class CycleTest extends PluginTestBase {
                 "  \"foo\";",
                 "  \"qux\";",
                 "  subgraph Cycle {",
-                "    edge [color=purple]",
+                "    edge [color=purple, penwidth=2]",
                 "    \"abc\" -> \"def\";",
                 "    \"bar\" -> \"baz\";",
                 "    \"bar\" -> \"qux\";",

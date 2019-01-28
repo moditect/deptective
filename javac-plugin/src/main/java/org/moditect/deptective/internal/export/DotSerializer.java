@@ -114,7 +114,7 @@ public class DotSerializer implements ModelSerializer {
 
         subGraphBuilder.append("  subgraph " + kind + " {").append(System.lineSeparator());
         if (color != null) {
-            subGraphBuilder.append("    edge [color=" + color + "]").append(System.lineSeparator());
+            subGraphBuilder.append("    edge [color=" + color + ", penwidth=2]").append(System.lineSeparator());
         }
         for (Entry<String, SortedSet<String>> reads : readsOfKind.entrySet()) {
             for (String read : reads.getValue()) {
