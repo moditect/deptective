@@ -190,19 +190,7 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
             return;
         }
 
-        if (!cycles.isEmpty()) {
-            for (Component.Builder component : actualPackageDependencies.getComponents()) {
-                for (Cycle<IdentifiableComponent> cycle : cycles) {
-                    if (contains(cycle, component.getName())) {
-                        for (IdentifiableComponent nodeInCycle : cycle.getNodes()) {
-                            if (component.getReads().containsKey(nodeInCycle.getName())) {
-                                component.addRead(nodeInCycle.getName(), ReadKind.CYCLE);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        actualPackageDependencies.updateFromCycles(cycles);
 
         DotSerializer serializer = new DotSerializer();
         actualPackageDependencies.build().serialize(serializer);
@@ -217,16 +205,6 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
         catch (IOException e) {
             throw new RuntimeException("Failed to write deptective.dot file", e);
         }
-    }
-
-    private boolean contains(Cycle<IdentifiableComponent> cycle, String name) {
-        for (IdentifiableComponent component : cycle.getNodes()) {
-            if (component.getName().equals(name)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private boolean isIgnoredDependency(String referencedPackageName) {

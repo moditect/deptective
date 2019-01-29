@@ -201,19 +201,7 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
         }
 
         if (createDotFile) {
-            if (!cycles.isEmpty()) {
-                for (Component.Builder component : builder.getComponents()) {
-                    for (Cycle<IdentifiableComponent> cycle : cycles) {
-                        if (contains(cycle, component.getName())) {
-                            for (IdentifiableComponent nodeInCycle : cycle.getNodes()) {
-                                if (component.getReads().containsKey(nodeInCycle.getName())) {
-                                    component.addRead(nodeInCycle.getName(), ReadKind.CYCLE);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            builder.updateFromCycles(cycles);
 
             serializer = new DotSerializer();
             packageDependencies.serialize(serializer);
@@ -229,16 +217,6 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
                 throw new RuntimeException("Failed to write deptective.dot file", e);
             }
         }
-    }
-
-    private boolean contains(Cycle<IdentifiableComponent> cycle, String name) {
-        for (IdentifiableComponent component : cycle.getNodes()) {
-            if (component.getName().equals(name)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private boolean isWhitelistAllExternal() {

@@ -19,11 +19,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.moditect.deptective.internal.export.ModelSerializer;
+import org.moditect.deptective.internal.graph.Cycle;
 
 public class PackageDependencies {
 
@@ -78,6 +80,24 @@ public class PackageDependencies {
 
         public Iterable<Component.Builder> getComponents() {
             return componentsByName.values();
+        }
+
+        public void updateFromCycles(List<Cycle<IdentifiableComponent>> cycles) {
+            for (Cycle<IdentifiableComponent> cycle : cycles) {
+                for (IdentifiableComponent nodeInCycle : cycle.getNodes()) {
+                    Component.Builder builder = componentsByName.get(nodeInCycle.name);
+
+                    if (builder == null) {
+                        continue;
+                    }
+
+                    for (IdentifiableComponent otherNodeInCycle : cycle.getNodes()) {
+                        if (builder.getReads().containsKey(otherNodeInCycle.getName())) {
+                            builder.addRead(otherNodeInCycle.getName(), ReadKind.CYCLE);
+                        }
+                    }
+                }
+            }
         }
     }
 
