@@ -32,6 +32,7 @@ import org.moditect.deptective.internal.graph.GraphUtils;
 import org.moditect.deptective.internal.log.DeptectiveMessages;
 import org.moditect.deptective.internal.log.Log;
 import org.moditect.deptective.internal.model.Component;
+import org.moditect.deptective.internal.model.IdentifiableComponent;
 import org.moditect.deptective.internal.model.PackageAssignedToMultipleComponentsException;
 import org.moditect.deptective.internal.model.PackageDependencies;
 import org.moditect.deptective.internal.model.ReadKind;
@@ -175,7 +176,7 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
     public void onCompletingCompilation() {
         log.useSource(null);
 
-        List<Cycle<Component>> cycles = GraphUtils.detectCycles(allowedPackageDependencies.getComponents());
+        List<Cycle<IdentifiableComponent>> cycles = GraphUtils.detectCycles(allowedPackageDependencies.getComponents());
 
         if (!cycles.isEmpty()) {
             String cyclesAsString = "- " + cycles.stream()
@@ -191,9 +192,9 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
 
         if (!cycles.isEmpty()) {
             for (Component.Builder component : actualPackageDependencies.getComponents()) {
-                for (Cycle<Component> cycle : cycles) {
+                for (Cycle<IdentifiableComponent> cycle : cycles) {
                     if (contains(cycle, component.getName())) {
-                        for (Component nodeInCycle : cycle.getNodes()) {
+                        for (IdentifiableComponent nodeInCycle : cycle.getNodes()) {
                             if (component.getReads().containsKey(nodeInCycle.getName())) {
                                 component.addRead(nodeInCycle.getName(), ReadKind.CYCLE);
                             }
@@ -218,8 +219,8 @@ public class PackageReferenceValidator implements PackageReferenceHandler {
         }
     }
 
-    private boolean contains(Cycle<Component> cycle, String name) {
-        for (Component component : cycle.getNodes()) {
+    private boolean contains(Cycle<IdentifiableComponent> cycle, String name) {
+        for (IdentifiableComponent component : cycle.getNodes()) {
             if (component.getName().equals(name)) {
                 return true;
             }

@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.moditect.deptective.internal.graph.Dependency;
-import org.moditect.deptective.internal.graph.Node;
 
 /**
  * Describes a component, a set of packages identified by one more naming patterns.
@@ -33,7 +32,7 @@ import org.moditect.deptective.internal.graph.Node;
  *
  * @author Gunnar Morling
  */
-public class Component implements Node<Component> {
+public class Component extends IdentifiableComponent {
 
     public static class Builder {
 
@@ -85,12 +84,11 @@ public class Component implements Node<Component> {
         }
     }
 
-    private final String name;
     private final Set<PackagePattern> contained;
     private final Map<String, ReadKind> reads;
 
     public Component(String name, Set<PackagePattern> contained, Map<String, ReadKind> reads) {
-        this.name = name;
+        super(name);
         this.contained = Collections.unmodifiableSet(contained);
         this.reads = Collections.unmodifiableMap(reads);
     }
@@ -113,10 +111,6 @@ public class Component implements Node<Component> {
         return name.equals(other.name) || reads.get(other.getName()) == ReadKind.ALLOWED;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public Set<PackagePattern> getContained() {
         return contained;
     }
@@ -136,11 +130,11 @@ public class Component implements Node<Component> {
     }
 
     @Override
-    public Dependency<Component> getOutgoingDependencyTo(Component node) {
+    public Dependency<IdentifiableComponent> getOutgoingDependencyTo(IdentifiableComponent node) {
         return reads.entrySet()
                 .stream()
                 .filter(e -> e.getKey().equals(node.getName()))
-                .map(e -> new Dependency<Component>(Component.builder(e.getKey()).build(), 1))
+                .map(e -> new Dependency<>(new ComponentReference(e.getKey()), 1))
                 .findFirst()
                 .orElse(null);
     }
@@ -149,31 +143,4 @@ public class Component implements Node<Component> {
     public boolean hasOutgoingDependencies() {
         return !reads.isEmpty();
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Component other = (Component) obj;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        }
-        else if (!name.equals(other.name))
-            return false;
-        return true;
-    }
-
 }

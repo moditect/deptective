@@ -51,7 +51,7 @@ public class GraphUtils {
      * @param nodes
      * @return a list of strongly connected components (SCCs) with a size > 1.
      */
-    public static <T extends Node<T>> List<Cycle<T>> detectCycles(Iterable<T> nodes) {
+    public static <T extends Node<T>> List<Cycle<T>> detectCycles(Iterable<? extends T> nodes) {
         return new Tarjan<T>().detectStronglyConnectedComponents(nodes)
                 .stream()
                 .filter(cycle -> cycle.size() > 1)
@@ -96,7 +96,7 @@ public class GraphUtils {
      * @param nodes the array of nodes
      * @return the adjacency list for the given list of nodes
      */
-    public static <T extends Node<T>> int[][] computeAdjacencyList(Iterable<T> nodes) {
+    public static <T extends Node<T>> int[][] computeAdjacencyList(Iterable<? extends T> nodes) {
 
         int[][] matrix;
 

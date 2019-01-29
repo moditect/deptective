@@ -32,7 +32,7 @@ public class Tarjan<T extends Node<T>> {
 
     private List<T> _artifacts;
 
-    public List<List<T>> detectStronglyConnectedComponents(Iterable<T> artifacts) {
+    public List<List<T>> detectStronglyConnectedComponents(Iterable<? extends T> artifacts) {
         Objects.requireNonNull(artifacts);
 
         _artifacts = asList(artifacts);
@@ -40,7 +40,7 @@ public class Tarjan<T extends Node<T>> {
         return executeTarjan(adjacencyList);
     }
 
-    private static <R> List<R> asList(Iterable<R> iterable) {
+    private static <R> List<R> asList(Iterable<? extends R> iterable) {
         List<R> list = new ArrayList<>();
         iterable.forEach(list::add);
         return list;

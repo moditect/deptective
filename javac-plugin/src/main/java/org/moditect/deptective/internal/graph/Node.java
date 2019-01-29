@@ -29,7 +29,7 @@ import java.util.stream.StreamSupport;
  */
 public interface Node<T extends Node<T>> {
 
-    default Set<Dependency<T>> getOutgoingDependenciesTo(Iterable<T> nodes) {
+    default Set<Dependency<T>> getOutgoingDependenciesTo(Iterable<? extends T> nodes) {
         return StreamSupport.stream(nodes.spliterator(), false)
                 .map(c -> getOutgoingDependencyTo(c))
                 .filter(Objects::nonNull)
