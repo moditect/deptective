@@ -179,7 +179,7 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
         packageDependencies.serialize(serializer);
 
         try {
-            FileObject output = jfm.getFileForOutput(StandardLocation.CLASS_OUTPUT, "", "deptective.json", null);
+            FileObject output = jfm.getFileForOutput(StandardLocation.SOURCE_OUTPUT, "", "deptective.json", null);
             log.note(DeptectiveMessages.GENERATED_CONFIG, output.toUri());
             Writer writer = output.openWriter();
             writer.append(serializer.serialize());
@@ -218,7 +218,7 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
             packageDependencies.serialize(serializer);
 
             try {
-                FileObject output = jfm.getFileForOutput(StandardLocation.CLASS_OUTPUT, "", "deptective.dot", null);
+                FileObject output = jfm.getFileForOutput(StandardLocation.SOURCE_OUTPUT, "", "deptective.dot", null);
                 log.note(DeptectiveMessages.GENERATED_DOT_REPRESENTATION, output.toUri());
                 Writer writer = output.openWriter();
                 writer.append(serializer.serialize());

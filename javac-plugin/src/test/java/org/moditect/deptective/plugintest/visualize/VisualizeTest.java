@@ -54,7 +54,7 @@ public class VisualizeTest extends PluginTestBase {
         assertThat(compilation).succeeded();
 
         assertThat(compilation).hadNoteContaining(
-                "Created DOT file representing the Deptective configuration at mem:///CLASS_OUTPUT/deptective.dot"
+                "Created DOT file representing the Deptective configuration at mem:///SOURCE_OUTPUT/deptective.dot"
         );
         assertThat(compilation).hadNoteCount(2);
 
@@ -82,7 +82,7 @@ public class VisualizeTest extends PluginTestBase {
         );
 
         Optional<JavaFileObject> deptectiveFile = compilation
-                .generatedFile(StandardLocation.CLASS_OUTPUT, "deptective.dot");
+                .generatedFile(StandardLocation.SOURCE_OUTPUT, "deptective.dot");
         assertThat(deptectiveFile.isPresent()).isTrue();
         String generatedConfig = Strings.readToString(deptectiveFile.get().openInputStream());
 
@@ -108,7 +108,7 @@ public class VisualizeTest extends PluginTestBase {
         assertThat(compilation).succeeded();
 
         assertThat(compilation).hadNoteContaining(
-                "Created DOT file representing the Deptective configuration at mem:///CLASS_OUTPUT/deptective.dot"
+                "Created DOT file representing the Deptective configuration at mem:///SOURCE_OUTPUT/deptective.dot"
         );
         assertThat(compilation).hadNoteCount(1);
 
@@ -134,7 +134,7 @@ public class VisualizeTest extends PluginTestBase {
         );
 
         Optional<JavaFileObject> deptectiveFile = compilation
-                .generatedFile(StandardLocation.CLASS_OUTPUT, "deptective.dot");
+                .generatedFile(StandardLocation.SOURCE_OUTPUT, "deptective.dot");
         assertThat(deptectiveFile.isPresent()).isTrue();
         String generatedConfig = Strings.readToString(deptectiveFile.get().openInputStream());
 

@@ -65,7 +65,7 @@ public class AnalyzeWithDefinedComponentsTest extends PluginTestBase {
         assertThat(compilation).succeeded();
 
         assertThat(compilation).hadNoteContaining(
-                "Generated Deptective configuration template at mem:///CLASS_OUTPUT/deptective.json"
+                "Generated Deptective configuration template at mem:///SOURCE_OUTPUT/deptective.json"
         );
         assertThat(compilation).hadNoteCount(1);
 
@@ -100,7 +100,7 @@ public class AnalyzeWithDefinedComponentsTest extends PluginTestBase {
         );
 
         Optional<JavaFileObject> deptectiveFile = compilation
-                .generatedFile(StandardLocation.CLASS_OUTPUT, "deptective.json");
+                .generatedFile(StandardLocation.SOURCE_OUTPUT, "deptective.json");
         assertThat(deptectiveFile.isPresent()).isTrue();
         String generatedConfig = Strings.readToString(deptectiveFile.get().openInputStream());
 
