@@ -266,10 +266,10 @@ Also enable the following "Save Actions":
 
 * Organize imports
 * Add final modifier to private fields
-* Add missing '@Override' annotations
-* Add missing '@Override' annotations to implementations of interface methods
-* Add missing '@Deprecated' annotations
-R* emove unnecessary casts
+* Add missing `@Override` annotations
+* Add missing `@Override` annotations to implementations of interface methods
+* Add missing `@Deprecated` annotations
+* Remove unnecessary casts
 * Remove trailing white spaces on all lines
 
 ## Related Work
