@@ -51,9 +51,7 @@
                     <fork>true</fork>
                     <showWarnings>true</showWarnings>
                     <compilerArgs>
-                        <arg>-Xplugin:Deptective</arg>
-                        <arg>-Adeptective.reporting_policy=WARN</arg>
-                        <arg>-Adeptective.visualize=true</arg>
+                        <arg>-Xplugin:Deptective reporting_policy=WARN visualize=true</arg>
 <!--                         <arg>-J-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=1044</arg> -->
                     </compilerArgs>
                     <annotationProcessorPaths>

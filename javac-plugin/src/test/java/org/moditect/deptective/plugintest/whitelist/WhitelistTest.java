@@ -18,9 +18,11 @@ package org.moditect.deptective.plugintest.whitelist;
 import static com.google.testing.compile.CompilationSubject.assertThat;
 
 import org.junit.Test;
+import org.moditect.deptective.internal.options.DeptectiveOptions.Options;
 import org.moditect.deptective.plugintest.PluginTestBase;
 import org.moditect.deptective.plugintest.whitelist.bar.Bar;
 import org.moditect.deptective.plugintest.whitelist.foo.Foo;
+import org.moditect.deptective.testutil.TestOptions;
 
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.Compiler;
@@ -31,8 +33,9 @@ public class WhitelistTest extends PluginTestBase {
     public void shouldApplyWhitelistForJavaLangType() {
         Compilation compilation = Compiler.javac()
                 .withOptions(
-                        "-Xplugin:Deptective",
-                        getConfigFileOption()
+                        TestOptions.deptectiveOptions(
+                                Options.CONFIG_FILE, getConfigFileOption()
+                        )
                 )
                 .compile(
                         forTestClass(Bar.class),

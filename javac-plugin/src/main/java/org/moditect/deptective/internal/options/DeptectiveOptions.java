@@ -36,14 +36,46 @@ import org.moditect.deptective.internal.model.PackagePattern;
  */
 public class DeptectiveOptions {
 
+    public enum Options {
+        COMPONENTS("components"),
+        WHITELISTED("whitelisted"),
+        VISUALIZE("visualize"),
+        MODE("mode"),
+        CYCLE_REPORTING_POLICY("cycle_reporting_policy"),
+        UNCONFIGURED_PACKAGE_REPORTING_POLICY("unconfigured_package_reporting_policy"),
+        REPORTING_POLICY("reporting_policy"),
+        CONFIG_FILE("config_file");
+
+        private final String name;
+
+        Options(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getFrom(Map<String, String> options) {
+            return options.get(name);
+        }
+    }
+
     private final Map<String, String> options;
 
-    public DeptectiveOptions(Map<String, String> options) {
-        this.options = Collections.unmodifiableMap(options);
+    public DeptectiveOptions(String... args) {
+        if (args != null) {
+            this.options = Arrays.stream(args)
+                    .map(o -> o.split("="))
+                    .collect(Collectors.toUnmodifiableMap(o -> o[0], o -> o[1]));
+        }
+        else {
+            this.options = Collections.emptyMap();
+        }
     }
 
     public Optional<Path> getConfigFilePath() {
-        String path = options.get("deptective.config_file");
+        String path = Options.CONFIG_FILE.getFrom(options);
 
         if (path != null) {
             return Optional.of(new File(path).toPath());
@@ -57,7 +89,7 @@ public class DeptectiveOptions {
      * Returns the policy for reporting illegal package references.
      */
     public ReportingPolicy getReportingPolicy() {
-        String policy = options.get("deptective.reporting_policy");
+        String policy = Options.REPORTING_POLICY.getFrom(options);
 
         if (policy != null) {
             return ReportingPolicy.valueOf(policy.trim().toUpperCase());
@@ -71,7 +103,7 @@ public class DeptectiveOptions {
      * Returns the policy for reporting unconfigured packages.
      */
     public ReportingPolicy getUnconfiguredPackageReportingPolicy() {
-        String policy = options.get("deptective.unconfigured_package_reporting_policy");
+        String policy = Options.UNCONFIGURED_PACKAGE_REPORTING_POLICY.getFrom(options);
 
         if (policy != null) {
             return ReportingPolicy.valueOf(policy.trim().toUpperCase());
@@ -85,7 +117,7 @@ public class DeptectiveOptions {
      * Returns the policy for reporting cycles between components.
      */
     public ReportingPolicy getCycleReportingPolicy(ReportingPolicy defaultPolicy) {
-        String policy = options.get("deptective.cycle_reporting_policy");
+        String policy = Options.CYCLE_REPORTING_POLICY.getFrom(options);
 
         if (policy != null) {
             return ReportingPolicy.valueOf(policy.trim().toUpperCase());
@@ -99,7 +131,7 @@ public class DeptectiveOptions {
      * Returns the task to be performed by the plug-in.
      */
     public PluginTask getPluginTask() {
-        String mode = options.get("deptective.mode");
+        String mode = Options.MODE.getFrom(options);
 
         if (mode != null) {
             return PluginTask.valueOf(mode.trim().toUpperCase());
@@ -110,13 +142,13 @@ public class DeptectiveOptions {
     }
 
     public boolean createDotFile() {
-        String visualize = options.get("deptective.visualize");
+        String visualize = Options.VISUALIZE.getFrom(options);
 
         return visualize != null && Boolean.parseBoolean(visualize.trim());
     }
 
     public List<PackagePattern> getWhitelistedPackagePatterns() {
-        String whitelisted = options.get("deptective.whitelisted");
+        String whitelisted = Options.WHITELISTED.getFrom(options);
 
         if (whitelisted != null) {
             String[] patterns = whitelisted.split(",");
@@ -131,7 +163,7 @@ public class DeptectiveOptions {
     }
 
     public Map<String, List<PackagePattern>> getComponentPackagePatterns() {
-        String components = options.get("deptective.components");
+        String components = Options.COMPONENTS.getFrom(options);
 
         if (components != null) {
             Map<String, List<PackagePattern>> componentPatterns = new HashMap<String, List<PackagePattern>>();

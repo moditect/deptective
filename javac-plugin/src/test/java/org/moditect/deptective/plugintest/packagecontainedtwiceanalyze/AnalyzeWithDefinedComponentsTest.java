@@ -18,8 +18,10 @@ package org.moditect.deptective.plugintest.packagecontainedtwiceanalyze;
 import static com.google.testing.compile.CompilationSubject.assertThat;
 
 import org.junit.Test;
+import org.moditect.deptective.internal.options.DeptectiveOptions.Options;
 import org.moditect.deptective.plugintest.PluginTestBase;
 import org.moditect.deptective.plugintest.packagecontainedtwiceanalyze.foo.Foo;
+import org.moditect.deptective.testutil.TestOptions;
 
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.Compiler;
@@ -30,11 +32,12 @@ public class AnalyzeWithDefinedComponentsTest extends PluginTestBase {
     public void shouldFailUponAnalyzeWithPackageMatchedByMultipleComponents() throws Exception {
         Compilation compilation = Compiler.javac()
                 .withOptions(
-                        "-Xplugin:Deptective",
-                        "-Adeptective.mode=ANALYZE",
-                        "-Adeptective.components=" +
+                        TestOptions.deptectiveOptions(
+                                Options.MODE, "ANALYZE",
+                                Options.COMPONENTS,
                                 "foo1:org.moditect.deptective.plugintest.packagecontainedtwiceanalyze.foo;" +
-                                "foo2:org.moditect.deptective.plugintest.packagecontainedtwiceanalyze.foo"
+                                        "foo2:org.moditect.deptective.plugintest.packagecontainedtwiceanalyze.foo"
+                        )
                 )
                 .compile(forTestClass(Foo.class));
 

@@ -108,7 +108,7 @@ _Note:_ access to the package `java.lang` is always allowed.
 
 Place the configuration file in the root of your source directory (e.g. _src/main/java_ for Maven projects)
 or on the classpath at _META-INF/deptective.json_ (e.g. _META-INF/src/main/resources/deptective.json_ for Maven projects).
-Alternatively you can specify the location of the config file using the `-Adeptective.configfile` option (see below).
+Alternatively you can specify the location of the config file using the `configfile` option (see below).
 
 ### Configuring the Java compiler
 
@@ -127,9 +127,8 @@ Alternatively you can specify the location of the config file using the `-Adepte
             <configuration>
                 <showWarnings>true</showWarnings>
                 <compilerArgs>
-                    <arg>-Xplugin:Deptective</arg>
-                    <!-- specify options like so -->
-                    <!-- <arg>-Adeptective.reportingpolicy=WARN</arg> -->
+                    <!-- add further options as needed -->
+                    <arg>-Xplugin:Deptective reportingpolicy=WARN</arg>
                 </compilerArgs>
                 <annotationProcessorPaths>
                     <path>
@@ -159,11 +158,11 @@ dependencies {
 
 tasks.withType(JavaCompile) {
     options.compilerArgs = [
-            '-Xplugin:Deptective',
-            '-Adeptective.mode=VALIDATE',
-            '-Adeptective.reporting_policy=ERROR',
-            '-Adeptective.visualize=true',
-            "-Adeptective.config_file=${projectDir}/src/main/resources/META-INF/deptective.json"
+            'Xplugin:Deptective' +
+            'mode=VALIDATE' +
+            'reporting_policy=ERROR' +
+            'visualize=true' +
+            "config_file=${projectDir}/src/main/resources/META-INF/deptective.json"
     ]
 }
 ...
@@ -175,25 +174,25 @@ See [integration-test/build.gradle](build.gradle) for a complete example.
 
 🕵 The following options can be provided when running the plug-in:
 
-* `-Adeptective.config_file=path/to/deptective.json`: Path of the configuration file in the file system
-* `-Adeptective.reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when spotting any illegal package dependencies (defaults to `ERROR`; make sure to set `<showWarnings>` to `true` when using the plug-in via Maven)
-* `-Adeptective.unconfigured_package_reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when detecting a package that's not configured in the config file (defaults to `WARN`)
-* `-Adeptective.mode=(ANALYZE|VALIDATE)`: Whether the plug-in should validate the packages of the compiled package against the _deptective.json_ file (`VALIDATE`) or whether it should generate a template for that file based on the current actual package relationships (`ANALYZE`).
+* `config_file=path/to/deptective.json`: Path of the configuration file in the file system
+* `reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when spotting any illegal package dependencies (defaults to `ERROR`; make sure to set `<showWarnings>` to `true` when using the plug-in via Maven)
+* `unconfigured_package_reporting_policy=(ERROR|WARN)`: Whether to fail the build or just raise a warning when detecting a package that's not configured in the config file (defaults to `WARN`)
+* `mode=(ANALYZE|VALIDATE)`: Whether the plug-in should validate the packages of the compiled package against the _deptective.json_ file (`VALIDATE`) or whether it should generate a template for that file based on the current actual package relationships (`ANALYZE`).
 The latter can be useful when introducing Deptective into an existing code base where writing the configuration from scratch might be too tedious. Generating the configuration from the current "is" state and iteratively refining it into an intended target state can be a useful approach in that case.
 The generated JSON file is created in the compiler's source output path, e.g. _target/generated-sources_ in case of Maven. Defaults to `VALIDATE`
-* `-Adeptective.whitelisted=...`: An optional comma-separated list of whitelist package patterns which will be applied in `ANALYZE` mode. Any reference to a whitelisted package will then not be added to the `reads` section of the referencing package in the generated descriptor template.
+* `whitelisted=...`: An optional comma-separated list of whitelist package patterns which will be applied in `ANALYZE` mode. Any reference to a whitelisted package will then not be added to the `reads` section of the referencing package in the generated descriptor template.
 The special value `*ALL_EXTERNAL*` can be used to automatically whitelist all packages which are not part of the current compilation (i.e. packages from dependencies). This can be useful if you're only interested in managing the relationships amongst the current project's packages themselves but not the relationships to external packages.
-* `-Adeptective.components=...`: A optional semicolon-separated list of component definitions which will be applied in `ANALYZE` mode.
+* `components=...`: A optional semicolon-separated list of component definitions which will be applied in `ANALYZE` mode.
 This is helpful when creating the Deptective configuration for an existing code base,
 where examining relationships on the package level would be too detailed otherwise.
 Component definitions are given in the form "<name>:<package pattern 1>, <package pattern 2>, ...".
 Any package matching a component will not be added by itself to the generate configuration but to the `contains` section of the matching component.
 Example value: "foo:com.example.foo1,com.example.foo2;bar:com.example.bar*;qux:com.example.qux".
-* `-Adeptective.visualize=(true|false)`: Whether to create a GraphViz (DOT) file representing generated configuration template (in `ANALYZE` mode) or the dependency configuration and (if present) any illegal package dependencies (in `VALIDATE` mode).
+* `visualize=(true|false)`: Whether to create a GraphViz (DOT) file representing generated configuration template (in `ANALYZE` mode) or the dependency configuration and (if present) any illegal package dependencies (in `VALIDATE` mode).
 The generated DOT file is created in the compiler's source output path, e.g. _target/generated-sources_ in case of Maven.
 Defaults to `false`.
 Illegal component relationships will be marked in red, and relationships that are part of a cycle amongst multiple components are marked in purple.
-* `-Adeptective.cycle_reporting_policy=(ERROR|WARN)`: Whether detected circular dependencies between components ("cycles") should fail the build (`ERROR`) or only should cause a warning (`WARN`).
+* `cycle_reporting_policy=(ERROR|WARN)`: Whether detected circular dependencies between components ("cycles") should fail the build (`ERROR`) or only should cause a warning (`WARN`).
 When using the `VALIDATE` mode, this check applies to the components defined in the _deptective.json_ file.
 As cycles are generally not desirable, the default reporting policy is `ERROR` in this mode,
 and you should adjust the architecture model to break up any cycles

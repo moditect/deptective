@@ -30,7 +30,6 @@ import com.sun.source.util.TaskEvent;
 import com.sun.source.util.TaskEvent.Kind;
 import com.sun.source.util.TaskListener;
 import com.sun.tools.javac.api.BasicJavacTask;
-import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.JavacMessages;
 
@@ -58,7 +57,7 @@ public class DeptectivePlugin implements Plugin {
     public void init(JavacTask task, String... args) {
         Context context = ((BasicJavacTask) task).getContext();
 
-        DeptectiveOptions options = new DeptectiveOptions(JavacProcessingEnvironment.instance(context).getOptions());
+        DeptectiveOptions options = new DeptectiveOptions(args);
 
         Log log = Log.getInstance(
                 context.get(com.sun.tools.javac.util.Log.logKey),

@@ -18,7 +18,9 @@ package org.moditect.deptective.plugintest.javac;
 import static com.google.testing.compile.CompilationSubject.assertThat;
 
 import org.junit.Test;
+import org.moditect.deptective.internal.options.DeptectiveOptions.Options;
 import org.moditect.deptective.plugintest.PluginTestBase;
+import org.moditect.deptective.testutil.TestOptions;
 
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.Compiler;
@@ -30,8 +32,9 @@ public class JavacTest extends PluginTestBase {
     public void shouldProduceCorrectJavacMessages() {
         Compilation compilation = Compiler.javac()
                 .withOptions(
-                        "-Xplugin:Deptective",
-                        getConfigFileOption()
+                        TestOptions.deptectiveOptions(
+                                Options.CONFIG_FILE, getConfigFileOption()
+                        )
                 )
                 .compile(
                         JavaFileObjects.forSourceLines(

@@ -18,8 +18,10 @@ package org.moditect.deptective.plugintest.unconfiguredpackage;
 import static com.google.testing.compile.CompilationSubject.assertThat;
 
 import org.junit.Test;
+import org.moditect.deptective.internal.options.DeptectiveOptions.Options;
 import org.moditect.deptective.plugintest.PluginTestBase;
 import org.moditect.deptective.plugintest.unconfiguredpackage.foo.Foo;
+import org.moditect.deptective.testutil.TestOptions;
 
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.Compiler;
@@ -30,8 +32,9 @@ public class UnconfiguredPackageTest extends PluginTestBase {
     public void shouldWarnWhenEncounteringUnconfiguredPackage() {
         Compilation compilation = Compiler.javac()
                 .withOptions(
-                        "-Xplugin:Deptective",
-                        getConfigFileOption()
+                        TestOptions.deptectiveOptions(
+                                Options.CONFIG_FILE, getConfigFileOption()
+                        )
                 )
                 .compile(
                         forTestClass(Foo.class)
@@ -47,9 +50,10 @@ public class UnconfiguredPackageTest extends PluginTestBase {
     public void shouldFailWhenEncounteringUnconfiguredPackage() {
         Compilation compilation = Compiler.javac()
                 .withOptions(
-                        "-Xplugin:Deptective",
-                        getConfigFileOption(),
-                        "-Adeptective.unconfigured_package_reporting_policy=ERROR"
+                        TestOptions.deptectiveOptions(
+                                Options.CONFIG_FILE, getConfigFileOption(),
+                                Options.UNCONFIGURED_PACKAGE_REPORTING_POLICY, "ERROR"
+                        )
                 )
                 .compile(
                         forTestClass(Foo.class)

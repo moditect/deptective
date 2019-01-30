@@ -18,8 +18,10 @@ package org.moditect.deptective.plugintest.packagecontainedtwice;
 import static com.google.testing.compile.CompilationSubject.assertThat;
 
 import org.junit.Test;
+import org.moditect.deptective.internal.options.DeptectiveOptions.Options;
 import org.moditect.deptective.plugintest.PluginTestBase;
 import org.moditect.deptective.plugintest.packagecontainedtwice.foo.Foo;
+import org.moditect.deptective.testutil.TestOptions;
 
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.Compiler;
@@ -29,10 +31,7 @@ public class PackageContainedInTwoComponentsTest extends PluginTestBase {
     @Test
     public void shouldFailWhenSamePackageIsContainedInMultipleComponents() {
         Compilation compilation = Compiler.javac()
-                .withOptions(
-                        "-Xplugin:Deptective",
-                        getConfigFileOption()
-                )
+                .withOptions(TestOptions.deptectiveOptions(Options.CONFIG_FILE, getConfigFileOption()))
                 .compile(
                         forTestClass(Foo.class)
                 );

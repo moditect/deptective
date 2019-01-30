@@ -25,6 +25,7 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 
 import org.junit.Test;
+import org.moditect.deptective.internal.options.DeptectiveOptions.Options;
 import org.moditect.deptective.internal.util.Strings;
 import org.moditect.deptective.plugintest.PluginTestBase;
 import org.moditect.deptective.plugintest.analyzewithcomponent.bar.Bar;
@@ -33,6 +34,7 @@ import org.moditect.deptective.plugintest.analyzewithcomponent.bar.barsub2.BarSu
 import org.moditect.deptective.plugintest.analyzewithcomponent.foo.Foo;
 import org.moditect.deptective.plugintest.analyzewithcomponent.qux.Qux;
 import org.moditect.deptective.plugintest.analyzewithcomponent.qux.quxsub1.QuxSub1;
+import org.moditect.deptective.testutil.TestOptions;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
@@ -45,13 +47,13 @@ public class AnalyzeWithDefinedComponentsTest extends PluginTestBase {
     public void shouldGenerateConfig() throws Exception {
         Compilation compilation = Compiler.javac()
                 .withOptions(
-                        "-Xplugin:Deptective",
-                        "-Adeptective.mode=ANALYZE",
-                        "-Adeptective.whitelisted=*ALL_EXTERNAL*",
-                        "-Adeptective.components=" +
-                                "bar:org.moditect.deptective.plugintest.analyzewithcomponent.bar," +
-                                "org.moditect.deptective.plugintest.analyzewithcomponent.bar.barsub*;" +
-                                "qux:org.moditect.deptective.plugintest.analyzewithcomponent.qux*"
+                        TestOptions.deptectiveOptions(
+                                Options.MODE, "ANALYZE",
+                                Options.WHITELISTED, "*ALL_EXTERNAL*",
+                                Options.COMPONENTS, "bar:org.moditect.deptective.plugintest.analyzewithcomponent.bar," +
+                                        "org.moditect.deptective.plugintest.analyzewithcomponent.bar.barsub*;" +
+                                        "qux:org.moditect.deptective.plugintest.analyzewithcomponent.qux*"
+                        )
                 )
                 .compile(
                         forTestClass(Bar.class),

@@ -24,6 +24,7 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 
 import org.junit.Test;
+import org.moditect.deptective.internal.options.DeptectiveOptions.Options;
 import org.moditect.deptective.internal.util.Strings;
 import org.moditect.deptective.plugintest.PluginTestBase;
 import org.moditect.deptective.plugintest.cycle.abc.Abc;
@@ -32,6 +33,7 @@ import org.moditect.deptective.plugintest.cycle.baz.Baz;
 import org.moditect.deptective.plugintest.cycle.def.Def;
 import org.moditect.deptective.plugintest.cycle.foo.Foo;
 import org.moditect.deptective.plugintest.cycle.qux.Qux;
+import org.moditect.deptective.testutil.TestOptions;
 
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.Compiler;
@@ -42,8 +44,9 @@ public class CycleTest extends PluginTestBase {
     public void shouldDetectCyclesInArchitectureModel() {
         Compilation compilation = Compiler.javac()
                 .withOptions(
-                        "-Xplugin:Deptective",
-                        getConfigFileOption()
+                        TestOptions.deptectiveOptions(
+                                Options.CONFIG_FILE, getConfigFileOption()
+                        )
                 )
                 .compile(
                         forTestClass(Foo.class),
@@ -65,10 +68,11 @@ public class CycleTest extends PluginTestBase {
     public void shouldVisualizeCyclesInArchitectureModel() throws Exception {
         Compilation compilation = Compiler.javac()
                 .withOptions(
-                        "-Xplugin:Deptective",
-                        "-Adeptective.visualize=true",
-                        "-Adeptective.cycle_reporting_policy=WARN",
-                        getConfigFileOption()
+                        TestOptions.deptectiveOptions(
+                                Options.CONFIG_FILE, getConfigFileOption(),
+                                Options.VISUALIZE, "true",
+                                Options.CYCLE_REPORTING_POLICY, "WARN"
+                        )
                 )
                 .compile(
                         forTestClass(Foo.class),

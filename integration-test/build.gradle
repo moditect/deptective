@@ -15,11 +15,10 @@ dependencies {
 
 tasks.withType(JavaCompile) {
     options.compilerArgs = [
-            '-Xplugin:Deptective',
-            '-Adeptective.mode=VALIDATE',
-            '-Adeptective.reporting_policy=ERROR',
-            '-Adeptective.visualize=true',
-            "-Adeptective.config_file=${projectDir}/src/main/resources/META-INF/deptective.json"
-
+            '-Xplugin:Deptective ' +
+            'mode=VALIDATE ' +
+            'reporting_policy=ERROR ' +
+            'visualize=true ' +
+            "config_file=${projectDir}/src/main/resources/META-INF/deptective.json"
     ]
 }

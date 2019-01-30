@@ -24,11 +24,13 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 
 import org.junit.Test;
+import org.moditect.deptective.internal.options.DeptectiveOptions.Options;
 import org.moditect.deptective.internal.util.Strings;
 import org.moditect.deptective.plugintest.PluginTestBase;
 import org.moditect.deptective.plugintest.visualize.bar.Bar;
 import org.moditect.deptective.plugintest.visualize.foo.Foo;
 import org.moditect.deptective.plugintest.visualize.qux.Qux;
+import org.moditect.deptective.testutil.TestOptions;
 
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.Compiler;
@@ -39,11 +41,11 @@ public class VisualizeTest extends PluginTestBase {
     public void shouldGenerateDotFileForAnalyse() throws Exception {
         Compilation compilation = Compiler.javac()
                 .withOptions(
-                        "-Xplugin:Deptective",
-                        "-Adeptective.mode=ANALYZE",
-                        "-Adeptective.visualize=true",
-                        "-Adeptective.whitelisted=java.math",
-                        getConfigFileOption()
+                        TestOptions.deptectiveOptions(
+                                Options.MODE, "ANALYZE",
+                                Options.VISUALIZE, "true",
+                                Options.WHITELISTED, "java.math"
+                        )
                 )
                 .compile(
                         forTestClass(Bar.class),
@@ -93,11 +95,12 @@ public class VisualizeTest extends PluginTestBase {
     public void shouldGenerateDotFileForValidate() throws Exception {
         Compilation compilation = Compiler.javac()
                 .withOptions(
-                        "-Xplugin:Deptective",
-                        "-Adeptective.visualize=true",
-                        "-Adeptective.whitelisted=java.math",
-                        "-Adeptective.reporting_policy=WARN",
-                        getConfigFileOption()
+                        TestOptions.deptectiveOptions(
+                                Options.CONFIG_FILE, getConfigFileOption(),
+                                Options.VISUALIZE, "true",
+                                Options.WHITELISTED, "java.math",
+                                Options.REPORTING_POLICY, "WARN"
+                        )
                 )
                 .compile(
                         forTestClass(Bar.class),

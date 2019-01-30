@@ -25,11 +25,13 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 
 import org.junit.Test;
+import org.moditect.deptective.internal.options.DeptectiveOptions.Options;
 import org.moditect.deptective.internal.util.Strings;
 import org.moditect.deptective.plugintest.PluginTestBase;
 import org.moditect.deptective.plugintest.analyze.bar.Bar;
 import org.moditect.deptective.plugintest.analyze.foo.Foo;
 import org.moditect.deptective.plugintest.analyze.qux.Qux;
+import org.moditect.deptective.testutil.TestOptions;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
@@ -42,9 +44,10 @@ public class AnalyzeTest extends PluginTestBase {
     public void shouldGenerateConfig() throws Exception {
         Compilation compilation = Compiler.javac()
                 .withOptions(
-                        "-Xplugin:Deptective",
-                        "-Adeptective.mode=ANALYZE",
-                        "-Adeptective.whitelisted=java.math"
+                        TestOptions.deptectiveOptions(
+                                Options.MODE, "analyze",
+                                Options.WHITELISTED, "java.math"
+                        )
                 )
                 .compile(
                         forTestClass(Bar.class),

@@ -27,6 +27,7 @@ import javax.tools.JavaFileObject;
 import org.assertj.core.util.Lists;
 import org.hamcrest.core.Is;
 import org.junit.Test;
+import org.moditect.deptective.internal.options.DeptectiveOptions.Options;
 import org.moditect.deptective.plugintest.PluginTestBase;
 import org.moditect.deptective.plugintest.basic.barctorcall.BarCtorCall;
 import org.moditect.deptective.plugintest.basic.barfield.BarField;
@@ -37,6 +38,7 @@ import org.moditect.deptective.plugintest.basic.barretval.BarRetVal;
 import org.moditect.deptective.plugintest.basic.bartypearg.BarTypeArg;
 import org.moditect.deptective.plugintest.basic.foo.Foo;
 import org.moditect.deptective.plugintest.basic.foo.FooWithoutErrors;
+import org.moditect.deptective.testutil.TestOptions;
 
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.Compiler;
@@ -45,7 +47,7 @@ public class BasicPluginTest extends PluginTestBase {
 
     private Compilation compile() {
         Compilation compilation = Compiler.javac()
-                .withOptions("-Xplugin:Deptective", getConfigFileOption())
+                .withOptions(TestOptions.deptectiveOptions(Options.CONFIG_FILE, getConfigFileOption()))
                 .compile(
                         forTestClass(BarCtorCall.class),
                         forTestClass(BarField.class),
@@ -67,7 +69,7 @@ public class BasicPluginTest extends PluginTestBase {
     @Test
     public void shouldAllowAccessToJavaLangAutomatically() {
         Compilation compilation = Compiler.javac()
-                .withOptions("-Xplugin:Deptective", getConfigFileOption())
+                .withOptions(TestOptions.deptectiveOptions(Options.CONFIG_FILE, getConfigFileOption()))
                 .compile(forTestClass(FooWithoutErrors.class));
         assertThat(compilation).succeeded();
     }
@@ -313,7 +315,12 @@ public class BasicPluginTest extends PluginTestBase {
     @Test
     public void shouldUseWarnReportingPolicy() {
         Compilation compilation = Compiler.javac()
-                .withOptions("-Xplugin:Deptective", getConfigFileOption(), "-Adeptective.reporting_policy=WARN")
+                .withOptions(
+                        TestOptions.deptectiveOptions(
+                                Options.CONFIG_FILE, getConfigFileOption(),
+                                Options.REPORTING_POLICY, "WARN"
+                                )
+                        )
                 .compile(forTestClass(BarCtorCall.class), forTestClass(BarField.class), forTestClass(BarLocalVar.class),
                         forTestClass(BarLoopVar.class), forTestClass(BarParameter.class), forTestClass(BarRetVal.class),
                         forTestClass(BarTypeArg.class), forTestClass(Foo.class)
