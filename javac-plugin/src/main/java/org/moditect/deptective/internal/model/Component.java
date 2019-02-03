@@ -46,13 +46,6 @@ public class Component extends IdentifiableComponent {
             this.reads = new HashMap<>();
         }
 
-        public Builder addReads(Iterable<String> reads) {
-            for (String read : reads) {
-                addRead(read, ReadKind.ALLOWED);
-            }
-            return this;
-        }
-
         public Builder addRead(String read, ReadKind readKind) {
             if (!read.isEmpty() && !read.equals(name) && !read.equals("java.lang")) {
                 reads.put(read, readKind);
@@ -89,8 +82,8 @@ public class Component extends IdentifiableComponent {
 
     public Component(String name, Set<PackagePattern> contained, Map<String, ReadKind> reads) {
         super(name);
-        this.contained = Collections.unmodifiableSet(contained);
-        this.reads = Collections.unmodifiableMap(reads);
+        this.contained = Collections.unmodifiableSet(new HashSet<>(contained));
+        this.reads = Collections.unmodifiableMap(new HashMap<>(reads));
     }
 
     public static Builder builder(String name) {

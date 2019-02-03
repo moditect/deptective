@@ -15,7 +15,6 @@
  */
 package org.moditect.deptective.internal.model;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,17 +40,6 @@ public class PackageDependencies {
                     .collect(Collectors.toSet());
 
             return new PackageDependencies(new Components(components), whitelisted);
-        }
-
-        public void addComponent(String name, Collection<PackagePattern> contains, Collection<String> reads) {
-            if (componentsByName.containsKey(name)) {
-                throw new IllegalArgumentException("Component " + name + " may not be configured more than once.");
-            }
-
-            componentsByName.put(
-                    name,
-                    Component.builder(name).addReads(reads).addContains(contains)
-            );
         }
 
         public void addContains(String componentName, PackagePattern contained) {

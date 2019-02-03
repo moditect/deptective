@@ -89,7 +89,9 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
         builder = PackageDependencies.builder();
 
         for (Component component : declaredComponents) {
-            builder.addComponent(component.getName(), component.getContained(), Collections.emptyList());
+            for (PackagePattern contained : component.getContained()) {
+                builder.addContains(component.getName(), contained);
+            }
         }
     }
 
@@ -202,6 +204,7 @@ public class PackageReferenceCollector implements PackageReferenceHandler {
 
         if (createDotFile) {
             builder.updateFromCycles(cycles);
+            packageDependencies = builder.build();
 
             serializer = new DotSerializer();
             packageDependencies.serialize(serializer);

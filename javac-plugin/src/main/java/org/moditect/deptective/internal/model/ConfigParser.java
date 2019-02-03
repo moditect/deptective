@@ -108,7 +108,13 @@ public class ConfigParser {
         List<PackagePattern> contains = parseContains((ArrayNode) (component.get("contains")));
         List<String> reads = parseReads((ArrayNode) (component.get("reads")));
 
-        builder.addComponent(name, contains, reads);
+        for (String read : reads) {
+            builder.addRead(name, read, ReadKind.ALLOWED);
+        }
+
+        for (PackagePattern pattern : contains) {
+            builder.addContains(name, pattern);
+        }
     }
 
     private List<String> parseReads(ArrayNode arrayNode) {
