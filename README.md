@@ -168,7 +168,7 @@ tasks.withType(JavaCompile) {
 ...
 ```
 
-See [integration-test/build.gradle](build.gradle) for a complete example.
+See [integration-test/build.gradle](integration-test/build.gradle) for a complete example.
 
 ### Configuration Options
 
