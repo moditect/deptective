@@ -65,9 +65,11 @@ public class DeptectiveOptions {
 
     public DeptectiveOptions(String... args) {
         if (args != null) {
-            this.options = Arrays.stream(args)
-                    .map(o -> o.split("="))
-                    .collect(Collectors.toUnmodifiableMap(o -> o[0], o -> o[1]));
+            this.options = Collections.unmodifiableMap(
+                    Arrays.stream(args)
+                            .map(o -> o.split("="))
+                            .collect(Collectors.toMap(o -> o[0], o -> o[1]))
+            );
         }
         else {
             this.options = Collections.emptyMap();
