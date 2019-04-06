@@ -22,6 +22,7 @@ import javax.tools.JavaFileObject;
 
 import org.moditect.deptective.internal.options.ReportingPolicy;
 
+import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.util.JCDiagnostic.DiagnosticPosition;
 import com.sun.tools.javac.util.JCDiagnostic.Note;
 import com.sun.tools.javac.util.JavacMessages;
@@ -29,7 +30,7 @@ import com.sun.tools.javac.util.Position;
 
 public class Log {
 
-    private final com.sun.tools.javac.util.Log log;
+    private final JavacProcessingEnvironment processingEnvironment;
 
     private final DeptectiveMessages messages;
 
@@ -39,34 +40,34 @@ public class Log {
      */
     private boolean registeredResourceBundle;
 
-    private Log(com.sun.tools.javac.util.Log log, JavacMessages messages) {
-        this.log = log;
+    private Log(JavacProcessingEnvironment processingEnvironment, JavacMessages messages) {
+        this.processingEnvironment = processingEnvironment;
         registeredResourceBundle = true;
         this.messages = new DeptectiveMessages();
         registerResourceBundle(messages);
     }
 
-    public static Log getInstance(com.sun.tools.javac.util.Log log, JavacMessages messages) {
-        return new Log(log, messages);
+    public static Log getInstance(JavacProcessingEnvironment processingEnvironment, JavacMessages messages) {
+        return new Log(processingEnvironment, messages);
     }
 
     public void report(ReportingPolicy reportingPolicy, String key, Object... params) {
         if (reportingPolicy == ReportingPolicy.ERROR) {
             if (registeredResourceBundle) {
-                log.error(Position.NOPOS, key, params);
+                currentLog().error(Position.NOPOS, key, params);
             }
             else {
                 MessageFormat format = new MessageFormat(messages.getFormat(DeptectiveMessages.ERROR_PREFIX, key));
-                log.rawError(Position.NOPOS, format.format(params));
+                currentLog().rawError(Position.NOPOS, format.format(params));
             }
         }
         else {
             if (registeredResourceBundle) {
-                log.strictWarning(null, key, params);
+                currentLog().strictWarning(null, key, params);
             }
             else {
                 MessageFormat format = new MessageFormat(messages.getFormat(DeptectiveMessages.WARNING_PREFIX, key));
-                log.rawWarning(Position.NOPOS, format.format(params));
+                currentLog().rawWarning(Position.NOPOS, format.format(params));
             }
         }
     }
@@ -74,20 +75,20 @@ public class Log {
     public void report(ReportingPolicy reportingPolicy, DiagnosticPosition pos, String key, Object... params) {
         if (reportingPolicy == ReportingPolicy.ERROR) {
             if (registeredResourceBundle) {
-                log.error(pos.getPreferredPosition(), key, params);
+                currentLog().error(pos.getPreferredPosition(), key, params);
             }
             else {
                 MessageFormat format = new MessageFormat(messages.getFormat(DeptectiveMessages.ERROR_PREFIX, key));
-                log.rawError(pos.getPreferredPosition(), format.format(params));
+                currentLog().rawError(pos.getPreferredPosition(), format.format(params));
             }
         }
         else {
             if (registeredResourceBundle) {
-                log.strictWarning(pos, key, params);
+                currentLog().strictWarning(pos, key, params);
             }
             else {
                 MessageFormat format = new MessageFormat(messages.getFormat(DeptectiveMessages.WARNING_PREFIX, key));
-                log.rawWarning(pos.getPreferredPosition(), format.format(params));
+                currentLog().rawWarning(pos.getPreferredPosition(), format.format(params));
             }
         }
     }
@@ -95,12 +96,12 @@ public class Log {
     public void note(String key, Object... params) {
         // no "raw" API for producing notes; so omitting them on Java 8
         if (registeredResourceBundle) {
-            log.note(new Note("compiler", key, params));
+            currentLog().note(new Note("compiler", key, params));
         }
     }
 
     public void useSource(JavaFileObject file) {
-        log.useSource(file);
+        currentLog().useSource(file);
     }
 
     private void registerResourceBundle(JavacMessages messages) {
@@ -115,5 +116,12 @@ public class Log {
         catch (Throwable t) {
             registeredResourceBundle = false;
         }
+    }
+
+    private com.sun.tools.javac.util.Log currentLog() {
+        // For the sake of Java 8 compatibility the currently relevant Log instance has to be
+        // retrieved on demand from the JavacProcessingEnvironment instead of using a cached
+        // instance from the plugin initialization phase
+        return processingEnvironment.getContext().get(com.sun.tools.javac.util.Log.logKey);
     }
 }

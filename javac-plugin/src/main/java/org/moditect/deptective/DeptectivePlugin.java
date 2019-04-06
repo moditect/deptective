@@ -17,6 +17,7 @@ package org.moditect.deptective;
 
 import javax.tools.JavaFileManager;
 
+import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import org.moditect.deptective.internal.DeptectiveTreeVisitor;
 import org.moditect.deptective.internal.handler.PackageReferenceHandler;
 import org.moditect.deptective.internal.log.Log;
@@ -60,7 +61,7 @@ public class DeptectivePlugin implements Plugin {
         DeptectiveOptions options = new DeptectiveOptions(args);
 
         Log log = Log.getInstance(
-                context.get(com.sun.tools.javac.util.Log.logKey),
+                context.get(JavacProcessingEnvironment.class),
                 context.get(JavacMessages.messagesKey)
         );
 
