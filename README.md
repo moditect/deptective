@@ -130,7 +130,7 @@ Alternatively you can specify the location of the config file using the `configf
                 <showWarnings>true</showWarnings>
                 <compilerArgs>
                     <!-- add further options as needed -->
-                    <arg>-Xplugin:Deptective reportingpolicy=WARN</arg>
+                    <arg>-Xplugin:Deptective reporting_policy=WARN</arg>
                 </compilerArgs>
                 <annotationProcessorPaths>
                     <path>
