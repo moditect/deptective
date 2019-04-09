@@ -156,6 +156,7 @@
                     <excludes>
                         <exclude>**/generate-readme-toc.sh</exclude>
                         <exclude>jitpack.yml</exclude>
+                        <exclude>CONTRIBUTORS.txt</exclude>
                         <exclude>LICENSE.txt</exclude>
                         <exclude>**/bin/**</exclude>
                         <exclude>**/.gradle/**</exclude>
