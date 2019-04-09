@@ -32,20 +32,6 @@
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-	          <artifactId>junit</artifactId>
-	          <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.gunnarmorling.deptective</groupId>
-            <artifactId>deptective-javac-plugin</artifactId>
-            <version>master-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -53,9 +39,9 @@
                 <version>3.8.0</version>
                 <configuration>
                     <fork>true</fork>
+                    <showWarnings>true</showWarnings>
                     <compilerArgs>
-                        <arg>-Xplugin:Deptective</arg>
-                        <arg>-Adeptective.reportingpolicy=WARN</arg>
+                        <arg>-Xplugin:Deptective reporting_policy=WARN</arg>
 <!--                         <arg>-J-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=1044</arg> -->
                     </compilerArgs>
                     <annotationProcessorPaths>

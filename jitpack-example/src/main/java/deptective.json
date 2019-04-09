@@ -1,18 +1,21 @@
 {
-    "packages" : [
+    "components" : [
         {
-            "name" : "com.example.foo",
+            "name" : "foo",
+            "contains" : [ "com.example.foo" ],
             "reads" : [
-                "com.example.bar",
+                "bar",
                 "java.lang",
                 "java.util"
             ]
         },
         {
-            "name" : "com.example.bar"
+            "name" : "bar",
+            "contains" : [ "com.example.bar" ]
         },
         {
-            "name" : "com.example.baz"
+            "name" : "baz",
+            "contains" : [ "com.example.baz" ]
         }
     ]
 }
