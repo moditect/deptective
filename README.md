@@ -1,6 +1,6 @@
 # Deptective
 
-[![Build Status](https://img.shields.io/travis/moditect/deptective.svg)](https://travis-ci.org/moditect/deptective)
+[![Build Status](https://img.shields.io/travis/moditect/deptective.svg)](https://travis-ci.org/moditect/deptective) [![JitPack Status](https://jitpack.io/v/moditect/deptective.svg)](https://jitpack.io/#moditect/deptective)
 
 🕵️ Deptective is a plug-in for the Java compiler (_javac_) that validates the dependencies
 amongst a project's packages against a description of allowed dependences
