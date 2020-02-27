@@ -29,9 +29,11 @@ import org.moditect.deptective.internal.PluginTask;
 import org.moditect.deptective.internal.model.PackagePattern;
 
 /**
- * The options supported by the Deptective plug-in. To be given as annotation processor options
- * ("-Adeptective.someoption=..."), as that's the only way to pass any options unknown to javac itself.
- *
+ * The options supported by the Deptective plug-in. To be given as javac plugin arguments through the
+ * command line.
+ * <pre>
+ *     -Xplugin:Deptective arg1=val1 ... argN=valN
+ * </pre>
  * @author Gunnar Morling
  */
 public class DeptectiveOptions {
