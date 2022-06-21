@@ -190,8 +190,8 @@ where examining relationships on the package level would be too detailed otherwi
 Component definitions are given in the form "<name>:<package pattern 1>, <package pattern 2>, ...".
 Any package matching a component will not be added by itself to the generate configuration but to the `contains` section of the matching component.
 Example value: "foo:com.example.foo1,com.example.foo2;bar:com.example.bar*;qux:com.example.qux".
-* `visualize=(true|false)`: Whether to create a GraphViz (DOT) file representing generated configuration template (in `ANALYZE` mode) or the dependency configuration and (if present) any illegal package dependencies (in `VALIDATE` mode).
-The generated DOT file is created in the compiler's source output path, e.g. _target/generated-sources_ in case of Maven.
+* `visualize=(true|false)`: Whether to create a [GraphViz](https://www.graphviz.org/) (DOT) file representing generated configuration template (in `ANALYZE` mode) or the dependency configuration and (if present) any illegal package dependencies (in `VALIDATE` mode).
+The generated DOT file is created in the compiler's source output path (e.g. _target/generated-sources_ in case of Maven) and can be converted into a PNG file using GraphViz by running _dot -Tpng path/to/deptective.dot > deptective.png_.
 Defaults to `false`.
 Illegal component relationships will be marked in red, and relationships that are part of a cycle amongst multiple components are marked in purple.
 * `cycle_reporting_policy=(ERROR|WARN)`: Whether detected circular dependencies between components ("cycles") should fail the build (`ERROR`) or only should cause a warning (`WARN`).
