@@ -286,7 +286,7 @@ In contrast to Deptective it is not executed during compilation but via (JUnit) 
 * [code-assert](https://github.com/nidi3/code-assert) allows to enforce dependency rules described in a Java DSL.
 Similarly to ArchUnit, these rules are executed as unit tests.
 * [Macker](https://innig.net/macker/) enforces architectural rules at build time via dedicated build tool plug-ins. (not actively maintained)
-
+* [CheckStyle](https://checkstyle.sourceforge.io/config_imports.html#ImportControl) comes with an `ImportControl` rule for a similar purpose
 ## License
 
 🕵 Deptective is licensed under the Apache License version 2.0.
