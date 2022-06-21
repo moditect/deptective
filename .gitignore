@@ -27,3 +27,4 @@ test-output
 /**/dependency-reduced-pom.xml
 .gradle
 bin
+.vscode
