@@ -10,7 +10,7 @@ repositories {
 sourceCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
-    annotationProcessor 'org.moditect.deptective:deptective-javac-plugin:1.0-SNAPSHOT'
+    annotationProcessor 'org.moditect.deptective:deptective-javac-plugin:1.0.0-SNAPSHOT'
 }
 
 tasks.withType(JavaCompile) {

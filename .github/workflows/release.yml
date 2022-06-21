@@ -1,0 +1,106 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version'
+        required: true
+      next:
+        description: 'Next version'
+        required: false
+
+env:
+  JAVA_VERSION: '8'
+  JAVA_DISTRO: 'zulu'
+  GH_ACCOUNT_ID: '41898282+github-actions[bot]@users.noreply.github.com'
+  GH_ACCOUNT_NAME: 'GitHub Action'
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: n1hility/cancel-previous-runs@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: ${{ env.JAVA_DISTRO }}
+          java-version: ${{ env.JAVA_VERSION }}
+          server-id: central
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_CENTRAL_TOKEN
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build
+        run: mvn --no-transfer-progress -B --file pom.xml verify
+
+      - name: 'Set release version'
+        id: version
+        run: |
+          chmod +x mvnw
+          RELEASE_VERSION=${{ github.event.inputs.version }}
+          NEXT_VERSION=${{ github.event.inputs.next }}
+          PLAIN_VERSION=`echo ${RELEASE_VERSION} | awk 'match($0, /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)/) { print substr($0, RSTART, RLENGTH); }'`
+          COMPUTED_NEXT_VERSION="${PLAIN_VERSION}-SNAPSHOT"
+          if [ -z $NEXT_VERSION ]
+          then
+            NEXT_VERSION=$COMPUTED_NEXT_VERSION
+          fi
+          echo "NEXT_VERSION=$NEXT_VERSION" >> $GITHUB_ENV
+          mvn -B -ntp versions:set versions:commit -DnewVersion=$RELEASE_VERSION
+          git config --global user.email "${{ env.GH_ACCOUNT_ID }}"
+          git config --global user.name "${{ env.GH_ACCOUNT_NAME }}"
+          git commit -a -m "Releasing version $RELEASE_VERSION"
+          git push origin HEAD:master
+
+      - name: 'Release to Maven Central'
+        env:
+          MAVEN_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          export GPG_TTY=$(tty)
+          export MAVEN_OPTS=--illegal-access=permit
+          mvn --no-transfer-progress -B --file pom.xml \
+            -Drepository.url=https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git \
+            -Dmaven.site.skip=true -Drelease=true deploy
+
+      - name: 'Release to GitHub'
+        env:
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mvn -B --file pom.xml -pl :deptective-aggregator -Pjreleaser jreleaser:release
+
+      - name: 'JReleaser output'
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: jreleaser
+          path: |
+            target/jreleaser/trace.log
+            target/jreleaser/output.properties
+
+      - name: 'Set next version'
+        run: |
+          mvn -B versions:set versions:commit -DnewVersion=${{ env.NEXT_VERSION }}
+          git config --global user.email "${{ env.GH_ACCOUNT_ID }}"
+          git config --global user.name "${{ env.GH_ACCOUNT_NAME }}"
+          git commit -a -m "Next version ${{ env.NEXT_VERSION }}"
+          git push origin HEAD:master

@@ -114,7 +114,7 @@ Alternatively you can specify the location of the config file using the `configf
 
 ### Configuring the Java compiler
 
-🕵 In order to use Deptective, add _deptective-javac-plugin-1.0-SNAPSHOT.jar_ to your project's annotation processor path and specify the option `-Xplugin:Deptective` when invoking _javac_.
+🕵 In order to use Deptective, add _deptective-javac-plugin-1.0.0-SNAPSHOT.jar_ to your project's annotation processor path and specify the option `-Xplugin:Deptective` when invoking _javac_.
 
 #### Apache Maven
 
@@ -136,7 +136,7 @@ Alternatively you can specify the location of the config file using the `configf
                     <path>
                         <groupId>org.moditect.deptective</groupId>
                         <artifactId>deptective-javac-plugin</artifactId>
-                        <version>1.0-SNAPSHOT</version>
+                        <version>1.0.0-SNAPSHOT</version>
                     </path>
                 </annotationProcessorPaths>
             </configuration>
@@ -155,7 +155,7 @@ See [integration-test/pom.xml](integration-test/pom.xml) for a complete example.
 ```
 ...
 dependencies {
-    annotationProcessor 'org.moditect.deptective:deptective-javac-plugin:1.0-SNAPSHOT'
+    annotationProcessor 'org.moditect.deptective:deptective-javac-plugin:1.0.0-SNAPSHOT'
 }
 
 tasks.withType(JavaCompile) {
