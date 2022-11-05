@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.moditect.deptective</groupId>
         <artifactId>deptective-aggregator</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -58,7 +58,7 @@
                         <path>
                             <groupId>org.moditect.deptective</groupId>
                             <artifactId>deptective-javac-plugin</artifactId>
-                            <version>1.0-SNAPSHOT</version>
+                            <version>1.0.0-SNAPSHOT</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
